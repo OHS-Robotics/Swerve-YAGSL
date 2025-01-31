@@ -51,7 +51,7 @@ public class RobotContainer {
 	SwerveInputStream driveAngularVelocityKeyboard = SwerveInputStream.of(drivebase.getSwerveDrive(), () -> -driverXbox.getLeftY(), () -> -driverXbox.getLeftX())
 		.withControllerRotationAxis(() -> driverXbox.getRawAxis(2))
 		.deadband(OperatorConstants.DEADBAND)
-		.scaleTranslation(OperatorConstants.JOYSTICK_SCALE_FACTOR)
+		.scaleTranslation(OperatorConstants.JOYSTICK_SCALE_FACTOR)	
 		.allianceRelativeControl(true);
 
 	// Derive the heading axis with math!
