@@ -283,6 +283,16 @@ public class SwerveSubsystem extends SubsystemBase
   }
 
   /**
+   * Drive the robot given a chassis field oriented velocity (doesn't return a Command, just does it now)
+   *
+   * @param velocity Velocity according to the field.
+   */
+  public void driveFieldOrientedImmediate(Supplier<ChassisSpeeds> velocity)
+  {
+    swerveDrive.driveFieldOriented(velocity.get());
+  }
+
+  /**
    * Drive according to the chassis robot oriented velocity.
    *
    * @param velocity Robot oriented {@link ChassisSpeeds}
