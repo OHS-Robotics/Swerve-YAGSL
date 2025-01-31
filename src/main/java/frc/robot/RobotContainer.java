@@ -18,17 +18,17 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import java.io.File;
+import frc.robot.subsystems.CoralLoaderSubsystem;
+import frc.robot.subsystems.external.LidarSubsystem;
+
 import swervelib.SwerveInputStream;
 
 public class RobotContainer {
-
 	final CommandXboxController driverXbox = new CommandXboxController(0);
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
+	public final CoralLoaderSubsystem coralLoader = new CoralLoaderSubsystem();
 
 	// Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
 	SwerveInputStream driveAngularVelocity = SwerveInputStream.of(drivebase.getSwerveDrive(), () -> driverXbox.getLeftY() * -1, () -> driverXbox.getLeftX() * -1)
@@ -72,6 +72,9 @@ public class RobotContainer {
 		Command driveFieldOrientedDirectAngleKeyboard = drivebase.driveFieldOriented(driveDirectAngleKeyboard);
 		Command driveFieldOrientedAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveAngularVelocityKeyboard);
 		// Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngleKeyboard);
+
+		coralLoader.setDefaultCommand(coralLoader.runLoader());
+		driverXbox.b().onTrue(coralLoader.toggleLoader());
 
 		if (RobotBase.isSimulation()) { 
 			drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
