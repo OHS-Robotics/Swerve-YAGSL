@@ -24,6 +24,7 @@ import frc.robot.commands.UnloadCoral;
 import frc.robot.commands.StopCoral;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 
 import swervelib.SwerveInputStream;
 
@@ -32,8 +33,11 @@ public class RobotContainer {
 	final CommandJoystick driverJoystick = new CommandJoystick(0);
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 	public final CoralManipulatorSubsystem coralManipulator = new CoralManipulatorSubsystem();
+	public final ElevatorSubsystem elevator = new ElevatorSubsystem();
+
 	private boolean referenceFrameIsField = true;
 	private SequentialCommandGroup loadCoralComposed;
+	public double elevatorPosition = 0.0;
 
 	// Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
 	SwerveInputStream driveFieldAngularVelocityStream = SwerveInputStream.of(drivebase.getSwerveDrive(), () -> driverJoystick.getY() * -1, () -> driverJoystick.getX() * -1)
@@ -97,6 +101,9 @@ public class RobotContainer {
         UnloadCoral unloadCoralCommand = new UnloadCoral();
 		StopCoral stopCoralCommand = new StopCoral();
 
+		driverJoystick.povUp().onTrue(Commands.runOnce(() -> updateElevator(0.05), elevator));
+		driverJoystick.povDown().onTrue(Commands.runOnce(() -> updateElevator(-0.05), elevator));
+
         loadCoralCommand.addRequirements(coralManipulator);
 		loadCoralCommand.coralManipulator = coralManipulator;
 
@@ -128,6 +135,14 @@ public class RobotContainer {
 			// driverXbox.b().whileTrue(drivebase.driveToPose(new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0))));
 			driverJoystick.button(8).whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
 		}
+	}
+
+	public void updateElevator(double change) {
+		elevatorPosition += change;
+		// todo: make these actual values
+		elevatorPosition = Math.max(0.0, Math.min(300.0, elevatorPosition));
+
+		elevator.setPosition(elevatorPosition);
 	}
 
 
