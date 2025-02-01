@@ -21,7 +21,7 @@ import frc.robot.commands.LoadCoral;
 import frc.robot.commands.TestCommand;
 import frc.robot.commands.UnloadCoral;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import frc.robot.subsystems.CoralLoaderSubsystem;
+import frc.robot.subsystems.CoralManipulatorSubsystem;
 
 import swervelib.SwerveInputStream;
 
@@ -83,7 +83,7 @@ public class RobotContainer {
 
 	private void configureBindings() {
 		//Delegate the actual calling of the swerve drive function to 
-		drivebase.setDefaultCommand(Command.run(() -> DriveRobot(referenceFrameIsField), drivebase));
+		drivebase.setDefaultCommand(Commands.run(() -> DriveRobot(referenceFrameIsField), drivebase));
 		driverJoystick.button(13).onTrue(Commands.runOnce(() -> { referenceFrameIsField = false; System.out.println("robot"); }));
 		driverJoystick.button(13).onFalse(Commands.runOnce(() -> { referenceFrameIsField = true; System.out.println("field"); }));
 		// driverXbox.rightTrigger().onTrue(Commands.runOnce(() -> System.out.println("here")));
@@ -95,8 +95,6 @@ public class RobotContainer {
 
         loadCoralCommand.addRequirements(coralManipulator);
         unloadCoralCommand.addRequirements(coralManipulator);
-
-        driverXbox.b().onTrue(new LoadCoral());
 
 		if (RobotBase.isSimulation()) {
 			//Reset the robot to a semi-arbritary position
