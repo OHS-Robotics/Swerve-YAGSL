@@ -121,7 +121,7 @@ public class RobotContainer {
 	*/
 	public void DriveRobot(boolean referenceFrameIsField) {
 		if (referenceFrameIsField) {
-			if (Robot.isSimulation()) {
+			if (Robot.isSimulation() && OperatorConstants.USE_KEYBOARD_IN_SIM) {
 				drivebase.driveFieldOrientedImmediate(driveFieldAngularVelocityKeyboardStream);
 			}
 			else {
@@ -129,7 +129,7 @@ public class RobotContainer {
 			}
 		}
 		else {
-			if (Robot.isSimulation()) {
+			if (Robot.isSimulation() && OperatorConstants.USE_KEYBOARD_IN_SIM) {
 				drivebase.driveFieldOrientedImmediate(driveRobotAngularVelocityKeyboardStream);
 			}
 			else {
