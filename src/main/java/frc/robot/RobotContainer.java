@@ -91,7 +91,8 @@ public class RobotContainer {
 		driverXbox.b().onTrue(coralLoader.toggleLoader());
 
 		if (RobotBase.isSimulation()) { 
-			drivebase.setDefaultCommand(driveFieldOrientedDirectAngleKeyboard);
+			drivebase.setDefaultCommand(driveFieldDirectAngleKeyboard);
+		}
 		// driverXbox.a().whileTrue(Commands.run(() -> DriveRobot(false), drivebase));
 		// driverXbox.a().whileFalse(Commands.run(() -> DriveRobot(true), drivebase));
 
