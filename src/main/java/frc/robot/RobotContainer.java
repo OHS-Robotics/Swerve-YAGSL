@@ -16,10 +16,12 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LoadCoral;
 import frc.robot.commands.TestCommand;
 import frc.robot.commands.UnloadCoral;
+import frc.robot.commands.StopCoral;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 
@@ -31,10 +33,11 @@ public class RobotContainer {
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 	public final CoralManipulatorSubsystem coralManipulator = new CoralManipulatorSubsystem();
 	private boolean referenceFrameIsField = true;
+	private SequentialCommandGroup loadCoralComposed;
 
 	// Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
 	SwerveInputStream driveFieldAngularVelocityStream = SwerveInputStream.of(drivebase.getSwerveDrive(), () -> driverJoystick.getY() * -1, () -> driverJoystick.getX() * -1)
-		.withControllerRotationAxis(driverJoystick::getTwist)
+		.withControllerRotationAxis(() -> driverJoystick.getTwist() * -1)
 		.deadband(OperatorConstants.DEADBAND)
 		.scaleTranslation(OperatorConstants.JOYSTICK_SCALE_FACTOR)
 		.allianceRelativeControl(true);
@@ -84,17 +87,26 @@ public class RobotContainer {
 	private void configureBindings() {
 		//Delegate the actual calling of the swerve drive function to 
 		drivebase.setDefaultCommand(Commands.run(() -> DriveRobot(referenceFrameIsField), drivebase));
-		driverJoystick.button(13).onTrue(Commands.runOnce(() -> { referenceFrameIsField = false; System.out.println("robot"); }));
-		driverJoystick.button(13).onFalse(Commands.runOnce(() -> { referenceFrameIsField = true; System.out.println("field"); }));
+		driverJoystick.button(2).onTrue(Commands.runOnce(() -> { referenceFrameIsField = false; System.out.println("robot"); }));
+		driverJoystick.button(2).onFalse(Commands.runOnce(() -> { referenceFrameIsField = true; System.out.println("field"); }));
 		// driverXbox.rightTrigger().onTrue(Commands.runOnce(() -> System.out.println("here")));
 		// driverXbox.a().whileTrue(Commands.run(() -> DriveRobot(false), drivebase));
 		// driverXbox.a().whileFalse(Commands.run(() -> DriveRobot(true), drivebase));
 
         LoadCoral loadCoralCommand = new LoadCoral();
         UnloadCoral unloadCoralCommand = new UnloadCoral();
+		StopCoral stopCoralCommand = new StopCoral();
 
         loadCoralCommand.addRequirements(coralManipulator);
+		loadCoralCommand.coralManipulator = coralManipulator;
+
         unloadCoralCommand.addRequirements(coralManipulator);
+		unloadCoralCommand.coralManipulator = coralManipulator;
+
+		stopCoralCommand.addRequirements(coralManipulator);
+		stopCoralCommand.coralManipulator = coralManipulator;
+
+		loadCoralComposed = loadCoralCommand.andThen(stopCoralCommand);
 
 		if (RobotBase.isSimulation()) {
 			//Reset the robot to a semi-arbritary position

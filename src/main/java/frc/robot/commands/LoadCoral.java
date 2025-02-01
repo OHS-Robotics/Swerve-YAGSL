@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 
 public class LoadCoral extends Command{
-    public CoralManipulatorSubsystem coralLoader;
+    public CoralManipulatorSubsystem coralManipulator;
 
     @Override
     public void initialize() {
@@ -13,13 +13,13 @@ public class LoadCoral extends Command{
 
     @Override
     public void execute() {
-        if (!coralLoader.isIngestingCoral()) {
-            coralLoader.ingestCoral();
+        if (!coralManipulator.isIngestingCoral()) {
+            coralManipulator.ingestCoral();
         }
     }
 
     @Override
     public boolean isFinished() {
-        return coralLoader.CoralLoaded();
+        return coralManipulator.CoralLoaded();
     }
 }

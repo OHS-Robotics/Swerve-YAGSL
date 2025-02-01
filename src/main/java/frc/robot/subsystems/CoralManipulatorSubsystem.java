@@ -1,50 +1,47 @@
 package frc.robot.subsystems;
 
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.external.LidarSubsystem;
 
-import com.revrobotics.spark.SparkLowLevel;
-import com.revrobotics.spark.SparkMax;
-
-import edu.wpi.first.wpilibj.I2C.Port;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-
-public class CoralManipulatorSubsystem extends SubsystemBase {
-    private final SparkMax m_coralManipulator = new SparkMax(16, SparkLowLevel.MotorType.kBrushed);
+public class CoralManipulatorSubsystem extends SubsystemBase{
+    private SparkMax motor = new SparkMax(17, MotorType.kBrushless);
     public final LidarSubsystem lidar = new LidarSubsystem(Port.kOnboard);
-    private final double ingestCoralSpeed = 5;
-    private final double expellCoralSpeed = -5;
-    private final double speedCheckMargin = 0.1;
+    private final double ingestCoralSpeed = 0.1;
+    private final double expellCoralSpeed = -0.1;
+    private final double speedCheckMargin = 0.05;
+    private final double senseCoralDist = 65;
 
-    public CoralManipulatorSubsystem() {}
-
+    public CoralManipulatorSubsystem() {
+        lidar.startMeasuring();
+    }
+    
     public void ingestCoral() {
-        m_coralManipulator.set(ingestCoralSpeed);
+        motor.set(ingestCoralSpeed);
     }
 
     public void expellCoral() {
-        m_coralManipulator.set(expellCoralSpeed);
+        motor.set(expellCoralSpeed);
+    }
+
+    public void stopMoving() {
+        motor.set(0);
     }
 
     public boolean CoralLoaded() {
-        return lidar.getDistance() < 65;
+        var dist = lidar.getDistance();
+        System.out.println(dist);
+        return dist < senseCoralDist;
     }
-    
+
     public boolean isIngestingCoral() {
-        return m_coralManipulator.get() > (ingestCoralSpeed - speedCheckMargin) && m_coralManipulator.get() < (ingestCoralSpeed + speedCheckMargin);
+        return motor.get() > (ingestCoralSpeed - speedCheckMargin) && motor.get() < (ingestCoralSpeed - speedCheckMargin); 
     }
 
     public boolean isExpellingCoral() {
-        return m_coralManipulator.get() > (expellCoralSpeed - speedCheckMargin) && m_coralManipulator.get() < (expellCoralSpeed + speedCheckMargin);
+        return motor.get() > (expellCoralSpeed - speedCheckMargin) && motor.get() < (expellCoralSpeed - speedCheckMargin); 
     }
-
-    public void stopActions() {
-        m_coralManipulator.stopMotor();
-    }
-
-    //push button
-    //run motor until lidar detects coral
-    //next button push
-    //run the motors backwards until you DON"T detect coral
 }
