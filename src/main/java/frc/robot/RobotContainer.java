@@ -5,6 +5,7 @@
 package frc.robot;
 
 import java.io.File;
+import java.util.function.DoubleSupplier;
 
 // import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -18,9 +19,11 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.OperatorConstants;
-
+import frc.robot.commands.LoadCoral;
+import frc.robot.commands.TestCommand;
+import frc.robot.commands.UnloadCoral;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import frc.robot.subsystems.CoralLoaderSubsystem;
+import frc.robot.subsystems.CoralManipulatorSubsystem;
 import frc.robot.subsystems.external.LidarSubsystem;
 
 import swervelib.SwerveInputStream;
@@ -28,7 +31,7 @@ import swervelib.SwerveInputStream;
 public class RobotContainer {
 	final CommandXboxController driverXbox = new CommandXboxController(0);
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
-	public final CoralLoaderSubsystem coralLoader = new CoralLoaderSubsystem();
+	public final CoralManipulatorSubsystem coralManipulator = new CoralManipulatorSubsystem();
 	private boolean referenceFrameIsField = true;
 
 	// Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
@@ -85,16 +88,15 @@ public class RobotContainer {
 		drivebase.setDefaultCommand(Commands.run(() -> DriveRobot(referenceFrameIsField), drivebase));
 		driverXbox.rightBumper().onTrue(Commands.runOnce(() -> { referenceFrameIsField = false; System.out.println("robot"); }));
 		driverXbox.rightBumper().onFalse(Commands.runOnce(() -> { referenceFrameIsField = true; System.out.println("field"); }));
-		// driverXbox.rightTrigger().onTrue(Commands.runOnce(() -> System.out.println("here")));
 
-		coralLoader.setDefaultCommand(coralLoader.runLoader());
-		driverXbox.b().onTrue(coralLoader.toggleLoader());
+		LoadCoral loadCoralCommand = new LoadCoral();
+		UnloadCoral unloadCoralCommand = new UnloadCoral();
+		
+		loadCoralCommand.addRequirements(coralManipulator);
+		unloadCoralCommand.addRequirements(coralManipulator);
 
-		if (RobotBase.isSimulation()) { 
-			drivebase.setDefaultCommand(driveFieldDirectAngleKeyboard);
-		}
-		// driverXbox.a().whileTrue(Commands.run(() -> DriveRobot(false), drivebase));
-		// driverXbox.a().whileFalse(Commands.run(() -> DriveRobot(true), drivebase));
+		driverXbox.b().onTrue(new LoadCoral());
+
 
 		if (RobotBase.isSimulation()) {
 			//Reset the robot to a semi-arbritary position
@@ -102,21 +104,18 @@ public class RobotContainer {
 		} 
 
 		if (DriverStation.isTest()) {
-			driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-			driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
-			driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-			driverXbox.back().whileTrue(drivebase.centerModulesCommand());
-			driverXbox.leftBumper().onTrue(Commands.none());
-			driverXbox.rightBumper().onTrue(Commands.none());
+			// driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+			// driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
+			// driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
+			// driverXbox.back().whileTrue(drivebase.centerModulesCommand());
+			// driverXbox.leftBumper().onTrue(Commands.none());
+			// driverXbox.rightBumper().onTrue(Commands.none());
 		}
 		else {
 			// driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
 			// driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
 			// driverXbox.b().whileTrue(drivebase.driveToPose(new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0))));
-			driverXbox.start().whileTrue(Commands.none());
-			driverXbox.back().whileTrue(Commands.none());
 			driverXbox.leftBumper().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-			driverXbox.rightBumper().onTrue(Commands.none());
 		}
 	}
 
@@ -125,7 +124,7 @@ public class RobotContainer {
 	 * Execute the swerve drive's drive function.
 	 * Automatically selects the appropriate control scheme (keyboard for simulation) and reference frame (field vs. robot)
 	*/
-	public void DriveRobot(boolean referenceFrameIsField) {
+	public void DriveRobot(boolean referenceFrameIsField) {		
 		if (referenceFrameIsField) {
 			if (Robot.isSimulation() && OperatorConstants.USE_KEYBOARD_IN_SIM) {
 				drivebase.driveFieldOrientedImmediate(driveFieldAngularVelocityKeyboardStream);
