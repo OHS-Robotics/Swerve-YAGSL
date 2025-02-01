@@ -6,17 +6,6 @@ package frc.robot.subsystems.swervedrive;
 
 import static edu.wpi.first.units.Units.Meter;
 
-// import com.pathplanner.lib.auto.AutoBuilder;
-// import com.pathplanner.lib.commands.PathPlannerAuto;
-// import com.pathplanner.lib.commands.PathfindingCommand;
-// import com.pathplanner.lib.config.PIDConstants;
-// import com.pathplanner.lib.config.RobotConfig;
-// import com.pathplanner.lib.controllers.PPHolonomicDriveController;
-// import com.pathplanner.lib.path.PathConstraints;
-// import com.pathplanner.lib.path.PathPlannerPath;
-// import com.pathplanner.lib.util.DriveFeedforwards;
-// import com.pathplanner.lib.util.swerve.SwerveSetpoint;
-// import com.pathplanner.lib.util.swerve.SwerveSetpointGenerator;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -39,8 +28,6 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
 
-// import frc.robot.Constants;
-// import frc.robot.subsystems.swervedrive.Vision.Cameras;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -48,8 +35,6 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
-// import org.json.simple.parser.ParseException;
-// import org.photonvision.targeting.PhotonPipelineResult;
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
 import swervelib.SwerveDriveTest;
@@ -130,230 +115,14 @@ public class SwerveSubsystem extends SubsystemBase
         new Pose2d(new Translation2d(Meter.of(2), Meter.of(0)), Rotation2d.fromDegrees(0)));
   }
 
-  /**
-   * Setup the photon vision class.
-   */
-//   public void setupPhotonVision()
-//   {
-//     vision = new Vision(swerveDrive::getPose, swerveDrive.field);
-//   }
-
   @Override
-  public void periodic()
-  {
-    // When vision is enabled we must manually update odometry in SwerveDrive
-    // if (visionDriveTest)
-    // {
-    //   swerveDrive.updateOdometry();
-    //   vision.updatePoseEstimation(swerveDrive);
-    // }
-
-    SmartDashboard.putNumber("Front Left - Drive Pos", swerveDrive.getModules()[0].getDriveMotor().getPosition());
-    SmartDashboard.putNumber("Front Left - Turn Pos", swerveDrive.getModules()[0].getAngleMotor().getPosition());
-    SmartDashboard.putNumber("Front Left - Abs Pos", swerveDrive.getModules()[0].getAbsoluteEncoder().getAbsolutePosition());
-
-    SmartDashboard.putNumber("Front Right - Drive Pos", swerveDrive.getModules()[1].getDriveMotor().getPosition());
-    SmartDashboard.putNumber("Front Right - Turn Pos", swerveDrive.getModules()[1].getAngleMotor().getPosition());
-    SmartDashboard.putNumber("Front Right - Abs Pos", swerveDrive.getModules()[1].getAbsoluteEncoder().getAbsolutePosition());
-
-    SmartDashboard.putNumber("Back Left - Drive Pos", swerveDrive.getModules()[2].getDriveMotor().getPosition());
-    SmartDashboard.putNumber("Back Left - Turn Pos", swerveDrive.getModules()[2].getAngleMotor().getPosition());
-    SmartDashboard.putNumber("Back Left - Abs Pos", swerveDrive.getModules()[2].getAbsoluteEncoder().getAbsolutePosition());
-
-    SmartDashboard.putNumber("Back Right - Drive Pos", swerveDrive.getModules()[3].getDriveMotor().getPosition());
-    SmartDashboard.putNumber("Back Right - Turn Pos", swerveDrive.getModules()[3].getAngleMotor().getPosition());
-    SmartDashboard.putNumber("Back Right - Abs Pos", swerveDrive.getModules()[3].getAbsoluteEncoder().getAbsolutePosition());
-
+  public void periodic() {
+    
   }
 
   @Override
-  public void simulationPeriodic()
-  {
+  public void simulationPeriodic() {
   }
-
-  /**
-   * Setup AutoBuilder for PathPlanner.
-   */
-//   public void setupPathPlanner()
-//   {
-//     // Load the RobotConfig from the GUI settings. You should probably
-//     // store this in your Constants file
-//     RobotConfig config;
-//     try
-//     {
-//       config = RobotConfig.fromGUISettings();
-
-//       final boolean enableFeedforward = true;
-//       // Configure AutoBuilder last
-//       AutoBuilder.configure(
-//           this::getPose,
-//           // Robot pose supplier
-//           this::resetOdometry,
-//           // Method to reset odometry (will be called if your auto has a starting pose)
-//           this::getRobotVelocity,
-//           // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-//           (speedsRobotRelative, moduleFeedForwards) -> {
-//             if (enableFeedforward)
-//             {
-//               swerveDrive.drive(
-//                   speedsRobotRelative,
-//                   swerveDrive.kinematics.toSwerveModuleStates(speedsRobotRelative),
-//                   moduleFeedForwards.linearForces()
-//                                );
-//             } else
-//             {
-//               swerveDrive.setChassisSpeeds(speedsRobotRelative);
-//             }
-//           },
-//           // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
-//           new PPHolonomicDriveController(
-//               // PPHolonomicController is the built in path following controller for holonomic drive trains
-//               new PIDConstants(5.0, 0.0, 0.0),
-//               // Translation PID constants
-//               new PIDConstants(5.0, 0.0, 0.0)
-//               // Rotation PID constants
-//           ),
-//           config,
-//           // The robot configuration
-//           () -> {
-//             // Boolean supplier that controls when the path will be mirrored for the red alliance
-//             // This will flip the path being followed to the red side of the field.
-//             // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-//             var alliance = DriverStation.getAlliance();
-//             if (alliance.isPresent())
-//             {
-//               return alliance.get() == DriverStation.Alliance.Red;
-//             }
-//             return false;
-//           },
-//           this
-//           // Reference to this subsystem to set requirements
-//                            );
-
-//     } catch (Exception e)
-//     {
-//       // Handle exception as needed
-//       e.printStackTrace();
-//     }
-
-//     //Preload PathPlanner Path finding
-//     // IF USING CUSTOM PATHFINDER ADD BEFORE THIS LINE
-//     PathfindingCommand.warmupCommand().schedule();
-//   }
-
-  /**
-   * Aim the robot at the target returned by PhotonVision.
-   *
-   * @return A {@link Command} which will run the alignment.
-   */
-//   public Command aimAtTarget(Cameras camera)
-//   {
-
-//     return run(() -> {
-//       Optional<PhotonPipelineResult> resultO = camera.getBestResult();
-//       if (resultO.isPresent())
-//       {
-//         var result = resultO.get();
-//         if (result.hasTargets())
-//         {
-//           drive(getTargetSpeeds(0,
-//                                 0,
-//                                 Rotation2d.fromDegrees(result.getBestTarget()
-//                                                              .getYaw()))); // Not sure if this will work, more math may be required.
-//         }
-//       }
-//     });
-//   }
-
-  /**
-   * Get the path follower with events.
-   *
-   * @param pathName PathPlanner path name.
-   * @return {@link AutoBuilder#followPath(PathPlannerPath)} path command.
-   */
-//   public Command getAutonomousCommand(String pathName)
-//   {
-    // Create a path following command using AutoBuilder. This will also trigger event markers.
-    // return new PathPlannerAuto(pathName);
-//   }
-
-  /**
-   * Use PathPlanner Path finding to go to a point on the field.
-   *
-   * @param pose Target {@link Pose2d} to go to.
-   * @return PathFinding command
-   */
-//   public Command driveToPose(Pose2d pose)
-//   {
-// Create the constraints to use while pathfinding
-//     PathConstraints constraints = new PathConstraints(
-//         swerveDrive.getMaximumChassisVelocity(), 4.0,
-//         swerveDrive.getMaximumChassisAngularVelocity(), Units.degreesToRadians(720));
-
-// // Since AutoBuilder is configured, we can use it to build pathfinding commands
-//     return AutoBuilder.pathfindToPose(
-//         pose,
-//         constraints,
-//         edu.wpi.first.units.Units.MetersPerSecond.of(0) // Goal end velocity in meters/sec
-//                                      );
-//   }
-
-  /**
-   * Drive with {@link SwerveSetpointGenerator} from 254, implemented by PathPlanner.
-   *
-   * @param robotRelativeChassisSpeed Robot relative {@link ChassisSpeeds} to achieve.
-   * @return {@link Command} to run.
-   * @throws IOException    If the PathPlanner GUI settings is invalid
-   * @throws ParseException If PathPlanner GUI settings is nonexistent.
-   */
-//   private Command driveWithSetpointGenerator(Supplier<ChassisSpeeds> robotRelativeChassisSpeed)
-//   throws IOException, ParseException
-//   {
-//     SwerveSetpointGenerator setpointGenerator = new SwerveSetpointGenerator(RobotConfig.fromGUISettings(),
-//                                                                             swerveDrive.getMaximumChassisAngularVelocity());
-//     AtomicReference<SwerveSetpoint> prevSetpoint
-//         = new AtomicReference<>(new SwerveSetpoint(swerveDrive.getRobotVelocity(),
-//                                                    swerveDrive.getStates(),
-//                                                    DriveFeedforwards.zeros(swerveDrive.getModules().length)));
-//     AtomicReference<Double> previousTime = new AtomicReference<>();
-
-//     return startRun(() -> previousTime.set(Timer.getFPGATimestamp()),
-//                     () -> {
-//                       double newTime = Timer.getFPGATimestamp();
-//                       SwerveSetpoint newSetpoint = setpointGenerator.generateSetpoint(prevSetpoint.get(),
-//                                                                                       robotRelativeChassisSpeed.get(),
-//                                                                                       newTime - previousTime.get());
-//                       swerveDrive.drive(newSetpoint.robotRelativeSpeeds(),
-//                                         newSetpoint.moduleStates(),
-//                                         newSetpoint.feedforwards().linearForces());
-//                       prevSetpoint.set(newSetpoint);
-//                       previousTime.set(newTime);
-
-//                     });
-//   }
-
-  /**
-   * Drive with 254's Setpoint generator; port written by PathPlanner.
-   *
-   * @param fieldRelativeSpeeds Field-Relative {@link ChassisSpeeds}
-   * @return Command to drive the robot using the setpoint generator.
-   */
-//   public Command driveWithSetpointGeneratorFieldRelative(Supplier<ChassisSpeeds> fieldRelativeSpeeds)
-//   {
-//     try
-//     {
-//       return driveWithSetpointGenerator(() -> {
-//         return ChassisSpeeds.fromFieldRelativeSpeeds(fieldRelativeSpeeds.get(), getHeading());
-
-//       });
-//     } catch (Exception e)
-//     {
-//       DriverStation.reportError(e.toString(), true);
-//     }
-//     return Commands.none();
-
-//   }
 
 
   /**
@@ -511,6 +280,16 @@ public class SwerveSubsystem extends SubsystemBase
     return run(() -> {
       swerveDrive.driveFieldOriented(velocity.get());
     });
+  }
+
+  /**
+   * Drive the robot given a chassis field oriented velocity (doesn't return a Command, just does it now)
+   *
+   * @param velocity Velocity according to the field.
+   */
+  public void driveFieldOrientedImmediate(Supplier<ChassisSpeeds> velocity)
+  {
+    swerveDrive.driveFieldOriented(velocity.get());
   }
 
   /**
