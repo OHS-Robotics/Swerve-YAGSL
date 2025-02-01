@@ -43,11 +43,11 @@ public final class Constants
   {
 
     // Joystick Deadband
-    public static final double DEADBAND = 0.25;
-    public static final double LEFT_Y_DEADBAND = 0.25;
-    public static final double RIGHT_X_DEADBAND = 0.25;
+    public static final double DEADBAND = 0.05;
+    public static final double LEFT_Y_DEADBAND = 0.05;
+    public static final double RIGHT_X_DEADBAND = 0.05;
     public static final double TURN_CONSTANT = 6;
     public static final double JOYSTICK_SCALE_FACTOR = 0.8;
-    public static final boolean USE_KEYBOARD_IN_SIM = true; // Whether to expect keyboard or controller controls in sim
+    public static final boolean USE_KEYBOARD_IN_SIM = false; // Whether to expect keyboard or controller controls in sim
   }
 }

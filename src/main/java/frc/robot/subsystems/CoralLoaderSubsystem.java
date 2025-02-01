@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class CoralLoaderSubsystem extends SubsystemBase {
 
     private boolean coralLoaderRunning = false;
-    private final SparkMax m_coralLoader = new SparkMax(6, SparkLowLevel.MotorType.kBrushed);
+    private final SparkMax m_coralLoader = new SparkMax(16, SparkLowLevel.MotorType.kBrushed);
     public final LidarSubsystem lidar = new LidarSubsystem(Port.kOnboard);
 
     public CoralLoaderSubsystem() {}
