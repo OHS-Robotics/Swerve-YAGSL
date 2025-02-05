@@ -13,13 +13,13 @@ public class UnloadCoral extends Command{
 
     @Override
     public void execute() {
-        if (!coralLoader.isExpellingCoral()) {
-            coralLoader.expellCoral();
+        if (!coralManipulator.isExpellingCoral()) {
+            coralManipulator.expellCoral();
         }
     }
 
     @Override
     public boolean isFinished() {
-        return !coralLoader.CoralLoaded();
+        return !coralManipulator.CoralLoaded();
     }
 }

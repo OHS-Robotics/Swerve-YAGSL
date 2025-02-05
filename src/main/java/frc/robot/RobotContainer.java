@@ -14,12 +14,12 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.LoadCoral;
-import frc.robot.commands.TestCommand;
 import frc.robot.commands.UnloadCoral;
 import frc.robot.commands.StopCoral;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
@@ -91,8 +91,8 @@ public class RobotContainer {
 	private void configureBindings() {
 		//Delegate the actual calling of the swerve drive function to 
 		drivebase.setDefaultCommand(Commands.run(() -> DriveRobot(referenceFrameIsField), drivebase));
-		driverJoystick.button(2).onTrue(Commands.runOnce(() -> { referenceFrameIsField = false; System.out.println("robot"); }));
-		driverJoystick.button(2).onFalse(Commands.runOnce(() -> { referenceFrameIsField = true; System.out.println("field"); }));
+		driverJoystick.button(13).onTrue(Commands.runOnce(() -> { referenceFrameIsField = !referenceFrameIsField; SmartDashboard.putString("Reference Frame", referenceFrameIsField ? "Field" : "Robot"); }));
+		// driverJoystick.button(13).onFalse(Commands.runOnce(() -> { referenceFrameIsField = true; SmartDashboard.putString("Reference Frame", "Field");  }));
 		// driverXbox.rightTrigger().onTrue(Commands.runOnce(() -> System.out.println("here")));
 		// driverXbox.a().whileTrue(Commands.run(() -> DriveRobot(false), drivebase));
 		// driverXbox.a().whileFalse(Commands.run(() -> DriveRobot(true), drivebase));
