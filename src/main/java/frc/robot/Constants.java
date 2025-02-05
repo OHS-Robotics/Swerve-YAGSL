@@ -50,4 +50,12 @@ public final class Constants
     public static final double JOYSTICK_SCALE_FACTOR = 0.8;
     public static final boolean USE_KEYBOARD_IN_SIM = true; // Whether to expect keyboard or controller controls in sim
   }
+
+  public static final class AutoConstants {
+
+    // Perform Autonomous Mode [SAFETY SWITCH]
+    public static final boolean AUTO_ENABLED = true;
+
+  }
+
 }
