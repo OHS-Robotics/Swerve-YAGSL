@@ -32,6 +32,13 @@ public final class Constants
 //    public static final PIDConstants ANGLE_PID       = new PIDConstants(0.4, 0, 0.01);
 //  }
 
+  public static final class SwerveDriveConstants {
+    public static final int FRONT_LEFT_SWERVE_DRIVE_MODULE = 0;
+    public static final int FRONT_RIGHT_SWERVE_DRIVE_MODULE = 1;
+    public static final int BACK_LEFT_SWERVE_DRIVE_MODULE = 2;
+    public static final int BACK_RIGHT_SWERVE_DRIVE_MODULE = 3;
+  }
+
   public static final class DrivebaseConstants
   {
 

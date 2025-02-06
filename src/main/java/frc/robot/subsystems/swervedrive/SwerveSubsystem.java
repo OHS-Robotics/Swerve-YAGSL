@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Config;
 import frc.robot.Constants;
+import static frc.robot.Constants.SwerveDriveConstants.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -122,6 +123,21 @@ public class SwerveSubsystem extends SubsystemBase
 
   @Override
   public void simulationPeriodic() {
+    SmartDashboard.putNumber("Front Left - Drive Pos", getSwerveDrive().getModules()[FRONT_LEFT_SWERVE_DRIVE_MODULE].getDriveMotor().getPosition());
+    SmartDashboard.putNumber("Front Left - Turn Pos", getSwerveDrive().getModules()[FRONT_LEFT_SWERVE_DRIVE_MODULE].getAngleMotor().getPosition());
+    SmartDashboard.putNumber("Front Left - Abs Pos", getSwerveDrive().getModules()[FRONT_LEFT_SWERVE_DRIVE_MODULE].getAbsoluteEncoder().getAbsolutePosition());
+
+    SmartDashboard.putNumber("Front Right - Drive Pos", getSwerveDrive().getModules()[FRONT_RIGHT_SWERVE_DRIVE_MODULE].getDriveMotor().getPosition());
+    SmartDashboard.putNumber("Front Right - Turn Pos", getSwerveDrive().getModules()[FRONT_RIGHT_SWERVE_DRIVE_MODULE].getAngleMotor().getPosition());
+    SmartDashboard.putNumber("Front Right - Abs Pos", getSwerveDrive().getModules()[FRONT_RIGHT_SWERVE_DRIVE_MODULE].getAbsoluteEncoder().getAbsolutePosition());
+
+    SmartDashboard.putNumber("Back Left - Drive Pos", getSwerveDrive().getModules()[BACK_LEFT_SWERVE_DRIVE_MODULE].getDriveMotor().getPosition());
+    SmartDashboard.putNumber("Back Left - Turn Pos", getSwerveDrive().getModules()[BACK_LEFT_SWERVE_DRIVE_MODULE].getAngleMotor().getPosition());
+    SmartDashboard.putNumber("Back Left - Abs Pos", getSwerveDrive().getModules()[BACK_LEFT_SWERVE_DRIVE_MODULE].getAbsoluteEncoder().getAbsolutePosition());
+
+    SmartDashboard.putNumber("Back Right - Drive Pos", getSwerveDrive().getModules()[BACK_RIGHT_SWERVE_DRIVE_MODULE].getDriveMotor().getPosition());
+    SmartDashboard.putNumber("Back Right - Turn Pos", getSwerveDrive().getModules()[BACK_RIGHT_SWERVE_DRIVE_MODULE].getAngleMotor().getPosition());
+    SmartDashboard.putNumber("Back Right - Abs Pos", getSwerveDrive().getModules()[BACK_RIGHT_SWERVE_DRIVE_MODULE].getAbsoluteEncoder().getAbsolutePosition());
   }
 
 
