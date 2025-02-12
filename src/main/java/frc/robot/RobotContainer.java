@@ -125,25 +125,20 @@ public class RobotContainer {
 	}
 
 	private void SetupCoralManipulatorCommands() {
-		LoadCoral loadCoralCommand = new LoadCoral();
-        UnloadCoral unloadCoralCommand = new UnloadCoral();
-		StopLoadingCoral stopLoadingCoralCommand = new StopLoadingCoral();
-		StopUnloadingCoral stopUnloadingCoralCommand = new StopUnloadingCoral();
+		LoadCoral loadCoralCommand = new LoadCoral(coralManipulator);
+        UnloadCoral unloadCoralCommand = new UnloadCoral(coralManipulator);
+		StopLoadingCoral stopLoadingCoralCommand = new StopLoadingCoral(coralManipulator);
+		StopUnloadingCoral stopUnloadingCoralCommand = new StopUnloadingCoral(coralManipulator);
 
-		loadCoralCommand.addRequirements(coralManipulator);
 		loadCoralCommand.coralManipulator = coralManipulator;
-
-        unloadCoralCommand.addRequirements(coralManipulator);
 		unloadCoralCommand.coralManipulator = coralManipulator;
-
-		stopLoadingCoralCommand.addRequirements(coralManipulator);
 		stopLoadingCoralCommand.coralManipulator = coralManipulator;
-
-		stopUnloadingCoralCommand.addRequirements(coralManipulator);
 		stopUnloadingCoralCommand.coralManipulator = coralManipulator;
 
 		loadCoralComposed = loadCoralCommand.andThen(stopLoadingCoralCommand);
 		unloadCoralComposed = unloadCoralCommand.andThen(stopUnloadingCoralCommand);
+		loadCoralComposed.addRequirements(coralManipulator);
+		unloadCoralCommand.addRequirements(coralManipulator);
 
 		driverJoystick.button(3).onTrue(loadCoralComposed);
 		driverJoystick.button(4).onTrue(unloadCoralComposed);
