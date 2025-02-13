@@ -17,13 +17,10 @@ public class LidarSubsystem extends SubsystemBase {
 	private final byte m_port;
 
 	private final ByteBuffer m_buffer = ByteBuffer.allocateDirect(2);
-
-	private boolean isreal = false;
     
-    public LidarSubsystem(Port port, boolean real) {
+    public LidarSubsystem(Port port) {
         m_port = (byte) port.value;
 		I2CJNI.i2CInitialize(m_port);
-		isreal = real;
     }
 
     public void startMeasuring() {
@@ -48,13 +45,10 @@ public class LidarSubsystem extends SubsystemBase {
 	}
 
 	private short readShort(int address) {
-		if (isreal) {
-			m_buffer.put(0, (byte) address);
-			I2CJNI.i2CWrite(m_port, k_deviceAddress, m_buffer, (byte) 1);
-			I2CJNI.i2CRead(m_port, k_deviceAddress, m_buffer, (byte) 2);
-			return m_buffer.getShort(0);	
-		}
-		return 0;
+		m_buffer.put(0, (byte) address);
+		I2CJNI.i2CWrite(m_port, k_deviceAddress, m_buffer, (byte) 1);
+		I2CJNI.i2CRead(m_port, k_deviceAddress, m_buffer, (byte) 2);
+		return m_buffer.getShort(0);	
 	}
 
 	public double pidGet() {

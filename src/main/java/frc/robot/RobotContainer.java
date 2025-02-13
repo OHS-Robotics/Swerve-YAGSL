@@ -99,7 +99,6 @@ public class RobotContainer {
 
 	public RobotContainer() {
 		configureBindings();
-
 		// Named commands are used by PathPlanner for Autonomous Mode...
 		NamedCommands.registerCommand("releaseCoral", autonomousSubsystem.getReleaseCoralCommand());
 	}

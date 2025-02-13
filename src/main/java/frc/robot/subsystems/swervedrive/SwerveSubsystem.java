@@ -18,6 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.Timer;
@@ -53,6 +54,8 @@ import swervelib.parser.SwerveParser;
 import swervelib.telemetry.SwerveDriveTelemetry;
 import swervelib.telemetry.SwerveDriveTelemetry.TelemetryVerbosity;
 
+import frc.robot.subsystems.external.LimelightHelpers;
+
 public class SwerveSubsystem extends SubsystemBase
 {
 
@@ -60,6 +63,7 @@ public class SwerveSubsystem extends SubsystemBase
    * Swerve drive object.
    */
   public final SwerveDrive swerveDrive;
+  public boolean real = RobotBase.isReal();
   /**
    * AprilTag field layout.
    */
@@ -116,18 +120,39 @@ public class SwerveSubsystem extends SubsystemBase
    * @param driveCfg      SwerveDriveConfiguration for the swerve.
    * @param controllerCfg Swerve Controller.
    */
-  public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg)
-  {
+  public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg) {
     swerveDrive = new SwerveDrive(
         driveCfg,
         controllerCfg,
         Constants.MAX_SPEED,
-        new Pose2d(new Translation2d(Meter.of(2), Meter.of(0)), Rotation2d.fromDegrees(0)));
+        new Pose2d(new Translation2d(Meter.of(2), Meter.of(0)), Rotation2d.fromDegrees(0))
+    );
+
+    // Switch to pipeline 0
+    LimelightHelpers.setPipelineIndex("", 0);
+
+    // Let the current pipeline control the LEDs
+    LimelightHelpers.setLEDMode_PipelineControl("");
+
+    LimelightHelpers.setCameraPose_RobotSpace ("", // todo: replace me!
+      0.0,    // Forward offset (meters)
+      0.0,    // Side offset (meters)
+      0.0,    // Height offset (meters)
+      0.0,    // Roll (degrees)
+      0.0,   // Pitch (degrees)
+      0.0     // Yaw (degrees)
+    );
+
+    LimelightHelpers.setCropWindow("", -1, 1, -1, 1);
+
+
   }
 
   @Override
   public void periodic() {
-    
+    if (real) {
+      swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d(""), Timer.getFPGATimestamp());
+    }
   }
 
   @Override
