@@ -5,6 +5,8 @@
 package frc.robot;
 
 import java.io.File;
+
+import com.pathplanner.lib.auto.NamedCommands;
 import java.util.function.DoubleSupplier;
 
 // import com.pathplanner.lib.auto.NamedCommands;
@@ -18,7 +20,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.subsystems.autonomous.AutonomousSubsystem;
 import frc.robot.commands.ElevatorJogDown;
 import frc.robot.commands.ElevatorJogUp;
 import frc.robot.commands.ElevatorStop;
@@ -34,8 +38,11 @@ import au.grapplerobotics.CanBridge;
 import swervelib.SwerveInputStream;
 
 public class RobotContainer {
+	public final AutonomousSubsystem autonomousSubsystem = new AutonomousSubsystem();
+
 	// final CommandXboxController driverXbox = new CommandXboxController(0);
 	final CommandJoystick driverJoystick = new CommandJoystick(0);
+
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 	public final CoralManipulatorSubsystem coralManipulator = new CoralManipulatorSubsystem();
 	public final ElevatorSubsystem elevator = new ElevatorSubsystem(1);
@@ -92,6 +99,9 @@ public class RobotContainer {
 
 	public RobotContainer() {
 		configureBindings();
+
+		// Named commands are used by PathPlanner for Autonomous Mode...
+		NamedCommands.registerCommand("releaseCoral", autonomousSubsystem.getReleaseCoralCommand());
 	}
 
 	private void configureBindings() {
@@ -189,7 +199,26 @@ public class RobotContainer {
 	}
 
 	public Command getAutonomousCommand() {
-		return Commands.print("No autonomous command configured");
+
+		if (AutoConstants.AUTO_ENABLED) {
+			String autoPathName = null;	
+
+			// Paths should be configured for the "BLUE" alliance ad they will be
+			// automtically reversed for the "RED" alliance as configured...
+            var alliance = DriverStation.getAlliance();
+            if (alliance.isPresent()) {
+				System.out.println("Autonomous Aliance: " + alliance);
+            }
+
+			autoPathName = "StartRight";
+			// autoPathName = "StartCenter";
+			// autoPathName = "StartLeft";
+	
+			return drivebase.getAutonomousCommand(autoPathName);	
+		} else {
+			return Commands.print("WARNING: AUTONOMOUS MODE IS DISABLED");
+		}
+
 	}
 
 	public void setMotorBrake(boolean brake) {
