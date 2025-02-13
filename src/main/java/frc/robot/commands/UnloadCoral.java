@@ -6,6 +6,10 @@ import frc.robot.subsystems.CoralManipulatorSubsystem;
 public class UnloadCoral extends Command{
     public CoralManipulatorSubsystem coralManipulator;
 
+    public UnloadCoral(CoralManipulatorSubsystem manip) {
+        coralManipulator = manip;
+    }
+
     @Override
     public void initialize() {
         

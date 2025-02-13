@@ -3,10 +3,10 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 
-public class LoadCoral extends Command{
+public class StopLoadingCoral extends Command{
     public CoralManipulatorSubsystem coralManipulator;
 
-    public LoadCoral(CoralManipulatorSubsystem manip) {
+    public StopLoadingCoral(CoralManipulatorSubsystem manip) {
         coralManipulator = manip;
     }
 
@@ -17,13 +17,11 @@ public class LoadCoral extends Command{
 
     @Override
     public void execute() {
-        if (!coralManipulator.isIngestingCoral()) {
-            coralManipulator.ingestCoral();
-        }
+        coralManipulator.stopMoving();
     }
 
     @Override
     public boolean isFinished() {
-        return coralManipulator.CoralLoaded();
+        return true;
     }
 }

@@ -23,12 +23,17 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.autonomous.AutonomousSubsystem;
+import frc.robot.commands.ElevatorJogDown;
+import frc.robot.commands.ElevatorJogUp;
+import frc.robot.commands.ElevatorStop;
 import frc.robot.commands.LoadCoral;
 import frc.robot.commands.UnloadCoral;
-import frc.robot.commands.StopCoral;
+import frc.robot.commands.StopLoadingCoral;
+import frc.robot.commands.StopUnloadingCoral;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import au.grapplerobotics.CanBridge;
 
 import swervelib.SwerveInputStream;
 
@@ -40,10 +45,11 @@ public class RobotContainer {
 
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 	public final CoralManipulatorSubsystem coralManipulator = new CoralManipulatorSubsystem();
-	public final ElevatorSubsystem elevator = new ElevatorSubsystem();
+	public final ElevatorSubsystem elevator = new ElevatorSubsystem(1);
 
 	private boolean referenceFrameIsField = true;
 	private SequentialCommandGroup loadCoralComposed;
+	private SequentialCommandGroup unloadCoralComposed;
 	public double elevatorPosition = 0.0;
 
 	// Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
@@ -102,28 +108,9 @@ public class RobotContainer {
 		//Delegate the actual calling of the swerve drive function to 
 		drivebase.setDefaultCommand(Commands.run(() -> DriveRobot(referenceFrameIsField), drivebase));
 		driverJoystick.button(13).onTrue(Commands.runOnce(() -> { referenceFrameIsField = !referenceFrameIsField; SmartDashboard.putString("Reference Frame", referenceFrameIsField ? "Field" : "Robot"); }));
-		// driverJoystick.button(13).onFalse(Commands.runOnce(() -> { referenceFrameIsField = true; SmartDashboard.putString("Reference Frame", "Field");  }));
-		// driverXbox.rightTrigger().onTrue(Commands.runOnce(() -> System.out.println("here")));
-		// driverXbox.a().whileTrue(Commands.run(() -> DriveRobot(false), drivebase));
-		// driverXbox.a().whileFalse(Commands.run(() -> DriveRobot(true), drivebase));
-
-        LoadCoral loadCoralCommand = new LoadCoral();
-        UnloadCoral unloadCoralCommand = new UnloadCoral();
-		StopCoral stopCoralCommand = new StopCoral();
-
-		driverJoystick.povUp().onTrue(Commands.runOnce(() -> updateElevator(0.05), elevator));
-		driverJoystick.povDown().onTrue(Commands.runOnce(() -> updateElevator(-0.05), elevator));
-
-        loadCoralCommand.addRequirements(coralManipulator);
-		loadCoralCommand.coralManipulator = coralManipulator;
-
-        unloadCoralCommand.addRequirements(coralManipulator);
-		unloadCoralCommand.coralManipulator = coralManipulator;
-
-		stopCoralCommand.addRequirements(coralManipulator);
-		stopCoralCommand.coralManipulator = coralManipulator;
-
-		loadCoralComposed = loadCoralCommand.andThen(stopCoralCommand);
+		
+		SetupCoralManipulatorCommands();
+		SetupElevatorCommands();
 
 		if (RobotBase.isSimulation()) {
 			//Reset the robot to a semi-arbritary position
@@ -147,12 +134,43 @@ public class RobotContainer {
 		}
 	}
 
+	private void SetupCoralManipulatorCommands() {
+		LoadCoral loadCoralCommand = new LoadCoral(coralManipulator);
+        UnloadCoral unloadCoralCommand = new UnloadCoral(coralManipulator);
+		StopLoadingCoral stopLoadingCoralCommand = new StopLoadingCoral(coralManipulator);
+		StopUnloadingCoral stopUnloadingCoralCommand = new StopUnloadingCoral(coralManipulator);
+
+		loadCoralCommand.coralManipulator = coralManipulator;
+		unloadCoralCommand.coralManipulator = coralManipulator;
+		stopLoadingCoralCommand.coralManipulator = coralManipulator;
+		stopUnloadingCoralCommand.coralManipulator = coralManipulator;
+
+		loadCoralComposed = loadCoralCommand.andThen(stopLoadingCoralCommand);
+		unloadCoralComposed = unloadCoralCommand.andThen(stopUnloadingCoralCommand);
+		loadCoralComposed.addRequirements(coralManipulator);
+		unloadCoralCommand.addRequirements(coralManipulator);
+
+		driverJoystick.button(3).onTrue(loadCoralComposed);
+		driverJoystick.button(4).onTrue(unloadCoralComposed);
+	}
+
+	private void SetupElevatorCommands() {
+		ElevatorJogUp jogUpCommand = new ElevatorJogUp(elevator);
+		ElevatorJogDown jogDownCommand = new ElevatorJogDown(elevator);
+		ElevatorStop stopCommand = new ElevatorStop(elevator);
+
+		driverJoystick.povUp().onTrue(jogUpCommand);
+		driverJoystick.povUp().onFalse(stopCommand);
+		driverJoystick.povDown().onTrue(jogDownCommand);
+		driverJoystick.povDown().onFalse(stopCommand);
+	}
+
 	public void updateElevator(double change) {
 		elevatorPosition += change;
 		// todo: make these actual values
 		elevatorPosition = Math.max(0.0, Math.min(300.0, elevatorPosition));
 
-		elevator.setPosition(elevatorPosition);
+		elevator.moveAbsolute(elevatorPosition);
 	}
 
 
