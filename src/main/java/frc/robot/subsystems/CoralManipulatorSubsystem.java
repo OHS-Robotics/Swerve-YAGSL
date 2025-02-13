@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.external.LidarSubsystem;
 import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
 import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
 
 public class CoralManipulatorSubsystem extends SubsystemBase{
@@ -47,12 +48,13 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
 
     public boolean CoralLoaded() {
         var dist = laser.getMeasurement();
-        System.out.println(dist.distance_mm);
+        if (dist == null) dist = new Measurement(0, 0, 0, false, 0, null);
+        // System.out.println(dist.distance_mm);
         return dist.distance_mm < senseCoralDist;
     }
 
     /**
-     * True if the left motor is moving within a tolerance of its ingeest speed
+     * True if the left motor is moving within a tolerance of its ingest speed
      * @return
      */
     public boolean isIngestingCoral() {

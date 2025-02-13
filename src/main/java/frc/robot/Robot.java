@@ -21,7 +21,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
-    System.out.println(m_robotContainer.driverJoystick.getTwist());
+    // System.out.println(m_robotContainer.driverJoystick.getTwist());
     CommandScheduler.getInstance().run();
 
     SmartDashboard.putNumber("Front Left - Drive Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[0].getDriveMotor().getPosition());
