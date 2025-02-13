@@ -7,7 +7,6 @@ package frc.robot;
 import java.io.File;
 
 import com.pathplanner.lib.auto.NamedCommands;
-import java.util.function.DoubleSupplier;
 
 // import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -33,7 +32,7 @@ import frc.robot.commands.StopUnloadingCoral;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
-import au.grapplerobotics.CanBridge;
+
 
 import swervelib.SwerveInputStream;
 
@@ -177,9 +176,11 @@ public class RobotContainer {
 	 * Execute the swerve drive's drive function.
 	 * Automatically selects the appropriate control scheme (keyboard for simulation) and reference frame (field vs. robot)
 	*/
+	@SuppressWarnings("unused")
 	public void DriveRobot(boolean referenceFrameIsField) {		
 		if (referenceFrameIsField) {
 			if (Robot.isSimulation() && OperatorConstants.USE_KEYBOARD_IN_SIM) {
+				
 				drivebase.driveFieldOrientedImmediate(driveFieldAngularVelocityKeyboardStream);
 			}
 			else {
