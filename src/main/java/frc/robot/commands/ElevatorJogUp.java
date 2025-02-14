@@ -12,15 +12,17 @@ public class ElevatorJogUp extends Command{
 
     @Override
     public void initialize() {
+        System.out.println("Elevator Jog Up");
     }
 
     @Override
     public void execute() {
-        elevator.jogUp(0.1);
+        elevator.jogUp(0.2);
     }
 
     @Override
     public boolean isFinished() {
-        return elevator.isAtSpeed();
+        // return elevator.isAtSpeed();
+        return true;
     }
 }

@@ -16,8 +16,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 public class ElevatorSubsystem extends SubsystemBase {
 
-    private final SparkMax motor_left = new SparkMax(16, SparkLowLevel.MotorType.kBrushless);
-    // private final SparkMax motor_right = new SparkMax(14, SparkLowLevel.MotorType.kBrushless);
+    private final SparkMax motor_left = new SparkMax(17, SparkLowLevel.MotorType.kBrushless);
+    private final SparkMax motor_right = new SparkMax(18, SparkLowLevel.MotorType.kBrushless);
 
     // IMPORTANT NOTE: Right motor is configured as a follower of the left motor.  We will only command moves to the left motor
 
@@ -26,16 +26,18 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double k_atVelocityToleranceRevs = 0.01;
     private double k_maxVel = 0.1;
     private double k_maxAccel = 0.1;
+    private double k_stopVel = 0.05; //vel to command which allows the motors to hold the elevator stationary
     private double targetVel = 0;
     
     private final SparkClosedLoopController clc_left = motor_left.getClosedLoopController();
     // private final SparkClosedLoopController clc_right = motor_right.getClosedLoopController();
 
-    SlewRateLimiter rateLimiter = new SlewRateLimiter(k_maxAccel);
+    SlewRateLimiter rateLimiterLeft = new SlewRateLimiter(k_maxAccel);
+    SlewRateLimiter rateLimiterRight = new SlewRateLimiter(k_maxAccel);
 
     // left is the forward one, right is the actual one
     private final RelativeEncoder encoder_left = motor_left.getEncoder();
-    // private final RelativeEncoder encoder_right = motor_right.getEncoder();
+    private final RelativeEncoder encoder_right = motor_right.getEncoder();
 
     private double expectedPositionInches = 0.0;
 
@@ -49,19 +51,19 @@ public class ElevatorSubsystem extends SubsystemBase {
         this.k_revsPerInch = revsPerInch;
         
         final SparkMaxConfig baseconf_left = new SparkMaxConfig();
-        // final SparkMaxConfig baseconf_right = new SparkMaxConfig();
+        final SparkMaxConfig baseconf_right = new SparkMaxConfig();
 
-        // baseconf_right.follow(motor_left, true);
+        baseconf_right.follow(motor_left, true);
 
         baseconf_left.smartCurrentLimit(30);
-        // baseconf_right.smartCurrentLimit(30);
+        baseconf_right.smartCurrentLimit(30);
 
         baseconf_left.idleMode(IdleMode.kBrake);
-        // baseconf_right.idleMode(IdleMode.kBrake);
+        baseconf_right.idleMode(IdleMode.kBrake);
         
-        // baseconf_right.encoder.inverted(true);
+        baseconf_right.encoder.inverted(true);
 
-        baseconf_left.closedLoop.pid(0.01, 0.01 , 0.0).outputRange(-k_maxVel, k_maxVel);
+        // baseconf_left.closedLoop.pid(0.01, 0.01 , 0.0).outputRange(-k_maxVel, k_maxVel);
         // baseconf_right.closedLoop.pid(0.1, 0.0, 0.0).outputRange(-1, 1);
         baseconf_left.closedLoop.maxMotion.maxVelocity(k_maxVel);
         // remember to add limits later
@@ -114,7 +116,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         
         // clc_left.setReference(speed * k_revsPerInch, ControlType.kVelocity);
         targetVel = speed;
-        motor_left.set(rateLimiter.calculate(speed));
+        // motor_left.set(rateLimiterLeft.calculate(speed));
+        motor_left.set(speed);
     }
 
     /**
@@ -129,7 +132,8 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         // clc_left.setReference(-1 * speed * k_revsPerInch, ControlType.kVelocity);
         targetVel = -speed;
-        motor_left.set(rateLimiter.calculate(-speed));
+        // motor_left.set(rateLimiterLeft.calculate(-speed));
+        motor_left.set(-speed);
     }
 
     /**
@@ -138,13 +142,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     public void stop() {
         // clc_left.setReference(0, ControlType.kVelocity);
         targetVel = 0;
-        motor_left.set(rateLimiter.calculate(0));
+        // motor_left.set(rateLimiterLeft.calculate(0));
+        motor_left.set(k_stopVel);
+        // motor_right.set(rateLimiterRight.calculate(0));
     }
 
 
     public void zeroEncoders() {
         encoder_left.setPosition(0);
-        // encoder_right.setPosition(0);
+        encoder_right.setPosition(0);
     }
 
     public boolean isAtPosition() {  

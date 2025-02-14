@@ -27,8 +27,10 @@ import frc.robot.commands.ElevatorJogUp;
 import frc.robot.commands.ElevatorStop;
 import frc.robot.commands.LoadCoral;
 import frc.robot.commands.UnloadCoral;
+import frc.robot.commands.UnloadCoralTwist;
 import frc.robot.commands.StopLoadingCoral;
 import frc.robot.commands.StopUnloadingCoral;
+import frc.robot.commands.StopUnloadingCoralTwist;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -37,7 +39,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import swervelib.SwerveInputStream;
 
 public class RobotContainer {
-	public final AutonomousSubsystem autonomousSubsystem = new AutonomousSubsystem();
+	// public final AutonomousSubsystem autonomousSubsystem = new AutonomousSubsystem();
 
 	// final CommandXboxController driverXbox = new CommandXboxController(0);
 	final CommandJoystick driverJoystick = new CommandJoystick(0);
@@ -49,11 +51,12 @@ public class RobotContainer {
 	private boolean referenceFrameIsField = true;
 	private SequentialCommandGroup loadCoralComposed;
 	private SequentialCommandGroup unloadCoralComposed;
+	private SequentialCommandGroup unloadCoralTwistComposed;
 	public double elevatorPosition = 0.0;
 
 	// Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
-	SwerveInputStream driveFieldAngularVelocityStream = SwerveInputStream.of(drivebase.getSwerveDrive(), () -> driverJoystick.getY() * -1, () -> driverJoystick.getX() * -1)
-		.withControllerRotationAxis(() -> driverJoystick.getTwist() * -1)
+	SwerveInputStream driveFieldAngularVelocityStream = SwerveInputStream.of(drivebase.getSwerveDrive(), () -> driverJoystick.getY(), () -> driverJoystick.getX())
+		.withControllerRotationAxis(() -> driverJoystick.getTwist())
 		.deadband(OperatorConstants.DEADBAND)
 		.scaleTranslation(OperatorConstants.JOYSTICK_SCALE_FACTOR)
 		.allianceRelativeControl(true);
@@ -99,14 +102,14 @@ public class RobotContainer {
 	public RobotContainer() {
 		configureBindings();
 		// Named commands are used by PathPlanner for Autonomous Mode...
-		NamedCommands.registerCommand("releaseCoral", autonomousSubsystem.getReleaseCoralCommand());
+		// NamedCommands.registerCommand("releaseCoral", autonomousSubsystem.getReleaseCoralCommand());
 	}
 
 	private void configureBindings() {
 		//Delegate the actual calling of the swerve drive function to 
 		drivebase.setDefaultCommand(Commands.run(() -> DriveRobot(referenceFrameIsField), drivebase));
 		driverJoystick.button(13).onTrue(Commands.runOnce(() -> { referenceFrameIsField = !referenceFrameIsField; SmartDashboard.putString("Reference Frame", referenceFrameIsField ? "Field" : "Robot"); }));
-		
+
 		SetupCoralManipulatorCommands();
 		SetupElevatorCommands();
 
@@ -135,21 +138,28 @@ public class RobotContainer {
 	private void SetupCoralManipulatorCommands() {
 		LoadCoral loadCoralCommand = new LoadCoral(coralManipulator);
         UnloadCoral unloadCoralCommand = new UnloadCoral(coralManipulator);
+		UnloadCoralTwist unloadCoralTwistCommand = new UnloadCoralTwist(coralManipulator);
 		StopLoadingCoral stopLoadingCoralCommand = new StopLoadingCoral(coralManipulator);
 		StopUnloadingCoral stopUnloadingCoralCommand = new StopUnloadingCoral(coralManipulator);
+		StopUnloadingCoralTwist stopUnloadingCoralTwistCommand = new StopUnloadingCoralTwist(coralManipulator);
 
 		loadCoralCommand.coralManipulator = coralManipulator;
 		unloadCoralCommand.coralManipulator = coralManipulator;
+		unloadCoralTwistCommand.coralManipulator = coralManipulator;
 		stopLoadingCoralCommand.coralManipulator = coralManipulator;
 		stopUnloadingCoralCommand.coralManipulator = coralManipulator;
 
 		loadCoralComposed = loadCoralCommand.andThen(stopLoadingCoralCommand);
 		unloadCoralComposed = unloadCoralCommand.andThen(stopUnloadingCoralCommand);
+		unloadCoralTwistComposed = unloadCoralTwistCommand.andThen(stopUnloadingCoralTwistCommand);
 		loadCoralComposed.addRequirements(coralManipulator);
 		unloadCoralCommand.addRequirements(coralManipulator);
+		unloadCoralTwistCommand.addRequirements(coralManipulator);
 
 		driverJoystick.button(3).onTrue(loadCoralComposed);
 		driverJoystick.button(4).onTrue(unloadCoralComposed);
+		driverJoystick.button(1).onTrue(unloadCoralTwistComposed);
+
 	}
 
 	private void SetupElevatorCommands() {

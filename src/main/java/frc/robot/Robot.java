@@ -42,6 +42,8 @@ public class Robot extends TimedRobot {
   
     SmartDashboard.putData("Field", m_robotContainer.drivebase.swerveDrive.field);
 
+    SmartDashboard.putNumber("Orientation", m_robotContainer.drivebase.getPose().getRotation().getDegrees());
+
     SendableCameraWrapper.wrap("uhhh", "http://frcvision.local:1181/stream.mjpg");
   }
 

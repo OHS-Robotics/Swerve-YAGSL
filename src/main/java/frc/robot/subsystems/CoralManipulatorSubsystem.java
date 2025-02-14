@@ -13,8 +13,8 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
     private SparkMax motorRight = new SparkMax(3, MotorType.kBrushless);
     public final LaserCan laser = new LaserCan(38);
     
-    private final double ingestCoralSpeed = 0.2;
-    private final double expellCoralSpeed = 0.3;
+    private final double ingestCoralSpeed = -0.15;
+    private final double expellCoralSpeed = -0.6;
     private final double speedCheckMargin = 0.05;
     private final double senseCoralDist = 30;
 
@@ -35,6 +35,11 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
     public void expellCoral() {
         motorLeft.set(expellCoralSpeed);
         motorRight.set(-expellCoralSpeed);
+    }
+
+    public void expellCoralTwist() {
+        motorLeft.set(expellCoralSpeed);
+        motorRight.set(-expellCoralSpeed * 0.75);
     }
 
     public void stopMoving() {

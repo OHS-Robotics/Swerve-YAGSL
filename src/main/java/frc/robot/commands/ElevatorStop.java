@@ -12,6 +12,7 @@ public class ElevatorStop extends Command{
 
     @Override
     public void initialize() {
+        System.out.println("Elevator Stop");
     }
 
     @Override
@@ -21,6 +22,6 @@ public class ElevatorStop extends Command{
 
     @Override
     public boolean isFinished() {
-        return elevator.isAtSpeed();
+        return true;
     }
 }

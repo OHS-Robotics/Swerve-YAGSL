@@ -12,6 +12,7 @@ public class ElevatorJogDown extends Command{
 
     @Override
     public void initialize() {
+        System.out.println("Elevator Jog Down");
     }
 
     @Override
@@ -21,6 +22,7 @@ public class ElevatorJogDown extends Command{
 
     @Override
     public boolean isFinished() {
-        return elevator.isAtSpeed();
+        // return elevator.isAtSpeed();
+        return true;
     }
 }
