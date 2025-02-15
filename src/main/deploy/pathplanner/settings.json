@@ -3,8 +3,8 @@
   "robotLength": 0.9,
   "holonomicMode": true,
   "pathFolders": [
-    "PathPlannerPaths",
-    "DeleteMe"
+    "SimplePaths",
+    "StartRightPaths"
   ],
   "autoFolders": [],
   "defaultMaxVel": 3.0,

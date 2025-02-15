@@ -54,8 +54,7 @@ public final class Constants
   public static final class AutoConstants {
 
     // Perform Autonomous Mode [SAFETY SWITCH]
-    public static final boolean AUTO_ENABLED = true;
-
+    public static final boolean AUTO_ENABLED = false;
   }
 
 }

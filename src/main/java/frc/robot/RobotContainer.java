@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -43,12 +44,13 @@ public class RobotContainer {
 
 	// final CommandXboxController driverXbox = new CommandXboxController(0);
 	final CommandJoystick driverJoystick = new CommandJoystick(0);
+	final CommandXboxController driverXbox = new CommandXboxController(1);
 
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 	public final CoralManipulatorSubsystem coralManipulator = new CoralManipulatorSubsystem();
 	public final ElevatorSubsystem elevator = new ElevatorSubsystem(1);
 
-	private boolean referenceFrameIsField = true;
+	private boolean referenceFrameIsField = false;
 	private SequentialCommandGroup loadCoralComposed;
 	private SequentialCommandGroup unloadCoralComposed;
 	private SequentialCommandGroup unloadCoralTwistComposed;
@@ -101,6 +103,7 @@ public class RobotContainer {
 
 	public RobotContainer() {
 		configureBindings();
+		// drivebase.swerveDrive.setMaximumAllowableSpeeds(, );
 		// Named commands are used by PathPlanner for Autonomous Mode...
 		// NamedCommands.registerCommand("releaseCoral", autonomousSubsystem.getReleaseCoralCommand());
 	}
@@ -156,10 +159,13 @@ public class RobotContainer {
 		unloadCoralCommand.addRequirements(coralManipulator);
 		unloadCoralTwistCommand.addRequirements(coralManipulator);
 
-		driverJoystick.button(3).onTrue(loadCoralComposed);
-		driverJoystick.button(4).onTrue(unloadCoralComposed);
-		driverJoystick.button(1).onTrue(unloadCoralTwistComposed);
+		// driverJoystick.button(3).onTrue(loadCoralComposed);
+		// driverJoystick.button(4).onTrue(unloadCoralComposed);
+		// driverJoystick.button(1).onTrue(unloadCoralTwistComposed);
 
+		driverXbox.a().onTrue(loadCoralComposed);
+		driverXbox.b().onTrue(unloadCoralComposed);
+		driverXbox.y().onTrue(unloadCoralTwistComposed);
 	}
 
 	private void SetupElevatorCommands() {
@@ -167,10 +173,10 @@ public class RobotContainer {
 		ElevatorJogDown jogDownCommand = new ElevatorJogDown(elevator);
 		ElevatorStop stopCommand = new ElevatorStop(elevator);
 
-		driverJoystick.povUp().onTrue(jogUpCommand);
-		driverJoystick.povUp().onFalse(stopCommand);
-		driverJoystick.povDown().onTrue(jogDownCommand);
-		driverJoystick.povDown().onFalse(stopCommand);
+		driverXbox.povUp().onTrue(jogUpCommand);
+		driverXbox.povUp().onFalse(stopCommand);
+		driverXbox.povDown().onTrue(jogDownCommand);
+		driverXbox.povDown().onFalse(stopCommand);
 	}
 
 	public void updateElevator(double change) {
@@ -179,6 +185,10 @@ public class RobotContainer {
 		elevatorPosition = Math.max(0.0, Math.min(300.0, elevatorPosition));
 
 		elevator.moveAbsolute(elevatorPosition);
+	}
+
+	public void teleopInit() {
+		// loadCoralComposed.execute();
 	}
 
 
@@ -220,7 +230,7 @@ public class RobotContainer {
 				System.out.println("Autonomous Aliance: " + alliance);
             }
 
-			autoPathName = "StartRight";
+			autoPathName = "blankpath";
 			// autoPathName = "StartCenter";
 			// autoPathName = "StartLeft";
 	
@@ -228,7 +238,6 @@ public class RobotContainer {
 		} else {
 			return Commands.print("WARNING: AUTONOMOUS MODE IS DISABLED");
 		}
-
 	}
 
 	public void setMotorBrake(boolean brake) {

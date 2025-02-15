@@ -24,25 +24,25 @@ public class Robot extends TimedRobot {
     // System.out.println(m_robotContainer.driverJoystick.getTwist());
     CommandScheduler.getInstance().run();
     
-    SmartDashboard.putNumber("Front Left - Drive Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[0].getDriveMotor().getPosition());
-    SmartDashboard.putNumber("Front Left - Turn Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[0].getAngleMotor().getPosition());
-    SmartDashboard.putNumber("Front Left - Abs Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[0].getAbsoluteEncoder().getAbsolutePosition());
+    // SmartDashboard.putNumber("Front Left - Drive Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[0].getDriveMotor().getPosition());
+    // SmartDashboard.putNumber("Front Left - Turn Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[0].getAngleMotor().getPosition());
+    // SmartDashboard.putNumber("Front Left - Abs Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[0].getAbsoluteEncoder().getAbsolutePosition());
 
-    SmartDashboard.putNumber("Front Right - Drive Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[1].getDriveMotor().getPosition());
-    SmartDashboard.putNumber("Front Right - Turn Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[1].getAngleMotor().getPosition());
-    SmartDashboard.putNumber("Front Right - Abs Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[1].getAbsoluteEncoder().getAbsolutePosition());
+    // SmartDashboard.putNumber("Front Right - Drive Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[1].getDriveMotor().getPosition());
+    // SmartDashboard.putNumber("Front Right - Turn Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[1].getAngleMotor().getPosition());
+    // SmartDashboard.putNumber("Front Right - Abs Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[1].getAbsoluteEncoder().getAbsolutePosition());
 
-    SmartDashboard.putNumber("Back Left - Drive Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[2].getDriveMotor().getPosition());
-    SmartDashboard.putNumber("Back Left - Turn Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[2].getAngleMotor().getPosition());
-    SmartDashboard.putNumber("Back Left - Abs Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[2].getAbsoluteEncoder().getAbsolutePosition());
+    // SmartDashboard.putNumber("Back Left - Drive Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[2].getDriveMotor().getPosition());
+    // SmartDashboard.putNumber("Back Left - Turn Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[2].getAngleMotor().getPosition());
+    // SmartDashboard.putNumber("Back Left - Abs Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[2].getAbsoluteEncoder().getAbsolutePosition());
 
-    SmartDashboard.putNumber("Back Right - Drive Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[3].getDriveMotor().getPosition());
-    SmartDashboard.putNumber("Back Right - Turn Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[3].getAngleMotor().getPosition());
-    SmartDashboard.putNumber("Back Right - Abs Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[3].getAbsoluteEncoder().getAbsolutePosition());
+    // SmartDashboard.putNumber("Back Right - Drive Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[3].getDriveMotor().getPosition());
+    // SmartDashboard.putNumber("Back Right - Turn Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[3].getAngleMotor().getPosition());
+    // SmartDashboard.putNumber("Back Right - Abs Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[3].getAbsoluteEncoder().getAbsolutePosition());
   
-    SmartDashboard.putData("Field", m_robotContainer.drivebase.swerveDrive.field);
+    // SmartDashboard.putData("Field", m_robotContainer.drivebase.swerveDrive.field);
 
-    SmartDashboard.putNumber("Orientation", m_robotContainer.drivebase.getPose().getRotation().getDegrees());
+    // SmartDashboard.putNumber("Orientation", m_robotContainer.drivebase.getPose().getRotation().getDegrees());
 
     SendableCameraWrapper.wrap("uhhh", "http://frcvision.local:1181/stream.mjpg");
   }
@@ -73,6 +73,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    m_robotContainer.teleopInit();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }

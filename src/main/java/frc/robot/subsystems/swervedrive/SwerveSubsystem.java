@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
+import org.dyn4j.UnitConversion;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.PIDConstants;
@@ -80,7 +82,8 @@ public class SwerveSubsystem extends SubsystemBase
         new Pose2d(new Translation2d(Meter.of(1),
         Meter.of(4)),
         Rotation2d.fromDegrees(0)));
-
+    
+      // swerveDrive.setMaximumAllowableSpeeds(10, Math.PI/2);
       // Alternative method if you don't want to supply the conversion factor via JSON files.
       // swerveDrive = new SwerveParser(directory).createSwerveDrive(maximumSpeed, angleConversionFactor, driveConversionFactor);
     }
@@ -98,7 +101,6 @@ public class SwerveSubsystem extends SubsystemBase
     //   // Stop the odometry thread if we are using vision that way we can synchronize updates better.
     //   swerveDrive.stopOdometryThread();
     // }
-
     setupPathPlanner();
 
   }
@@ -124,8 +126,8 @@ public class SwerveSubsystem extends SubsystemBase
     LimelightHelpers.setLEDMode_PipelineControl("");
 
     LimelightHelpers.setCameraPose_RobotSpace ("", // todo: replace me!
-      0.0,    // Forward offset (meters)
-      0.0,    // Side offset (meters)
+      UnitConversion.feetToMeters(14.0/12.0),    // Forward offset (meters)
+      UnitConversion.feetToMeters(7.0/12.0),    // Side offset (meters)
       0.0,    // Height offset (meters)
       0.0,    // Roll (degrees)
       0.0,   // Pitch (degrees)
@@ -140,6 +142,7 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic() {
     if (real) {
+      LimelightHelpers.SetRobotOrientation("", swerveDrive.getYaw().getDegrees(), 0, swerveDrive.getPitch().getDegrees(), 0, swerveDrive.getRoll().getDegrees(), 0);
       swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d(""), Timer.getFPGATimestamp());
     }
   }

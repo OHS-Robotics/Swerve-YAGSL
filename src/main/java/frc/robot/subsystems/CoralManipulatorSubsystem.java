@@ -14,7 +14,7 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
     public final LaserCan laser = new LaserCan(38);
     
     private final double ingestCoralSpeed = -0.15;
-    private final double expellCoralSpeed = -0.6;
+    private final double expellCoralSpeed = -0.75;
     private final double speedCheckMargin = 0.05;
     private final double senseCoralDist = 30;
 

@@ -45,7 +45,7 @@
     "rotation": 61.18920625702696
   },
   "reversed": false,
-  "folder": "PathPlannerPaths",
+  "folder": "StartRightPaths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

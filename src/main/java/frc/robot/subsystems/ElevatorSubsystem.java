@@ -137,6 +137,24 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     /**
+     * Jog the elevator up
+     * @param speed The speed at which you want to move, in inches/sec
+     */
+    public void jog(double xboxRawValue) {
+        if (xboxRawValue == 0) {
+            motor_left.set(0.05);
+        }
+        else if (xboxRawValue > 0) {
+            motor_left.set(xboxRawValue * 0.2);
+        }
+        else if (xboxRawValue < 0) {
+            motor_left.set(xboxRawValue * 0.1);
+        }
+        // clc_left.setReference(speed * k_revsPerInch, ControlType.kVelocity);
+        // motor_left.set(rateLimiterLeft.calculate(speed));
+    }
+
+    /**
      * Stops elevator motion
      */
     public void stop() {
