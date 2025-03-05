@@ -125,7 +125,8 @@ public class AutonomousSubsystem extends SubsystemBase {
         // we do this so we don't have the bot try to run into a wall
         Pose2d targetPose = aprilTagPose.get().toPose2d().plus(new Transform2d(targetOffset.getX(), targetOffset.getY(), new Rotation2d(Math.PI)));
 
-        return AutoBuilder.followPath(getPathTo(targetPose));
+        return AutoBuilder.followPath(getPathTo(targetPose)).andThen(() -> System.out.println("Tweaking"));
+        // return Commands.none();
     }
 
     public Command tweakToCoralCommand() {

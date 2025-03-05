@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.revrobotics.RelativeEncoder;
@@ -80,6 +81,10 @@ public class ElevatorSubsystem extends SubsystemBase {
         return encoder_left.getPosition();
     }
     
+    public void update() {
+        SmartDashboard.putNumber("Elevator Left", encoder_left.getPosition());
+        SmartDashboard.putNumber("Elevator Right", encoder_right.getPosition());
+    }
 
     // todo: test these
     /**

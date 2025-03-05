@@ -23,9 +23,13 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.autonomous.AutonomousSubsystem;
+import frc.robot.commands.ElevatorBottom;
 import frc.robot.commands.ElevatorJogDown;
 import frc.robot.commands.ElevatorJogUp;
 import frc.robot.commands.ElevatorLevel1;
+import frc.robot.commands.ElevatorLevel2;
+import frc.robot.commands.ElevatorLevel3;
+import frc.robot.commands.ElevatorLevel4;
 import frc.robot.commands.ElevatorStop;
 import frc.robot.commands.LoadCoral;
 import frc.robot.commands.UnloadCoral;
@@ -116,7 +120,7 @@ public class RobotContainer {
 		drivebase.setDefaultCommand(Commands.run(() -> DriveRobot(referenceFrameIsField), drivebase));
 		driverJoystick.button(13).onTrue(Commands.runOnce(() -> { referenceFrameIsField = !referenceFrameIsField; SmartDashboard.putString("Reference Frame", referenceFrameIsField ? "Field" : "Robot"); }));
 
-		driverJoystick.button(7).onTrue(autonomous.tweakToCoralCommand());
+		driverJoystick.button(15).onTrue(autonomous.tweakToCoralCommand());
 
 		SetupCoralManipulatorCommands();
 		SetupElevatorCommands();
@@ -173,19 +177,21 @@ public class RobotContainer {
 		ElevatorJogUp jogUp = new ElevatorJogUp(elevator);
 		ElevatorJogDown jogDown = new ElevatorJogDown(elevator);
 		ElevatorStop stop = new ElevatorStop(elevator);
+		ElevatorBottom bottom = new ElevatorBottom(elevator);
 		ElevatorLevel1 L1 = new ElevatorLevel1(elevator);
-		ElevatorLevel1 L2 = new ElevatorLevel1(elevator);
-		ElevatorLevel1 L3 = new ElevatorLevel1(elevator);
-		ElevatorLevel1 L4 = new ElevatorLevel1(elevator);
+		ElevatorLevel2 L2 = new ElevatorLevel2(elevator);
+		ElevatorLevel3 L3 = new ElevatorLevel3(elevator);
+		ElevatorLevel4 L4 = new ElevatorLevel4(elevator);
 
 		driverJoystick.povUp().onTrue(jogUp);
 		driverJoystick.povUp().onFalse(stop);
 		driverJoystick.povDown().onTrue(jogDown);
 		driverJoystick.povDown().onFalse(stop);
-		driverJoystick.button(5).onTrue(L1);
-		driverJoystick.button(6).onTrue(L2);
-		driverJoystick.button(7).onTrue(L3);
-		driverJoystick.button(8).onTrue(L4);
+		driverJoystick.button(5).onTrue(bottom);
+		driverJoystick.button(6).onTrue(L1);
+		driverJoystick.button(10).onTrue(L2);
+		driverJoystick.button(9).onTrue(L3);
+		driverJoystick.button(16).onTrue(L4);
 	}
 
 	private void changeSpeeds(double speed) {
