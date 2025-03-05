@@ -35,6 +35,7 @@ import frc.robot.commands.StopUnloadingCoralTwist;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import com.pathplanner.lib.auto.AutoBuilder;
 
 
 import swervelib.SwerveInputStream;
@@ -49,6 +50,7 @@ public class RobotContainer {
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 	public final CoralManipulatorSubsystem coralManipulator = new CoralManipulatorSubsystem();
 	public final ElevatorSubsystem elevator = new ElevatorSubsystem(1);
+	public final AutonomousSubsystem autonomous = new AutonomousSubsystem(drivebase);
 
 	private boolean referenceFrameIsField = false;
 	private SequentialCommandGroup loadCoralComposed;
@@ -112,6 +114,8 @@ public class RobotContainer {
 		//Delegate the actual calling of the swerve drive function to 
 		drivebase.setDefaultCommand(Commands.run(() -> DriveRobot(referenceFrameIsField), drivebase));
 		driverJoystick.button(13).onTrue(Commands.runOnce(() -> { referenceFrameIsField = !referenceFrameIsField; SmartDashboard.putString("Reference Frame", referenceFrameIsField ? "Field" : "Robot"); }));
+
+		driverJoystick.button(7).onTrue(autonomous.tweakToCoralCommand());
 
 		SetupCoralManipulatorCommands();
 		SetupElevatorCommands();
@@ -177,6 +181,11 @@ public class RobotContainer {
 		driverXbox.povUp().onFalse(stopCommand);
 		driverXbox.povDown().onTrue(jogDownCommand);
 		driverXbox.povDown().onFalse(stopCommand);
+		// driverXbox.rightBumper().onTrue(Commands.run(() -> jogUpCommand.multiplier = 0.5));
+	}
+
+	private void changeSpeeds(double speed) {
+		
 	}
 
 	public void updateElevator(double change) {
@@ -242,5 +251,9 @@ public class RobotContainer {
 
 	public void setMotorBrake(boolean brake) {
 		drivebase.setMotorBrake(brake);
+	}
+
+	public Command getAutoInitCommand() {
+		return autonomous.getStartCommand();
 	}
 }

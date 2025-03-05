@@ -72,6 +72,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         // motor_right.configure(baseconf_right, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
     
+
+    // todo: test these
     /**
      * Move to an absolute position
      * @param commandPosition Desired position (inches)

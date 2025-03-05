@@ -9,6 +9,7 @@ import static edu.wpi.first.units.Units.Meter;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -23,6 +24,7 @@ import frc.robot.Constants;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.DoubleSupplier;
 import java.util.function.Supplier;
 
@@ -33,7 +35,10 @@ import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.path.GoalEndState;
+import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.Waypoint;
 
 import swervelib.SwerveController;
 import swervelib.SwerveDrive;
@@ -126,11 +131,11 @@ public class SwerveSubsystem extends SubsystemBase
     LimelightHelpers.setLEDMode_PipelineControl("");
 
     LimelightHelpers.setCameraPose_RobotSpace ("", // todo: replace me!
-      UnitConversion.feetToMeters(14.0/12.0),    // Forward offset (meters)
-      UnitConversion.feetToMeters(7.0/12.0),    // Side offset (meters)
-      0.0,    // Height offset (meters)
+      0.4572,    // Forward offset (meters)
+      0.2032,    // Side offset (meters)
+      0.2286,    // Height offset (meters)
       0.0,    // Roll (degrees)
-      0.0,   // Pitch (degrees)
+      11,   // Pitch (degrees)
       0.0     // Yaw (degrees)
     );
 

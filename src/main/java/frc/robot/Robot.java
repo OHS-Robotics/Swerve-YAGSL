@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj.shuffleboard.SendableCameraWrapper;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -40,11 +41,12 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Back Right - Turn Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[3].getAngleMotor().getPosition());
     // SmartDashboard.putNumber("Back Right - Abs Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[3].getAbsoluteEncoder().getAbsolutePosition());
   
-    // SmartDashboard.putData("Field", m_robotContainer.drivebase.swerveDrive.field);
+    SmartDashboard.putData("Field", m_robotContainer.drivebase.swerveDrive.field);
+    // SmartDashboard.putData(SendableCameraWrapper.wrap("limelight", "http://limelight.local:5800/stream.mjpg"));
 
     // SmartDashboard.putNumber("Orientation", m_robotContainer.drivebase.getPose().getRotation().getDegrees());
 
-    SendableCameraWrapper.wrap("uhhh", "http://frcvision.local:1181/stream.mjpg");
+    // Shuffleboard.getTab("camera").add(SendableCameraWrapper.wrap("limelight", "http://limelight.local:5800/stream.mjpg"));
   }
 
   @Override
@@ -58,7 +60,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    m_autonomousCommand = m_robotContainer.getAutoInitCommand();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();

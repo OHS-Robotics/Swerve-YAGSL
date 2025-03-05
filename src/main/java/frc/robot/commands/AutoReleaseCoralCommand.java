@@ -8,8 +8,6 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class AutoReleaseCoralCommand extends Command {
 
-    private static final String delimiter = "**************************************************************";
-
     @Override
     public void initialize() {
         super.initialize();
@@ -17,10 +15,7 @@ public class AutoReleaseCoralCommand extends Command {
 
     @Override
     public void execute() {
-        System.out.println(delimiter);
-        System.out.println("EXECUTING: " + this.getClass().getCanonicalName());
-        System.out.println("Releasing Coral...");
-        System.out.println(delimiter);
+
     }
 
     @Override
