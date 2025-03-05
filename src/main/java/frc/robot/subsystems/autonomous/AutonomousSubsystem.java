@@ -1,6 +1,7 @@
 package frc.robot.subsystems.autonomous;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
@@ -95,7 +96,7 @@ public class AutonomousSubsystem extends SubsystemBase {
         return path;
     }
 
-    public Command tweakToCoralCommand() {
+    public Command tweakToCoral() {
         RawFiducial target = new RawFiducial(0, 0, 0, 0, 0, 0, 0);
         double dist = 9999999.9; // arbitrarily large value that will be overwritten if a tag is found
         RawFiducial[] fiducials = LimelightHelpers.getRawFiducials("");
@@ -111,14 +112,23 @@ public class AutonomousSubsystem extends SubsystemBase {
                 target = fiducial;
             }
         }
-        Pose3d aprilTagPose = field.getTagPose(target.id).get();
-        double aprilTagRotation = aprilTagPose.getRotation().getZ();
+        Optional<Pose3d> aprilTagPose = field.getTagPose(target.id);
+        if (!aprilTagPose.isPresent()) {
+            System.out.println("WARNING: Couldn't find an april tag target!");
+            return Commands.none();
+        }
+        
+        double aprilTagRotation = aprilTagPose.get().getRotation().getZ();
         // this is kind of ugly but it calculates a vector in the direction the april tag is facing, it's a pose2d so we can use Pose2d.rotateBy()
-        Pose2d targetOffset = new Pose2d(0.0, 1.0, new Rotation2d()).rotateBy(new Rotation2d(aprilTagRotation));
+        Pose2d targetOffset = new Pose2d(0.0, 0.5588, new Rotation2d()).rotateBy(new Rotation2d(aprilTagRotation));
         // we convert this pose to a transform(and set the rotation to 180 so the pose is facing towards the april tag) and offset the april tag's position by this amount
         // we do this so we don't have the bot try to run into a wall
-        Pose2d targetPose = aprilTagPose.toPose2d().plus(new Transform2d(targetOffset.getX(), targetOffset.getY(), new Rotation2d(Math.PI)));
+        Pose2d targetPose = aprilTagPose.get().toPose2d().plus(new Transform2d(targetOffset.getX(), targetOffset.getY(), new Rotation2d(Math.PI)));
 
         return AutoBuilder.followPath(getPathTo(targetPose));
+    }
+
+    public Command tweakToCoralCommand() {
+        return Commands.run(() -> tweakToCoral().schedule(), swerveDrive);
     }
 }
