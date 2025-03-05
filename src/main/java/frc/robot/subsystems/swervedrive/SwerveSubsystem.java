@@ -6,6 +6,7 @@ package frc.robot.subsystems.swervedrive;
 
 import static edu.wpi.first.units.Units.Meter;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -147,8 +148,16 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic() {
     if (real) {
-      LimelightHelpers.SetRobotOrientation("", swerveDrive.getYaw().getDegrees(), 0, swerveDrive.getPitch().getDegrees(), 0, swerveDrive.getRoll().getDegrees(), 0);
-      swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d(""), Timer.getFPGATimestamp());
+      LimelightHelpers.SetRobotOrientation("", swerveDrive.getYaw().getDegrees(), 0, 0.0, 0, 0.0, 0);
+      LimelightHelpers.PoseEstimate limelightMeasurement = DriverStation.getAlliance().get() == DriverStation.Alliance.Blue ? LimelightHelpers.getBotPoseEstimate_wpiBlue("") : LimelightHelpers.getBotPoseEstimate_wpiRed("");
+      if (limelightMeasurement.tagCount >= 2) {  // Only trust measurement if we see multiple tags
+          swerveDrive.setVisionMeasurementStdDevs(VecBuilder.fill(0.7, 0.7, 9999999));
+          swerveDrive.addVisionMeasurement(
+              limelightMeasurement.pose,
+              limelightMeasurement.timestampSeconds
+          );
+      }
+      // swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d(""), Timer.getFPGATimestamp());
     }
   }
 

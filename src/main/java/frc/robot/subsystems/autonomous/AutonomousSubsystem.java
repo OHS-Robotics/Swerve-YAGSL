@@ -18,6 +18,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.commands.AutoReleaseCoralCommand;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
@@ -65,7 +66,7 @@ import frc.robot.subsystems.external.LimelightHelpers.RawFiducial;
  */
 public class AutonomousSubsystem extends SubsystemBase {
     public SwerveSubsystem swerveDrive;
-    private final PathConstraints constraints = new PathConstraints(2., 2.0, 2*Math.PI, 4*Math.PI);
+    private final PathConstraints constraints = new PathConstraints(1.0, 1.0, 2*Math.PI, 4*Math.PI);
     private AprilTagFieldLayout field;
 
     public AutonomousSubsystem(SwerveSubsystem swerve) {
