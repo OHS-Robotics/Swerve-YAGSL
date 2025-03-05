@@ -57,4 +57,16 @@ public final class Constants
     public static final boolean AUTO_ENABLED = false;
   }
 
+  public static final class Elevator {
+    public static final double heightBottom = 0;
+    public static final double heightL1 = 28.5;
+    public static final double heightL2 = 39.3;
+    public static final double heightL3 = 62.9;
+    public static final double heightL4 = 99.2;
+    
+
+    public static final double jogUpVel = 0.2;
+    public static final double jogDownVel = 0.1;
+  }
+
 }

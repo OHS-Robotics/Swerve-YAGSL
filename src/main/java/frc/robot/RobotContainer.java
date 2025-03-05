@@ -25,6 +25,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.autonomous.AutonomousSubsystem;
 import frc.robot.commands.ElevatorJogDown;
 import frc.robot.commands.ElevatorJogUp;
+import frc.robot.commands.ElevatorLevel1;
 import frc.robot.commands.ElevatorStop;
 import frc.robot.commands.LoadCoral;
 import frc.robot.commands.UnloadCoral;
@@ -163,25 +164,28 @@ public class RobotContainer {
 		unloadCoralCommand.addRequirements(coralManipulator);
 		unloadCoralTwistCommand.addRequirements(coralManipulator);
 
-		// driverJoystick.button(3).onTrue(loadCoralComposed);
-		// driverJoystick.button(4).onTrue(unloadCoralComposed);
-		// driverJoystick.button(1).onTrue(unloadCoralTwistComposed);
-
-		driverXbox.a().onTrue(loadCoralComposed);
-		driverXbox.b().onTrue(unloadCoralComposed);
-		driverXbox.y().onTrue(unloadCoralTwistComposed);
+		driverJoystick.button(3).onTrue(loadCoralComposed);
+		driverJoystick.button(4).onTrue(unloadCoralComposed);
+		driverJoystick.button(1).onTrue(unloadCoralTwistComposed);
 	}
 
 	private void SetupElevatorCommands() {
-		ElevatorJogUp jogUpCommand = new ElevatorJogUp(elevator);
-		ElevatorJogDown jogDownCommand = new ElevatorJogDown(elevator);
-		ElevatorStop stopCommand = new ElevatorStop(elevator);
+		ElevatorJogUp jogUp = new ElevatorJogUp(elevator);
+		ElevatorJogDown jogDown = new ElevatorJogDown(elevator);
+		ElevatorStop stop = new ElevatorStop(elevator);
+		ElevatorLevel1 L1 = new ElevatorLevel1(elevator);
+		ElevatorLevel1 L2 = new ElevatorLevel1(elevator);
+		ElevatorLevel1 L3 = new ElevatorLevel1(elevator);
+		ElevatorLevel1 L4 = new ElevatorLevel1(elevator);
 
-		driverXbox.povUp().onTrue(jogUpCommand);
-		driverXbox.povUp().onFalse(stopCommand);
-		driverXbox.povDown().onTrue(jogDownCommand);
-		driverXbox.povDown().onFalse(stopCommand);
-		// driverXbox.rightBumper().onTrue(Commands.run(() -> jogUpCommand.multiplier = 0.5));
+		driverJoystick.povUp().onTrue(jogUp);
+		driverJoystick.povUp().onFalse(stop);
+		driverJoystick.povDown().onTrue(jogDown);
+		driverJoystick.povDown().onFalse(stop);
+		driverJoystick.button(5).onTrue(L1);
+		driverJoystick.button(6).onTrue(L2);
+		driverJoystick.button(7).onTrue(L3);
+		driverJoystick.button(8).onTrue(L4);
 	}
 
 	private void changeSpeeds(double speed) {
@@ -189,11 +193,11 @@ public class RobotContainer {
 	}
 
 	public void updateElevator(double change) {
-		elevatorPosition += change;
-		// todo: make these actual values
-		elevatorPosition = Math.max(0.0, Math.min(300.0, elevatorPosition));
+		// elevatorPosition += change;
+		// // todo: make these actual values
+		// elevatorPosition = Math.max(0.0, Math.min(300.0, elevatorPosition));
 
-		elevator.moveAbsolute(elevatorPosition);
+		// elevator.moveAbsolute(elevatorPosition);
 	}
 
 	public void teleopInit() {

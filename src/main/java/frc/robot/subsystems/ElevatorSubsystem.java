@@ -40,6 +40,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final RelativeEncoder encoder_right = motor_right.getEncoder();
 
     private double expectedPositionInches = 0.0;
+    public double moveAbsTarget = 0;
 
     // private final PIDController pid = new PIDController(0.1, 0.0, 0.0);
 
@@ -52,6 +53,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         
         final SparkMaxConfig baseconf_left = new SparkMaxConfig();
         final SparkMaxConfig baseconf_right = new SparkMaxConfig();
+
+        encoder_left.setPosition(0);
+        encoder_right.setPosition(0);
 
         baseconf_right.follow(motor_left, true);
 
@@ -71,23 +75,39 @@ public class ElevatorSubsystem extends SubsystemBase {
         motor_left.configure(baseconf_left, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
         // motor_right.configure(baseconf_right, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
+
+    public double currentPosition() {
+        return encoder_left.getPosition();
+    }
     
 
     // todo: test these
     /**
-     * Move to an absolute position
+     * Starts a move to an absolute position.  Move Absolute Complete must be checked in order to know when it's complete
      * @param commandPosition Desired position (inches)
      */
-    public void moveAbsolute(double commandPosition) { // position is in inches
+    public void moveAbsoluteStart(double commandPosition, double commandSpeed) { // position is in inches
         // double output = pid.calculate((encoder_left.getPosition() + encoder_right.getPosition())/2.0, position);
         
         // inPosition = Math.abs((encoder_left.getPosition() + encoder_right.getPosition())/2.0 - output) < 0.1;
 
         // motor_left.set((encoder_left.getPosition() - output) * 0.1);
         // motor_right.set((encoder_right.getPosition() - output) * -0.1);
-        expectedPositionInches = commandPosition;
+        // expectedPositionInches = commandPosition;
 
-        clc_left.setReference(commandPosition * k_revsPerInch, ControlType.kPosition); // right motor is a follower
+        // clc_left.setReference(commandPosition * k_revsPerInch, ControlType.kPosition); // right motor is a follower
+        if (commandPosition > currentPosition()) {
+            jogUp(commandSpeed);
+        }
+        else {
+            jogDown(commandSpeed);
+        }
+
+        moveAbsTarget = commandPosition;
+    }
+
+    public boolean moveAbsoluteComplete() {
+        return valueIsWithinTolerance(currentPosition(), moveAbsTarget, 1);
     }
 
     /*

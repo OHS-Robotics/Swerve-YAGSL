@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.ElevatorSubsystem;
 
 public class ElevatorJogDown extends Command{
@@ -17,7 +18,7 @@ public class ElevatorJogDown extends Command{
 
     @Override
     public void execute() {
-        elevator.jogDown(0.1);
+        elevator.jogDown(Constants.Elevator.jogDownVel);
     }
 
     @Override

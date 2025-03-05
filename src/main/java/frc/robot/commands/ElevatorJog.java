@@ -28,17 +28,4 @@ public class ElevatorJog extends Command{
         // return elevator.isAtSpeed();
         return true;
     }
-
-    private double applyDeadBand(double raw, double deadband) {
-        if (Math.abs(raw) < deadband) return 0;
-        
-        if (raw - deadband > 0) {
-            return (raw - deadband);
-        }
-        if (raw + deadband < 0) {
-            return (raw + deadband);
-        }
-        
-        return 0;
-    }
 }
