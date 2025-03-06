@@ -148,7 +148,7 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic() {
     if (real) {
-      LimelightHelpers.SetRobotOrientation("", swerveDrive.getYaw().getDegrees(), 0.0, 0.0, 0, 0.0, 0.0);
+      LimelightHelpers.SetRobotOrientation("", -swerveDrive.getYaw().getDegrees(), 0.0, 0.0, 0, 0.0, 0.0);
       LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("");
       if (limelightMeasurement.tagCount >= 2) {  // Only trust measurement if we see multiple tags
           swerveDrive.setVisionMeasurementStdDevs(VecBuilder.fill(1.5, 1.5, 9999999));

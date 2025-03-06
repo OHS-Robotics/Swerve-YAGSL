@@ -67,6 +67,8 @@ public final class Constants
 
     public static final double jogUpVel = 0.2;
     public static final double jogDownVel = 0.1;
+
+    public static final double countsPerInch = 1.464;
   }
 
 }
