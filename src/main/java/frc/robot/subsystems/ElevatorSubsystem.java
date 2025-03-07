@@ -26,7 +26,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private double k_atVelocityToleranceRevs = 0.01;
     private double k_maxVel = 0.1;
     private double k_maxAccel = 0.1;
-    private double targetVel = 0;
+    private double targetVel_Revs = 0;
     
     private final SparkClosedLoopController clc_left = motor_left.getClosedLoopController();
     // private final SparkClosedLoopController clc_right = motor_right.getClosedLoopController();
@@ -38,7 +38,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     private final RelativeEncoder encoder_left = motor_left.getEncoder();
     private final RelativeEncoder encoder_right = motor_right.getEncoder();
 
-    public double targetPositionRevs = 0;
+    public double targetPosition_Revs = 0;
     public boolean moveInProgress = false;
 
     // private final PIDController pid = new PIDController(0.1, 0.0, 0.0);
@@ -82,12 +82,11 @@ public class ElevatorSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Elevator Right", encoder_right.getPosition());
     }
 
-    // todo: test these
     /**
-     * Begins a move to an absolute position.  Move Absolute Complete must be checked in order to know when it's complete
+     * Begins a move to an absolute position.  The elevator will stop by itself when it reaches its target position
      * @param commandPosition Desired position (inches)
      */
-    public void moveAbsoluteBegin(double positionInches, double speed) { // position is in inches
+    public void moveAbsoluteBegin(double position_Inches, double speed_InchesPerSecond) { // position is in inches
         // double output = pid.calculate((encoder_left.getPosition() + encoder_right.getPosition())/2.0, position);
         
         // inPosition = Math.abs((encoder_left.getPosition() + encoder_right.getPosition())/2.0 - output) < 0.1;
@@ -98,50 +97,53 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         // clc_left.setReference(commandPosition * k_revsPerInch, ControlType.kPosition); // right motor is a follower
 
-        var positionRevs = positionInches * Constants.Elevator.revsPerInch;
-        if (positionRevs > currentPosition()) {
-            jogUp(speed);
+        var position_Revs = position_Inches * Constants.Elevator.revsPerInch;
+        var speed_Revs = speed_InchesPerSecond * Constants.Elevator.revsPerInch;
+
+        if (position_Revs > currentPosition()) {
+            jogUp(speed_Revs);
         }
         else {
-            jogDown(speed);
+            jogDown(speed_Revs);
         }
 
-        targetPositionRevs = positionRevs;
+        targetPosition_Revs = position_Revs;
     }
 
-    public boolean moveComplete() {
-        return valueIsWithinTolerance(currentPosition(), targetPositionRevs, 0.5);
+    public boolean atTargetPosition() {
+        return valueIsWithinTolerance(currentPosition(), targetPosition_Revs, 0.5);
     }
 
-    /*
-     * Move relative to the elevator's current position
+    /**
+     * Begins a move relative to the elevator's current position.  The elevator will stop by itself when it reaches its target distance
+     * @param commandPosition Desired position (inches)
      */
-    public void moveRelativeBegin(double distanceInches, double speed) { // commandDistance is in Inches
+    public void moveRelativeBegin(double distance_Inches, double speed_InchesPerSecond) { // commandDistance is in Inches
         // double output = pid.calculate((encoder_left.getPosition() + encoder_right.getPosition())/2.0, position);
         
         // inPosition = Math.abs((encoder_left.getPosition() + encoder_right.getPosition())/2.0 - output) < 0.1;
 
         // motor_left.set((encoder_left.getPosition() - output) * 0.1);
         // motor_right.set((encoder_right.getPosition() - output) * -0.1);
-        var targetPositionInches = (distanceInches * Constants.Elevator.revsPerInch + currentPosition()) / Constants.Elevator.revsPerInch;
-        moveAbsoluteBegin(targetPositionInches, speed);
+        var targetPositionInches = (distance_Inches * Constants.Elevator.revsPerInch + currentPosition()) / Constants.Elevator.revsPerInch;
+        moveAbsoluteBegin(targetPositionInches, speed_InchesPerSecond);
     }
 
 
     /**
      * Jog the elevator up
-     * @param speed The speed at which you want to move, in inches/sec
+     * @param speed_InchesPerSecond The speed at which you want to move, in inches/sec
      */
-    public void jogUp(double speed) {
-        if (speed < 0) {
+    public void jogUp(double speed_InchesPerSecond) {
+        if (speed_InchesPerSecond < 0) {
             System.out.println("Cannot jog with a negative vel.  Provide only positive values");
             return;
         }
         
         // clc_left.setReference(speed * k_revsPerInch, ControlType.kVelocity);
-        targetVel = speed * Constants.Elevator.revsPerInch;
+        targetVel_Revs = speed_InchesPerSecond * Constants.Elevator.revsPerInch;
         // motor_left.set(rateLimiterLeft.calculate(speed));
-        motor_left.set(targetVel);
+        motor_left.set(targetVel_Revs);
     }
 
     /**
@@ -155,17 +157,17 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
 
         // clc_left.setReference(-1 * speed * k_revsPerInch, ControlType.kVelocity);
-        targetVel = -speed * Constants.Elevator.revsPerInch;
+        targetVel_Revs = -speed * Constants.Elevator.revsPerInch;
         // motor_left.set(rateLimiterLeft.calculate(-speed));
-        motor_left.set(targetVel);
+        motor_left.set(targetVel_Revs);
     }
 
     /**
      * Stops elevator motion
      */
     public void stop() {
-        targetVel = 0;
-        motor_left.set(Constants.Elevator.stopVelInchesPerSec * Constants.Elevator.revsPerInch);
+        targetVel_Revs = 0;
+        motor_left.set(Constants.Elevator.stopVel_InchesPerSec * Constants.Elevator.revsPerInch);
     }
 
 
@@ -175,7 +177,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public boolean isAtSpeed() {
-        return valueIsWithinTolerance(encoder_left.getVelocity(), targetVel, k_atVelocityToleranceRevs);
+        return valueIsWithinTolerance(encoder_left.getVelocity(), targetVel_Revs, k_atVelocityToleranceRevs);
     }
 
     public boolean valueIsWithinTolerance(double val, double target, double toleranceRevs) {
@@ -187,7 +189,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         if (moveInProgress) {
-            if (moveComplete()) {
+            if (atTargetPosition()) {
                 stop();
                 moveInProgress = false;
             }

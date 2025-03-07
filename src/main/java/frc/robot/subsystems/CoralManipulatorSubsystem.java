@@ -4,6 +4,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
 import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
@@ -16,7 +17,6 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
     private final double ingestCoralSpeed = -0.15;
     private final double expellCoralSpeed = -0.75;
     private final double speedCheckMargin = 0.05;
-    private final double senseCoralDist = 30;
 
     public CoralManipulatorSubsystem() {
         try {
@@ -50,7 +50,7 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
     public boolean CoralLoaded() {
         var dist = laser.getMeasurement();
         if (dist == null) dist = new Measurement(0, 0, 0, false, 0, null);
-        return dist.distance_mm < senseCoralDist;
+        return dist.distance_mm < Constants.CoralManipulator.coralSenseDistance_mm;
     }
 
     /**

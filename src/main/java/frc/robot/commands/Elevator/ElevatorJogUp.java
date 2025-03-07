@@ -17,7 +17,7 @@ public class ElevatorJogUp extends Command{
 
     @Override
     public void execute() {
-        elevator.jogUp(Constants.Elevator.jogUpVelInchesPerSec);
+        elevator.jogUp(Constants.Elevator.jogUpVel_InchesPerSec);
     }
 
     @Override

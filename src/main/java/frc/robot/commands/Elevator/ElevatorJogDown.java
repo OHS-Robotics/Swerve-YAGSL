@@ -18,7 +18,7 @@ public class ElevatorJogDown extends Command{
 
     @Override
     public void execute() {
-        elevator.jogDown(Constants.Elevator.jogDownVelInchesPerSec);
+        elevator.jogDown(Constants.Elevator.jogDownVel_InchesPerSec);
     }
 
     @Override
