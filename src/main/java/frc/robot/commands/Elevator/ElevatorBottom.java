@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.Elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -15,10 +15,10 @@ public class ElevatorBottom extends Command{
     @Override
     public void initialize() {
         if (elevator.currentPosition() < Constants.Elevator.heightBottom) {
-            elevator.moveAbsoluteStart(Constants.Elevator.heightBottom,  Constants.Elevator.jogUpVel);
+            elevator.moveAbsoluteBegin(Constants.Elevator.heightBottom,  Constants.Elevator.jogUpVelInchesPerSec);
         }
         else {
-            elevator.moveAbsoluteStart(Constants.Elevator.heightBottom,  Constants.Elevator.jogDownVel);
+            elevator.moveAbsoluteBegin(Constants.Elevator.heightBottom,  Constants.Elevator.jogDownVelInchesPerSec);
         }
     }
 
@@ -28,11 +28,6 @@ public class ElevatorBottom extends Command{
 
     @Override
     public boolean isFinished() {
-        if (elevator.moveAbsoluteComplete()) {
-            elevator.stop();
-            return true;
-        }
-
-        return false;
+        return true;
     }
 }

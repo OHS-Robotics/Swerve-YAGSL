@@ -51,10 +51,8 @@ public final class Constants
     public static final boolean USE_KEYBOARD_IN_SIM = false; // Whether to expect keyboard or controller controls in sim
   }
 
-  public static final class AutoConstants {
-
-    // Perform Autonomous Mode [SAFETY SWITCH]
-    public static final boolean AUTO_ENABLED = false;
+  public static final class Autonomous {
+    public static final boolean AUTO_ENABLED = false; // Perform Autonomous Mode [SAFETY SWITCH]
   }
 
   public static final class Elevator {
@@ -65,10 +63,17 @@ public final class Constants
     public static final double heightL4 = 99.2;
     
 
-    public static final double jogUpVel = 0.2;
-    public static final double jogDownVel = 0.1;
+    public static final double jogUpVelInchesPerSec = 0.1366;
+    public static final double jogDownVelInchesPerSec = 0.0683;
+    public static final double stopVelInchesPerSec = 0.034; //Velocity which we actually apply to stop. Serves as holding torque
 
-    public static final double countsPerInch = 1.464;
+    public static final double revsPerInch = 1.464;
+
+    public static final boolean limitSlewRate = false;
+  }
+
+  public static final class CoralManipulator {
+    public static final double coralSenseDistance = 30; //Maximum threshold for sensing coral with the laser
   }
 
 }

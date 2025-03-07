@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.CoralManipulator;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
@@ -8,22 +8,24 @@ public class UnloadCoral extends Command{
 
     public UnloadCoral(CoralManipulatorSubsystem manip) {
         coralManipulator = manip;
+        addRequirements(coralManipulator);
     }
 
     @Override
     public void initialize() {
-        
+        coralManipulator.expellCoral();
     }
 
     @Override
     public void execute() {
-        if (!coralManipulator.isExpellingCoral()) {
-            coralManipulator.expellCoral();
-        }
     }
 
     @Override
     public boolean isFinished() {
-        return !coralManipulator.CoralLoaded();
+        if (!coralManipulator.CoralLoaded()) {
+            coralManipulator.stopMoving();
+            return true;
+        }
+        return false;
     }
 }

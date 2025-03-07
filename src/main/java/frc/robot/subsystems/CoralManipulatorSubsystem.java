@@ -50,7 +50,6 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
     public boolean CoralLoaded() {
         var dist = laser.getMeasurement();
         if (dist == null) dist = new Measurement(0, 0, 0, false, 0, null);
-        // System.out.println(dist.distance_mm);
         return dist.distance_mm < senseCoralDist;
     }
 
