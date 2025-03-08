@@ -63,8 +63,8 @@ public final class Constants
     public static final double heightL4_Inches = 67.74;
     
 
-    public static final double jogUpVel_InchesPerSec = 0.1366;
-    public static final double jogDownVel_InchesPerSec = 0.0683;
+    public static final double jogUpVel_InchesPerSec = 0.1; //0.1366;
+    public static final double jogDownVel_InchesPerSec = 0.05; //0.0683;
     public static final double stopVel_InchesPerSec = 0.034; //Velocity which we actually apply to stop. Serves as holding torque
 
     public static final double revsPerInch = 1.464;

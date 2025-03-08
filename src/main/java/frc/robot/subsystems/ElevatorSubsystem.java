@@ -73,8 +73,12 @@ public class ElevatorSubsystem extends SubsystemBase {
         // motor_right.configure(baseconf_right, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
-    public double currentPosition() {
+    public double currentPosition_Revs() {
         return encoder_left.getPosition();
+    }
+
+    public double currentPosition_Inches() {
+        return encoder_left.getPosition() / Constants.Elevator.revsPerInch;
     }
     
     public void update() {
@@ -99,19 +103,23 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         var position_Revs = position_Inches * Constants.Elevator.revsPerInch;
         var speed_Revs = speed_InchesPerSecond * Constants.Elevator.revsPerInch;
+        moveInProgress = true;
 
-        if (position_Revs > currentPosition()) {
+        if (position_Revs > currentPosition_Revs()) {
             jogUp(speed_Revs);
         }
         else {
             jogDown(speed_Revs);
         }
 
+        System.out.println("Commanded Speed: " + speed_Revs);
+
         targetPosition_Revs = position_Revs;
+
     }
 
     public boolean atTargetPosition() {
-        return valueIsWithinTolerance(currentPosition(), targetPosition_Revs, 0.5);
+        return valueIsWithinTolerance(currentPosition_Revs(), targetPosition_Revs, 0.5);
     }
 
     /**
@@ -125,7 +133,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         // motor_left.set((encoder_left.getPosition() - output) * 0.1);
         // motor_right.set((encoder_right.getPosition() - output) * -0.1);
-        var targetPositionInches = (distance_Inches * Constants.Elevator.revsPerInch + currentPosition()) / Constants.Elevator.revsPerInch;
+        var targetPositionInches = (distance_Inches * Constants.Elevator.revsPerInch + currentPosition_Revs()) / Constants.Elevator.revsPerInch;
         moveAbsoluteBegin(targetPositionInches, speed_InchesPerSecond);
     }
 

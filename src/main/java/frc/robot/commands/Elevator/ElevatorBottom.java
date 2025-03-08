@@ -14,7 +14,7 @@ public class ElevatorBottom extends Command{
 
     @Override
     public void initialize() {
-        if (elevator.currentPosition() < Constants.Elevator.heightBottom_Inches) {
+        if (elevator.currentPosition_Revs() < Constants.Elevator.heightBottom_Inches) {
             elevator.moveAbsoluteBegin(Constants.Elevator.heightBottom_Inches,  Constants.Elevator.jogUpVel_InchesPerSec);
         }
         else {

@@ -14,7 +14,7 @@ public class ElevatorLevel4 extends Command{
 
     @Override
     public void initialize() {
-        if (elevator.currentPosition() < Constants.Elevator.heightL4_Inches) {
+        if (elevator.currentPosition_Inches() < Constants.Elevator.heightL4_Inches) {
             elevator.moveAbsoluteBegin(Constants.Elevator.heightL4_Inches,  Constants.Elevator.jogUpVel_InchesPerSec);
         }
         else {
