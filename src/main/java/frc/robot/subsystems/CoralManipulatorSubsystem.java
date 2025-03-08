@@ -4,6 +4,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import au.grapplerobotics.LaserCan;
 import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
 import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
@@ -14,9 +15,8 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
     public final LaserCan laser = new LaserCan(38);
     
     private final double ingestCoralSpeed = -0.15;
-    private final double expellCoralSpeed = -0.75;
+    private final double expelCoralSpeed = -0.75;
     private final double speedCheckMargin = 0.05;
-    private final double senseCoralDist = 30;
 
     public CoralManipulatorSubsystem() {
         try {
@@ -32,14 +32,14 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
         motorRight.set(-ingestCoralSpeed);
     }
 
-    public void expellCoral() {
-        motorLeft.set(expellCoralSpeed);
-        motorRight.set(-expellCoralSpeed);
+    public void expelCoral() {
+        motorLeft.set(expelCoralSpeed);
+        motorRight.set(-expelCoralSpeed);
     }
 
-    public void expellCoralTwist() {
-        motorLeft.set(expellCoralSpeed);
-        motorRight.set(-expellCoralSpeed * 0.5);
+    public void expelCoralTwist() {
+        motorLeft.set(expelCoralSpeed);
+        motorRight.set(-expelCoralSpeed * 0.5);
     }
 
     public void stopMoving() {
@@ -50,8 +50,7 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
     public boolean CoralLoaded() {
         var dist = laser.getMeasurement();
         if (dist == null) dist = new Measurement(0, 0, 0, false, 0, null);
-        // System.out.println(dist.distance_mm);
-        return dist.distance_mm < senseCoralDist;
+        return dist.distance_mm < Constants.CoralManipulator.coralSenseDistance_mm;
     }
 
     /**
@@ -63,10 +62,10 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
     }
 
     /**
-     * True if the left motor is moving within a tolerance of its expell speed
+     * True if the left motor is moving within a tolerance of its expel speed
      * @return
      */
-    public boolean isExpellingCoral() {
-        return motorLeft.get() > (expellCoralSpeed - speedCheckMargin) && motorLeft.get() < (expellCoralSpeed - speedCheckMargin); 
+    public boolean isExpelingCoral() {
+        return motorLeft.get() > (expelCoralSpeed - speedCheckMargin) && motorLeft.get() < (expelCoralSpeed - speedCheckMargin); 
     }
 }

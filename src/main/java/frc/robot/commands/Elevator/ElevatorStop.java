@@ -1,29 +1,27 @@
-package frc.robot.commands;
+package frc.robot.commands.Elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.Constants;
 import frc.robot.subsystems.ElevatorSubsystem;
 
-public class ElevatorJogUp extends Command{
+public class ElevatorStop extends Command{
     public ElevatorSubsystem elevator;
 
-    public ElevatorJogUp(ElevatorSubsystem elev) {
+    public ElevatorStop(ElevatorSubsystem elev) {
         elevator = elev;
     }
 
     @Override
     public void initialize() {
-        System.out.println("Elevator Jog Up");
+        System.out.println("Elevator Stop");
     }
 
     @Override
     public void execute() {
-        elevator.jogUp(Constants.Elevator.jogUpVel);
+        elevator.stop();
     }
 
     @Override
     public boolean isFinished() {
-        // return elevator.isAtSpeed();
         return true;
     }
 }

@@ -1,26 +1,24 @@
-package frc.robot.commands;
+package frc.robot.commands.Elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants;
 import frc.robot.subsystems.ElevatorSubsystem;
 
-public class ElevatorJog extends Command{
+public class ElevatorJogDown extends Command{
     public ElevatorSubsystem elevator;
-    private CommandXboxController xbox;
 
-    public ElevatorJog(ElevatorSubsystem elev, CommandXboxController c) {
+    public ElevatorJogDown(ElevatorSubsystem elev) {
         elevator = elev;
-        xbox = c;
     }
 
     @Override
     public void initialize() {
-        System.out.println("Elevator Jog ");
+        System.out.println("Elevator Jog Down");
     }
 
     @Override
     public void execute() {
-        elevator.jogUp(xbox.getLeftY());
+        elevator.jogDown(Constants.Elevator.jogDownVel_InchesPerSec);
     }
 
     @Override

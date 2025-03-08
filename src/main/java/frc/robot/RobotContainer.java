@@ -19,24 +19,20 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.Autonomous;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.autonomous.AutonomousSubsystem;
-import frc.robot.commands.ElevatorBottom;
-import frc.robot.commands.ElevatorJogDown;
-import frc.robot.commands.ElevatorJogUp;
-import frc.robot.commands.ElevatorLevel1;
-import frc.robot.commands.ElevatorLevel2;
-import frc.robot.commands.ElevatorLevel3;
-import frc.robot.commands.ElevatorLevel4;
-import frc.robot.commands.ElevatorStop;
-import frc.robot.commands.LoadCoral;
-import frc.robot.commands.UnloadCoral;
-import frc.robot.commands.UnloadCoralTwist;
-import frc.robot.commands.StopLoadingCoral;
-import frc.robot.commands.StopUnloadingCoral;
-import frc.robot.commands.StopUnloadingCoralTwist;
+import frc.robot.commands.CoralManipulator.LoadCoral;
+import frc.robot.commands.CoralManipulator.UnloadCoral;
+import frc.robot.commands.CoralManipulator.UnloadCoralTwist;
+import frc.robot.commands.Elevator.ElevatorBottom;
+import frc.robot.commands.Elevator.ElevatorJogDown;
+import frc.robot.commands.Elevator.ElevatorJogUp;
+import frc.robot.commands.Elevator.ElevatorLevel1;
+import frc.robot.commands.Elevator.ElevatorLevel2;
+import frc.robot.commands.Elevator.ElevatorLevel3;
+import frc.robot.commands.Elevator.ElevatorLevel4;
+import frc.robot.commands.Elevator.ElevatorStop;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -54,13 +50,10 @@ public class RobotContainer {
 
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 	public final CoralManipulatorSubsystem coralManipulator = new CoralManipulatorSubsystem();
-	public final ElevatorSubsystem elevator = new ElevatorSubsystem(1);
+	public final ElevatorSubsystem elevator = new ElevatorSubsystem();
 	public final AutonomousSubsystem autonomous = new AutonomousSubsystem(drivebase);
 
 	private boolean referenceFrameIsField = false;
-	private SequentialCommandGroup loadCoralComposed;
-	private SequentialCommandGroup unloadCoralComposed;
-	private SequentialCommandGroup unloadCoralTwistComposed;
 	public double elevatorPosition = 0.0;
 
 	// Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
@@ -110,16 +103,12 @@ public class RobotContainer {
 
 	public RobotContainer() {
 		configureBindings();
-		// drivebase.swerveDrive.setMaximumAllowableSpeeds(, );
-		// Named commands are used by PathPlanner for Autonomous Mode...
-		// NamedCommands.registerCommand("releaseCoral", autonomousSubsystem.getReleaseCoralCommand());
 	}
 
 	private void configureBindings() {
 		//Delegate the actual calling of the swerve drive function to 
 		drivebase.setDefaultCommand(Commands.run(() -> DriveRobot(referenceFrameIsField), drivebase));
 		driverJoystick.button(13).onTrue(Commands.runOnce(() -> { referenceFrameIsField = !referenceFrameIsField; SmartDashboard.putString("Reference Frame", referenceFrameIsField ? "Field" : "Robot"); }));
-
 		driverJoystick.button(15).onTrue(autonomous.tweakToCoralCommand());
 
 		SetupCoralManipulatorCommands();
@@ -148,29 +137,17 @@ public class RobotContainer {
 	}
 
 	private void SetupCoralManipulatorCommands() {
-		LoadCoral loadCoralCommand = new LoadCoral(coralManipulator);
-        UnloadCoral unloadCoralCommand = new UnloadCoral(coralManipulator);
-		UnloadCoralTwist unloadCoralTwistCommand = new UnloadCoralTwist(coralManipulator);
-		StopLoadingCoral stopLoadingCoralCommand = new StopLoadingCoral(coralManipulator);
-		StopUnloadingCoral stopUnloadingCoralCommand = new StopUnloadingCoral(coralManipulator);
-		StopUnloadingCoralTwist stopUnloadingCoralTwistCommand = new StopUnloadingCoralTwist(coralManipulator);
+		LoadCoral loadCoral = new LoadCoral(coralManipulator);
+        UnloadCoral unloadCoral = new UnloadCoral(coralManipulator);
+		UnloadCoralTwist unloadCoralTwist = new UnloadCoralTwist(coralManipulator);
 
-		loadCoralCommand.coralManipulator = coralManipulator;
-		unloadCoralCommand.coralManipulator = coralManipulator;
-		unloadCoralTwistCommand.coralManipulator = coralManipulator;
-		stopLoadingCoralCommand.coralManipulator = coralManipulator;
-		stopUnloadingCoralCommand.coralManipulator = coralManipulator;
+		loadCoral.coralManipulator = coralManipulator;
+		unloadCoral.coralManipulator = coralManipulator;
+		unloadCoralTwist.coralManipulator = coralManipulator;
 
-		loadCoralComposed = loadCoralCommand.andThen(stopLoadingCoralCommand);
-		unloadCoralComposed = unloadCoralCommand.andThen(stopUnloadingCoralCommand);
-		unloadCoralTwistComposed = unloadCoralTwistCommand.andThen(stopUnloadingCoralTwistCommand);
-		loadCoralComposed.addRequirements(coralManipulator);
-		unloadCoralCommand.addRequirements(coralManipulator);
-		unloadCoralTwistCommand.addRequirements(coralManipulator);
-
-		driverJoystick.button(3).onTrue(loadCoralComposed);
-		driverJoystick.button(4).onTrue(unloadCoralComposed);
-		driverJoystick.button(1).onTrue(unloadCoralTwistComposed);
+		driverJoystick.button(3).onTrue(loadCoral);
+		driverJoystick.button(4).onTrue(unloadCoral);
+		driverJoystick.button(1).onTrue(unloadCoralTwist);
 	}
 
 	private void SetupElevatorCommands() {
@@ -194,10 +171,6 @@ public class RobotContainer {
 		driverJoystick.button(16).onTrue(L4);
 	}
 
-	private void changeSpeeds(double speed) {
-		
-	}
-
 	public void updateElevator(double change) {
 		// elevatorPosition += change;
 		// // todo: make these actual values
@@ -216,7 +189,7 @@ public class RobotContainer {
 	 * Automatically selects the appropriate control scheme (keyboard for simulation) and reference frame (field vs. robot)
 	*/
 	@SuppressWarnings("unused")
-	public void DriveRobot(boolean referenceFrameIsField) {		
+	public void DriveRobot(boolean referenceFrameIsField) {
 		if (referenceFrameIsField) {
 			if (Robot.isSimulation() && OperatorConstants.USE_KEYBOARD_IN_SIM) {
 				
@@ -239,8 +212,8 @@ public class RobotContainer {
 
 	public Command getAutonomousCommand() {
 
-		if (AutoConstants.AUTO_ENABLED) {
-			String autoPathName = null;	
+		if (Autonomous.AUTO_ENABLED) {
+			String autoPathName = null;
 
 			// Paths should be configured for the "BLUE" alliance ad they will be
 			// automtically reversed for the "RED" alliance as configured...
