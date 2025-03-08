@@ -13,7 +13,7 @@ public class UnloadCoral extends Command{
 
     @Override
     public void initialize() {
-        coralManipulator.expellCoral();
+        coralManipulator.expelCoral();
     }
 
     @Override
