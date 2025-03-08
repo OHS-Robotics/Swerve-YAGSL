@@ -19,8 +19,6 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import frc.robot.Constants.Autonomous;
-import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.autonomous.AutonomousSubsystem;
 import frc.robot.commands.CoralManipulator.LoadCoral;
 import frc.robot.commands.CoralManipulator.UnloadCoral;
@@ -55,12 +53,16 @@ public class RobotContainer {
 
 	private boolean referenceFrameIsField = false;
 	public double elevatorPosition = 0.0;
+	public boolean isInHighGear = true;
 
 	// Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
-	SwerveInputStream driveFieldAngularVelocityStream = SwerveInputStream.of(drivebase.getSwerveDrive(), () -> driverJoystick.getY(), () -> driverJoystick.getX())
-		.withControllerRotationAxis(() -> driverJoystick.getTwist())
-		.deadband(OperatorConstants.DEADBAND)
-		.scaleTranslation(OperatorConstants.JOYSTICK_SCALE_FACTOR)
+	SwerveInputStream driveFieldAngularVelocityStream = SwerveInputStream.of(drivebase.getSwerveDrive(), 
+		() -> applyExpoCurveTranslation(driverJoystick.getY()), 
+		() -> applyExpoCurveTranslation(driverJoystick.getX()))
+		.withControllerRotationAxis(() -> applyExpoCurveRotation(driverJoystick.getTwist()))
+		.deadband(Constants.Operator.deadband)
+		.scaleTranslation(Constants.Operator.scaleTranslationHighGear)
+		.scaleRotation(Constants.Operator.scaleRotationHighGear)
 		.allianceRelativeControl(true);
 	
 	// Clone's the angular velocity input stream and converts it to a fieldRelative input stream.
@@ -75,8 +77,9 @@ public class RobotContainer {
 	
 	SwerveInputStream driveFieldAngularVelocityKeyboardStream = SwerveInputStream.of(drivebase.getSwerveDrive(), () -> -driverJoystick.getY(), () -> -driverJoystick.getX())
 		.withControllerRotationAxis(() -> driverJoystick.getRawAxis(2))
-		.deadband(OperatorConstants.DEADBAND)
-		.scaleTranslation(OperatorConstants.JOYSTICK_SCALE_FACTOR)	
+		.deadband(Constants.Operator.deadband)
+		.scaleTranslation(Constants.Operator.scaleTranslationHighGear)
+		.scaleRotation(Constants.Operator.scaleRotationHighGear)
 		.allianceRelativeControl(true);
 
 	SwerveInputStream driveRobotAngularVelocityKeyboardStream = driveFieldAngularVelocityStream.copy()
@@ -108,7 +111,12 @@ public class RobotContainer {
 	private void configureBindings() {
 		//Delegate the actual calling of the swerve drive function to 
 		drivebase.setDefaultCommand(Commands.run(() -> DriveRobot(referenceFrameIsField), drivebase));
-		driverJoystick.button(13).onTrue(Commands.runOnce(() -> { referenceFrameIsField = !referenceFrameIsField; SmartDashboard.putString("Reference Frame", referenceFrameIsField ? "Field" : "Robot"); }));
+		// driverJoystick.button(13).onTrue(Commands.runOnce(() -> { referenceFrameIsField = !referenceFrameIsField; SmartDashboard.putString("Reference Frame", referenceFrameIsField ? "Field" : "Robot"); }));
+		driverJoystick.button(2).onTrue(Commands.runOnce(() -> SetGearMode(false)));
+		driverJoystick.button(2).onFalse(Commands.runOnce(() -> SetGearMode(true)));
+
+		SmartDashboard.putString("Gear Mode", isInHighGear ? "High" : "Low");
+
 		driverJoystick.button(15).onTrue(autonomous.tweakToCoralCommand());
 
 		SetupCoralManipulatorCommands();
@@ -132,7 +140,7 @@ public class RobotContainer {
 			// driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
 			// driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
 			// driverXbox.b().whileTrue(drivebase.driveToPose(new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0))));
-			driverJoystick.button(8).whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+			// driverJoystick.button(8).whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
 		}
 	}
 
@@ -191,7 +199,7 @@ public class RobotContainer {
 	@SuppressWarnings("unused")
 	public void DriveRobot(boolean referenceFrameIsField) {
 		if (referenceFrameIsField) {
-			if (Robot.isSimulation() && OperatorConstants.USE_KEYBOARD_IN_SIM) {
+			if (Robot.isSimulation() && Constants.Operator.useKeyboardInSim) {
 				
 				drivebase.driveFieldOrientedImmediate(driveFieldAngularVelocityKeyboardStream);
 			}
@@ -200,7 +208,7 @@ public class RobotContainer {
 			}
 		}
 		else {
-			if (Robot.isSimulation() && OperatorConstants.USE_KEYBOARD_IN_SIM) {
+			if (Robot.isSimulation() && Constants.Operator.useKeyboardInSim) {
 				drivebase.driveFieldOrientedImmediate(driveRobotAngularVelocityKeyboardStream);
 			}
 			else {
@@ -212,7 +220,7 @@ public class RobotContainer {
 
 	public Command getAutonomousCommand() {
 
-		if (Autonomous.AUTO_ENABLED) {
+		if (Constants.Autonomous.autoEnabled) {
 			String autoPathName = null;
 
 			// Paths should be configured for the "BLUE" alliance ad they will be
@@ -238,5 +246,70 @@ public class RobotContainer {
 
 	public Command getAutoInitCommand() {
 		return autonomous.getStartCommand();
+	}
+
+	/**
+	 * Transforms joystick input to give a desired smoothness for operation
+	 * @param input
+	 * @return
+	 */
+	public double applyExpoCurveTranslation(double input) {
+		return input;
+	}
+
+	/**
+	 * Transforms joystick input to give a desired smoothness for operation
+	 * @param input
+	 * @return
+	 */
+	public double applyExpoCurveRotation(double input) {
+		return input;
+	}
+
+	/**
+	 * Toggles between high and low gear mode
+	 */
+	public void toggleGearMode() {
+		isInHighGear = !isInHighGear;
+		SetGearMode(isInHighGear);		
+	}
+
+	/**
+	 * Sets the gear mode for the robot
+	 * @param setHigh The desired gear mode (true = high, low = false)
+	 */
+	public void SetGearMode(boolean setHigh) {
+		isInHighGear = setHigh;
+
+		if (isInHighGear) {
+			driveFieldAngularVelocityStream.scaleRotation(Constants.Operator.scaleRotationHighGear);
+			driveFieldAngularVelocityStream.scaleTranslation(Constants.Operator.scaleTranslationHighGear);
+			driveFieldDirectAngleStream.scaleRotation(Constants.Operator.scaleRotationHighGear);
+			driveFieldDirectAngleStream.scaleTranslation(Constants.Operator.scaleTranslationHighGear);
+			driveRobotAngularVelocityStream.scaleRotation(Constants.Operator.scaleRotationHighGear);
+			driveRobotAngularVelocityStream.scaleTranslation(Constants.Operator.scaleTranslationHighGear);
+			driveFieldAngularVelocityKeyboardStream.scaleRotation(Constants.Operator.scaleRotationHighGear);
+			driveFieldAngularVelocityKeyboardStream.scaleTranslation(Constants.Operator.scaleTranslationHighGear);
+			driveRobotAngularVelocityKeyboardStream.scaleRotation(Constants.Operator.scaleRotationHighGear);
+			driveRobotAngularVelocityKeyboardStream.scaleTranslation(Constants.Operator.scaleTranslationHighGear);
+			driveFieldDirectAngleKeyboardStream.scaleRotation(Constants.Operator.scaleRotationHighGear);
+			driveFieldDirectAngleKeyboardStream.scaleTranslation(Constants.Operator.scaleTranslationHighGear);
+		}
+		else {
+			driveFieldAngularVelocityStream.scaleRotation(Constants.Operator.scaleRotationLowGear);
+			driveFieldAngularVelocityStream.scaleTranslation(Constants.Operator.scaleTranslationLowGear);
+			driveFieldDirectAngleStream.scaleRotation(Constants.Operator.scaleRotationLowGear);
+			driveFieldDirectAngleStream.scaleTranslation(Constants.Operator.scaleTranslationLowGear);
+			driveRobotAngularVelocityStream.scaleRotation(Constants.Operator.scaleRotationLowGear);
+			driveRobotAngularVelocityStream.scaleTranslation(Constants.Operator.scaleTranslationLowGear);
+			driveFieldAngularVelocityKeyboardStream.scaleRotation(Constants.Operator.scaleRotationLowGear);
+			driveFieldAngularVelocityKeyboardStream.scaleTranslation(Constants.Operator.scaleTranslationLowGear);
+			driveRobotAngularVelocityKeyboardStream.scaleRotation(Constants.Operator.scaleRotationLowGear);
+			driveRobotAngularVelocityKeyboardStream.scaleTranslation(Constants.Operator.scaleTranslationLowGear);
+			driveFieldDirectAngleKeyboardStream.scaleRotation(Constants.Operator.scaleRotationLowGear);
+			driveFieldDirectAngleKeyboardStream.scaleTranslation(Constants.Operator.scaleTranslationLowGear);
+		}
+
+		SmartDashboard.putString("Gear Mode", isInHighGear ? "High" : "Low");
 	}
 }

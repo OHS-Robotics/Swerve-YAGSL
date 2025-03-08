@@ -39,20 +39,23 @@ public final class Constants
     public static final double WHEEL_LOCK_TIME = 10; // seconds
   }
 
-  public static class OperatorConstants
+  public static class Operator
   {
 
     // Joystick Deadband
-    public static final double DEADBAND = 0.05;
-    public static final double LEFT_Y_DEADBAND = 0.05;
-    public static final double RIGHT_X_DEADBAND = 0.05;
-    public static final double TURN_CONSTANT = 6;
-    public static final double JOYSTICK_SCALE_FACTOR = 0.8;
-    public static final boolean USE_KEYBOARD_IN_SIM = false; // Whether to expect keyboard or controller controls in sim
+    public static final double deadband = 0.05;
+    public static final double deadbandLeftY = 0.05;
+    public static final double deadbandRightX = 0.05;
+    public static final double turnConstant = 6;
+    public static final double scaleTranslationHighGear = 0.8;
+    public static final double scaleTranslationLowGear = 0.2;
+    public static final double scaleRotationHighGear = 0.8;
+    public static final double scaleRotationLowGear = 0.2;
+    public static final boolean useKeyboardInSim = false; // Whether to expect keyboard or controller controls in sim
   }
 
   public static final class Autonomous {
-    public static final boolean AUTO_ENABLED = false; // Perform Autonomous Mode [SAFETY SWITCH]
+    public static final boolean autoEnabled = false; // Perform Autonomous Mode [SAFETY SWITCH]
   }
 
   public static final class Elevator {
