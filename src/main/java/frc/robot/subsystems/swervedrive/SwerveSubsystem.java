@@ -132,7 +132,7 @@ public class SwerveSubsystem extends SubsystemBase
     // Let the current pipeline control the LEDs
     LimelightHelpers.setLEDMode_PipelineControl("");
 
-    LimelightHelpers.setCameraPose_RobotSpace ("", // todo: replace me!
+    LimelightHelpers.setCameraPose_RobotSpace ("",
       0.4572,    // Forward offset (meters)
       0.2032,    // Side offset (meters)
       0.2286,    // Height offset (meters)
@@ -149,10 +149,12 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic() {
     if (real) {
+      swerveDrive.swerveDrivePoseEstimator.update(swerveDrive.getYaw(), swerveDrive.getModulePositions());
+
       LimelightHelpers.SetRobotOrientation("", -swerveDrive.getYaw().getDegrees(), 0.0, 0.0, 0, 0.0, 0.0);
       LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("");
-      if (limelightMeasurement.tagCount >= 2) {  // Only trust measurement if we see multiple tags
-          swerveDrive.setVisionMeasurementStdDevs(VecBuilder.fill(1.5, 1.5, 9999999));
+      if (limelightMeasurement.tagCount >= 3) {  // Only trust measurement if we see multiple tags
+          swerveDrive.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
           swerveDrive.addVisionMeasurement(
               limelightMeasurement.pose,
               limelightMeasurement.timestampSeconds

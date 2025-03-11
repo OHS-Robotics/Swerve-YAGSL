@@ -69,8 +69,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         baseconf_left.closedLoop.maxMotion.maxVelocity(k_maxVel);
         // remember to add limits later
 
-        motor_left.configure(baseconf_left, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-        // motor_right.configure(baseconf_right, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+        motor_left.configure(baseconf_left, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
+        motor_right.configure(baseconf_right, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     public double currentPosition_Revs() {

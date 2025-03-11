@@ -2,6 +2,8 @@ package frc.robot.subsystems.autonomous;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.LongConsumer;
+import java.util.function.LongSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
@@ -11,10 +13,14 @@ import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -68,10 +74,36 @@ public class AutonomousSubsystem extends SubsystemBase {
     public SwerveSubsystem swerveDrive;
     private final PathConstraints constraints = new PathConstraints(1.0, 1.0, 2*Math.PI, 4*Math.PI);
     private AprilTagFieldLayout field;
+    
+    
+
+     private class AprilTagController/* implements Sendable*/ {
+        /*
+        * 0 = go to april tag's position on the field using the position estimation
+        * 1 = go to the april tag's position based on where it appears on the limelight
+        * 2 = ignore april tag related commands
+        */
+        private long aprilTagMethod = 1;
+        LongSupplier getAprilTagMethod = () -> aprilTagMethod;
+        LongConsumer setAprilTagMethod = (method) -> aprilTagMethod = method;
+        
+        /*@Override
+        public void initSendable(SendableBuilder builder) {
+            builder.setSmartDashboardType("AprilTagController");
+
+            builder.addIntegerProperty("aprilTagMethod", getAprilTagMethod, setAprilTagMethod);
+
+        }*/
+    }
+    
+    public AprilTagController aprilTagController = new AprilTagController();
 
     public AutonomousSubsystem(SwerveSubsystem swerve) {
         swerveDrive = swerve;
         field = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+        
+
+
     }
 
     public Command getReleaseCoralCommand() {
@@ -113,21 +145,46 @@ public class AutonomousSubsystem extends SubsystemBase {
                 target = fiducial;
             }
         }
-        Optional<Pose3d> aprilTagPose = field.getTagPose(target.id);
-        if (!aprilTagPose.isPresent()) {
-            System.out.println("WARNING: Couldn't find an april tag target!");
-            return Commands.none();
-        }
+        // (int) aprilTagController.getAprilTagMethod.getAsLong()
+        switch ((int) aprilTagController.aprilTagMethod) {
+            case 0: {
+                Optional<Pose3d> aprilTagPose = field.getTagPose(target.id);
+                if (!aprilTagPose.isPresent()) {
+                    System.out.println("WARNING: Couldn't find an april tag target!");
+                    return Commands.none();
+                }
+                
+                double aprilTagRotation = aprilTagPose.get().getRotation().getZ();
+                // this is kind of ugly but it calculates a vector in the direction the april tag is facing, it's a pose2d so we can use Pose2d.rotateBy()
+                Pose2d targetOffset = new Pose2d(0.0, 0.5588 /* measured as the perfect distance */, new Rotation2d()).rotateBy(new Rotation2d(aprilTagRotation));
+                // we convert this pose to a transform(and set the rotation to 180 so the pose is facing towards the april tag) and offset the april tag's position by this amount
+                // we do this so we don't have the bot try to run into a wall
+                Pose2d targetPose = aprilTagPose.get().toPose2d().plus(new Transform2d(targetOffset.getX(), targetOffset.getY(), new Rotation2d(Math.PI)));
         
-        double aprilTagRotation = aprilTagPose.get().getRotation().getZ();
-        // this is kind of ugly but it calculates a vector in the direction the april tag is facing, it's a pose2d so we can use Pose2d.rotateBy()
-        Pose2d targetOffset = new Pose2d(0.0, 0.5588, new Rotation2d()).rotateBy(new Rotation2d(aprilTagRotation));
-        // we convert this pose to a transform(and set the rotation to 180 so the pose is facing towards the april tag) and offset the april tag's position by this amount
-        // we do this so we don't have the bot try to run into a wall
-        Pose2d targetPose = aprilTagPose.get().toPose2d().plus(new Transform2d(targetOffset.getX(), targetOffset.getY(), new Rotation2d(Math.PI)));
+                System.out.println("Tweaking");
+                return AutoBuilder.followPath(getPathTo(targetPose));
+            }
 
-        return AutoBuilder.followPath(getPathTo(targetPose)).andThen(() -> System.out.println("Tweaking"));
-        // return Commands.none();
+            case 1: {
+                // get the vector to the target and move in that direction
+                // this won't adjust rotation because you can't get the direction of the april tag
+                // from raw fiducials
+                Pose2d targetOffset = new Pose2d(Math.cos(target.txnc * (Math.PI / 180.0)) * target.distToRobot * 0.9, Math.sin(target.txnc * (Math.PI / 180.0)) * target.distToRobot * 0.9, new Rotation2d()).rotateBy(swerveDrive.swerveDrive.getYaw());
+                Pose2d targetPose = swerveDrive.getPose()
+                .plus(new Transform2d(-targetOffset.getX(), -targetOffset.getY(), new Rotation2d())) // offset by vector
+                .plus(new Transform2d(-0.4572, -0.2032, new Rotation2d())); // account for limelight offset
+
+
+                System.out.println("Tweaking");
+                return AutoBuilder.followPath(getPathTo(targetPose));
+            }
+
+            default: {
+                return Commands.none();
+            }
+        }
+
+
     }
 
     public Command tweakToCoralCommand() {
