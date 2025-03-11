@@ -83,8 +83,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    // note: remember to uncomment this later
-    // m_robotContainer.elevator.update();
+    m_robotContainer.elevator.update();
   }
 
   @Override

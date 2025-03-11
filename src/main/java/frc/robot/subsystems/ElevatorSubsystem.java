@@ -62,7 +62,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         baseconf_left.idleMode(IdleMode.kBrake);
         baseconf_right.idleMode(IdleMode.kBrake);
         
-        baseconf_right.encoder.inverted(true);
+        // baseconf_right.encoder.inverted(true);
 
         // baseconf_left.closedLoop.pid(0.01, 0.01 , 0.0).outputRange(-k_maxVel, k_maxVel);
         // baseconf_right.closedLoop.pid(0.1, 0.0, 0.0).outputRange(-1, 1);
@@ -74,16 +74,16 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
 
     public double currentPosition_Revs() {
-        return encoder_left.getPosition();
+        return -encoder_left.getPosition();
     }
 
     public double currentPosition_Inches() {
-        return encoder_left.getPosition() / Constants.Elevator.revsPerInch;
+        return -encoder_left.getPosition() / Constants.Elevator.revsPerInch;
     }
     
     public void update() {
-        SmartDashboard.putNumber("Elevator Left", encoder_left.getPosition());
-        SmartDashboard.putNumber("Elevator Right", encoder_right.getPosition());
+        SmartDashboard.putNumber("Elevator Left", -encoder_left.getPosition());
+        SmartDashboard.putNumber("Elevator Right", -encoder_right.getPosition());
     }
 
     /**
@@ -91,12 +91,12 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @param commandPosition Desired position (inches)
      */
     public void moveAbsoluteBegin(double position_Inches, double speed_InchesPerSecond) { // position is in inches
-        // double output = pid.calculate((encoder_left.getPosition() + encoder_right.getPosition())/2.0, position);
+        // double output = pid.calculate((-encoder_left.getPosition() + -encoder_right.getPosition())/2.0, position);
         
-        // inPosition = Math.abs((encoder_left.getPosition() + encoder_right.getPosition())/2.0 - output) < 0.1;
+        // inPosition = Math.abs((-encoder_left.getPosition() + -encoder_right.getPosition())/2.0 - output) < 0.1;
 
-        // motor_left.set((encoder_left.getPosition() - output) * 0.1);
-        // motor_right.set((encoder_right.getPosition() - output) * -0.1);
+        // motor_left.set((-encoder_left.getPosition() - output) * 0.1);
+        // motor_right.set((-encoder_right.getPosition() - output) * -0.1);
         // expectedPositionInches = commandPosition;
 
         // clc_left.setReference(commandPosition * k_revsPerInch, ControlType.kPosition); // right motor is a follower
@@ -127,12 +127,12 @@ public class ElevatorSubsystem extends SubsystemBase {
      * @param commandPosition Desired position (inches)
      */
     public void moveRelativeBegin(double distance_Inches, double speed_InchesPerSecond) { // commandDistance is in Inches
-        // double output = pid.calculate((encoder_left.getPosition() + encoder_right.getPosition())/2.0, position);
+        // double output = pid.calculate((-encoder_left.getPosition() + -encoder_right.getPosition())/2.0, position);
         
-        // inPosition = Math.abs((encoder_left.getPosition() + encoder_right.getPosition())/2.0 - output) < 0.1;
+        // inPosition = Math.abs((-encoder_left.getPosition() + -encoder_right.getPosition())/2.0 - output) < 0.1;
 
-        // motor_left.set((encoder_left.getPosition() - output) * 0.1);
-        // motor_right.set((encoder_right.getPosition() - output) * -0.1);
+        // motor_left.set((-encoder_left.getPosition() - output) * 0.1);
+        // motor_right.set((-encoder_right.getPosition() - output) * -0.1);
         var targetPositionInches = (distance_Inches * Constants.Elevator.revsPerInch + currentPosition_Revs()) / Constants.Elevator.revsPerInch;
         moveAbsoluteBegin(targetPositionInches, speed_InchesPerSecond);
     }
@@ -151,7 +151,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         // clc_left.setReference(speed * k_revsPerInch, ControlType.kVelocity);
         targetVel_Revs = speed_InchesPerSecond * Constants.Elevator.revsPerInch;
         // motor_left.set(rateLimiterLeft.calculate(speed));
-        motor_left.set(targetVel_Revs);
+        motor_left.set(-targetVel_Revs);
     }
 
     /**
@@ -167,7 +167,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         // clc_left.setReference(-1 * speed * k_revsPerInch, ControlType.kVelocity);
         targetVel_Revs = -speed * Constants.Elevator.revsPerInch;
         // motor_left.set(rateLimiterLeft.calculate(-speed));
-        motor_left.set(targetVel_Revs);
+        motor_left.set(-targetVel_Revs);
     }
 
     /**
@@ -175,7 +175,7 @@ public class ElevatorSubsystem extends SubsystemBase {
      */
     public void stop() {
         targetVel_Revs = 0;
-        motor_left.set(Constants.Elevator.stopVel_InchesPerSec * Constants.Elevator.revsPerInch);
+        motor_left.set(-Constants.Elevator.stopVel_InchesPerSec * Constants.Elevator.revsPerInch);
     }
 
 

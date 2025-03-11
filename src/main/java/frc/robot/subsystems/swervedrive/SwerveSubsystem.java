@@ -82,7 +82,7 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public SwerveSubsystem(File directory) {
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
-    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH;
+    SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH; // todo: change this to INFO
     try {
       swerveDrive = new SwerveParser(directory).createSwerveDrive(
         Constants.MAX_SPEED,
@@ -149,7 +149,7 @@ public class SwerveSubsystem extends SubsystemBase
   @Override
   public void periodic() {
     if (real) {
-      swerveDrive.swerveDrivePoseEstimator.update(swerveDrive.getYaw(), swerveDrive.getModulePositions());
+      swerveDrive.swerveDrivePoseEstimator.update((new Rotation2d(Math.PI)).plus(swerveDrive.getYaw()), swerveDrive.getModulePositions());
 
       LimelightHelpers.SetRobotOrientation("", -swerveDrive.getYaw().getDegrees(), 0.0, 0.0, 0, 0.0, 0.0);
       LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("");

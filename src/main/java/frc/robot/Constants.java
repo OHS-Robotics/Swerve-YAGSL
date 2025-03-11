@@ -60,17 +60,17 @@ public final class Constants
 
   public static final class Elevator {
     public static final double heightBottom_Inches = 0;
-    public static final double heightL1_Inches = 19.46;
-    public static final double heightL2_Inches = 26.83;
-    public static final double heightL3_Inches = 42.95;
-    public static final double heightL4_Inches = 67.74;
+    public static final double heightL1_Inches = 20.0;
+    public static final double heightL2_Inches = 20.0;
+    public static final double heightL3_Inches = 40.0;
+    public static final double heightL4_Inches = 50.0;
     
 
     public static final double jogUpVel_InchesPerSec = 0.1; //0.1366;
     public static final double jogDownVel_InchesPerSec = 0.05; //0.0683;
-    public static final double stopVel_InchesPerSec = 0.034; //Velocity which we actually apply to stop. Serves as holding torque
+    public static final double stopVel_InchesPerSec = 0.034 / 1.2; //Velocity which we actually apply to stop. Serves as holding torque
 
-    public static final double revsPerInch = 1.464;
+    public static final double revsPerInch = 1.04;
 
     public static final boolean limitSlewRate = false;
   }

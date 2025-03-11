@@ -169,9 +169,9 @@ public class AutonomousSubsystem extends SubsystemBase {
                 // get the vector to the target and move in that direction
                 // this won't adjust rotation because you can't get the direction of the april tag
                 // from raw fiducials
-                Pose2d targetOffset = new Pose2d(Math.cos(target.txnc * (Math.PI / 180.0)) * target.distToRobot * 0.9, Math.sin(target.txnc * (Math.PI / 180.0)) * target.distToRobot * 0.9, new Rotation2d()).rotateBy(swerveDrive.swerveDrive.getYaw());
+                Pose2d targetOffset = new Pose2d(Math.sin(target.txnc * (Math.PI / 180.0)) * target.distToRobot * 0.9, Math.cos(target.txnc * (Math.PI / 180.0)) * target.distToRobot * 0.9, new Rotation2d()).rotateBy(swerveDrive.swerveDrive.getYaw());
                 Pose2d targetPose = swerveDrive.getPose()
-                .plus(new Transform2d(-targetOffset.getX(), -targetOffset.getY(), new Rotation2d())) // offset by vector
+                .plus(new Transform2d(targetOffset.getX(), targetOffset.getY(), new Rotation2d())) // offset by vector
                 .plus(new Transform2d(-0.4572, -0.2032, new Rotation2d())); // account for limelight offset
 
 
