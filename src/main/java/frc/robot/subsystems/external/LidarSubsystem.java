@@ -48,7 +48,7 @@ public class LidarSubsystem extends SubsystemBase {
 		m_buffer.put(0, (byte) address);
 		I2CJNI.i2CWrite(m_port, k_deviceAddress, m_buffer, (byte) 1);
 		I2CJNI.i2CRead(m_port, k_deviceAddress, m_buffer, (byte) 2);
-		return m_buffer.getShort(0);
+		return m_buffer.getShort(0);	
 	}
 
 	public double pidGet() {

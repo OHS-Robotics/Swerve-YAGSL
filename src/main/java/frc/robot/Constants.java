@@ -46,15 +46,45 @@ public final class Constants
     public static final double WHEEL_LOCK_TIME = 10; // seconds
   }
 
-  public static class OperatorConstants
+  public static class Operator
   {
 
     // Joystick Deadband
-    public static final double DEADBAND = 0.05;
-    public static final double LEFT_Y_DEADBAND = 0.05;
-    public static final double RIGHT_X_DEADBAND = 0.05;
-    public static final double TURN_CONSTANT = 6;
-    public static final double JOYSTICK_SCALE_FACTOR = 0.8;
-    public static final boolean USE_KEYBOARD_IN_SIM = false; // Whether to expect keyboard or controller controls in sim
+    public static final double deadband = 0.05;
+    public static final double deadbandLeftY = 0.05;
+    public static final double deadbandRightX = 0.05;
+    public static final double turnConstant = 6;
+    public static final double scaleTranslationHighGear = 0.8;
+    public static final double scaleTranslationLowGear = 0.2;
+    public static final double scaleRotationHighGear = 0.8;
+    public static final double scaleRotationLowGear = 0.2;
+    public static final boolean useKeyboardInSim = false; // Whether to expect keyboard or controller controls in sim
   }
+
+  public static final class Autonomous {
+    public static final boolean autoEnabled = false; // Perform Autonomous Mode [SAFETY SWITCH]
+  }
+
+  public static final class Elevator {
+    public static final double heightBottom_Inches = 0;
+    public static final double heightL1_Inches = 18.5;
+    public static final double heightL2_Inches = 25.5;
+    public static final double heightL3_Inches = 40.0;
+    public static final double heightL4_Inches = 66.75;
+    public static final double heightMax_Inches = 68;
+    
+
+    public static final double jogUpVel_InchesPerSec = 0.2; //0.1366;
+    public static final double stopVel_InchesPerSec = 0.035; //Velocity which we actually apply to stop. Serves as holding torque
+    public static final double jogDownVel_InchesPerSec = jogUpVel_InchesPerSec - stopVel_InchesPerSec; //0.0683;
+
+    public static final double revsPerInch = 1.04;
+
+    public static final boolean limitSlewRate = false;
+  }
+
+  public static final class CoralManipulator {
+    public static final double coralSenseDistance_mm = 30; //Maximum threshold for sensing coral with the laser
+  }
+
 }
