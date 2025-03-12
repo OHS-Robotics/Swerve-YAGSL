@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 // import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -31,6 +32,7 @@ import frc.robot.commands.Elevator.ElevatorLevel2;
 import frc.robot.commands.Elevator.ElevatorLevel3;
 import frc.robot.commands.Elevator.ElevatorLevel4;
 import frc.robot.commands.Elevator.ElevatorStop;
+import frc.robot.commands.swervedrive.NudgeGenerator;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -121,6 +123,7 @@ public class RobotContainer {
 
 		SetupCoralManipulatorCommands();
 		SetupElevatorCommands();
+		SetupNudgeCommands();
 
 		if (RobotBase.isSimulation()) {
 			//Reset the robot to a semi-arbritary position
@@ -177,6 +180,16 @@ public class RobotContainer {
 		driverJoystick.button(7).onTrue(L2);
 		driverJoystick.button(10).onTrue(L3);
 		driverJoystick.button(9).onTrue(L4);
+	}
+
+	private void SetupNudgeCommands() {
+		driverJoystick.button(13).onTrue(Commands.runOnce(() -> nudgeForward(1)));
+	}
+
+	private void nudgeForward(double distance_Feet) {
+		var pose = NudgeGenerator.GenerateNudgeFowardPose(drivebase, Units.feetToMeters(distance_Feet));
+		var nudgeCommand = AutoBuilder.pathfindToPose(pose, NudgeGenerator.standardConstraints);
+		nudgeCommand.schedule();
 	}
 
 	public void updateElevator(double change) {

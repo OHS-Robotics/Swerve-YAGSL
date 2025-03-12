@@ -35,13 +35,10 @@ public final class Constants
   public static final class DrivebaseConstants
   {
 
-    // Hold time on motor brakes when disabled
-    public static final double WHEEL_LOCK_TIME = 10; // seconds
   }
 
   public static class Operator
   {
-
     // Joystick Deadband
     public static final double deadband = 0.05;
     public static final double deadbandLeftY = 0.05;
@@ -73,7 +70,8 @@ public final class Constants
 
     public static final double revsPerInch = 1.04;
 
-    public static final boolean limitSlewRate = false;
+    public static final double slewRate = 0.1;
+    public static final double atVelocityToleranceRevs = 0.05;
   }
 
   public static final class CoralManipulator {
