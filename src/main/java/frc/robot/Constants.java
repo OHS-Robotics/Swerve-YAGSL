@@ -60,11 +60,11 @@ public final class Constants
 
   public static final class Elevator {
     public static final double heightBottom_Inches = 0;
-    public static final double heightL1_Inches = 20.0;
-    public static final double heightL2_Inches = 20.0;
+    public static final double heightL1_Inches = 18.5;
+    public static final double heightL2_Inches = 25.5;
     public static final double heightL3_Inches = 40.0;
-    public static final double heightL4_Inches = 56.0;
-    public static final double heightMax_Inches = 60.0;
+    public static final double heightL4_Inches = 64.75;
+    public static final double heightMax_Inches = 68;
     
 
     public static final double jogUpVel_InchesPerSec = 0.2; //0.1366;

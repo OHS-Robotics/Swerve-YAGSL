@@ -80,6 +80,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     public double currentPosition_Inches() {
         return -encoder_left.getPosition() / Constants.Elevator.revsPerInch;
     }
+
+    public double currentVelocity_RevsPerSec() {
+        return -encoder_left.getVelocity();
+    }
+
+    public double currentVelocity_InchesPerSec() {
+        return -encoder_left.getVelocity() / Constants.Elevator.revsPerInch;
+    }
     
     public void update() {
         SmartDashboard.putNumber("Elevator Left", -encoder_left.getPosition());
@@ -197,7 +205,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         //Safeguard against going too high
-        if (currentPosition_Inches() > Constants.Elevator.heightMax_Inches) {
+        if (currentPosition_Inches() > Constants.Elevator.heightMax_Inches && currentVelocity_InchesPerSec() > 0.1) {
             stop();
             moveInProgress = false;
         }
@@ -208,5 +216,7 @@ public class ElevatorSubsystem extends SubsystemBase {
                 moveInProgress = false;
             }
         }
+
+        SmartDashboard.putNumber("Elevator Inches", currentPosition_Inches());
     }
 }
