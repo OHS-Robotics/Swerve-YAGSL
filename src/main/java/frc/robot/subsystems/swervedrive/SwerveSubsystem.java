@@ -162,6 +162,8 @@ public class SwerveSubsystem extends SubsystemBase
       }
       // swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d(""), Timer.getFPGATimestamp());
     }
+
+    SmartDashboard.putNumber("Rotation", getPose().getRotation().getDegrees());
   }
 
   @Override

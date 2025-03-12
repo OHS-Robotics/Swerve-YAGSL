@@ -32,7 +32,7 @@ import frc.robot.commands.Elevator.ElevatorLevel2;
 import frc.robot.commands.Elevator.ElevatorLevel3;
 import frc.robot.commands.Elevator.ElevatorLevel4;
 import frc.robot.commands.Elevator.ElevatorStop;
-import frc.robot.commands.swervedrive.NudgeGenerator;
+import frc.robot.commands.swervedrive.Nudge;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -127,7 +127,7 @@ public class RobotContainer {
 
 		if (RobotBase.isSimulation()) {
 			//Reset the robot to a semi-arbritary position
-			driverJoystick.button(14).onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
+			// driverJoystick.button(14).onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
 		} 
 
 		if (DriverStation.isTest()) {
@@ -183,13 +183,10 @@ public class RobotContainer {
 	}
 
 	private void SetupNudgeCommands() {
-		driverJoystick.button(13).onTrue(Commands.runOnce(() -> nudgeForward(1)));
-	}
-
-	private void nudgeForward(double distance_Feet) {
-		var pose = NudgeGenerator.GenerateNudgeFowardPose(drivebase, Units.feetToMeters(distance_Feet));
-		var nudgeCommand = AutoBuilder.pathfindToPose(pose, NudgeGenerator.standardConstraints);
-		nudgeCommand.schedule();
+		driverJoystick.button(11).onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistForward_Meters, 180, Constants.Operator.nudgeSpeed_MetersPerSec)); //Forward
+		driverJoystick.button(12).onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistBack_Meters, 0, Constants.Operator.nudgeSpeed_MetersPerSec)); //Backward
+		driverJoystick.button(13).onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistLeft_Meters, 270, Constants.Operator.nudgeSpeed_MetersPerSec)); //Left
+		driverJoystick.button(14).onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistRight_Meters, 90, Constants.Operator.nudgeSpeed_MetersPerSec)); //Right
 	}
 
 	public void updateElevator(double change) {

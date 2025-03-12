@@ -48,7 +48,13 @@ public final class Constants
     public static final double scaleTranslationLowGear = 0.2;
     public static final double scaleRotationHighGear = 0.8;
     public static final double scaleRotationLowGear = 0.2;
-    public static final boolean useKeyboardInSim = false; // Whether to expect keyboard or controller controls in sim
+    public static final boolean useKeyboardInSim = true; // Whether to expect keyboard or controller controls in sim
+
+    public static final double nudgeSpeed_MetersPerSec = 5;
+    public static final double nudgeDistForward_Meters = 0.1;
+    public static final double nudgeDistBack_Meters = 0.1;
+    public static final double nudgeDistLeft_Meters = 0.1;
+    public static final double nudgeDistRight_Meters = 0.1;
   }
 
   public static final class Autonomous {
