@@ -112,7 +112,8 @@ public class AutonomousSubsystem extends SubsystemBase {
 
     
     public PathPlannerPath getStartPath() {
-        return getPathTo(swerveDrive.getPose().plus(new Transform2d(0.0, 0.5, new Rotation2d(0.0))));
+        Pose2d offset = new Pose2d(0.0, 0.5, new Rotation2d()).rotateBy(swerveDrive.swerveDrive.getYaw());
+        return getPathTo(swerveDrive.getPose().plus(new Transform2d(offset.getX(), offset.getY(), new Rotation2d(0.0))));
     }
 
     public Command getStartCommand() {
