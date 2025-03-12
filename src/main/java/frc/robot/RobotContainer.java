@@ -174,9 +174,9 @@ public class RobotContainer {
 		driverJoystick.povDown().onFalse(stop);
 		driverJoystick.button(5).onTrue(bottom);
 		driverJoystick.button(6).onTrue(L1);
-		driverJoystick.button(10).onTrue(L2);
-		driverJoystick.button(9).onTrue(L3);
-		driverJoystick.button(16).onTrue(L4);
+		driverJoystick.button(7).onTrue(L2);
+		driverJoystick.button(10).onTrue(L3);
+		driverJoystick.button(9).onTrue(L4);
 	}
 
 	public void updateElevator(double change) {
