@@ -196,6 +196,12 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+        //Safeguard against going too high
+        if (currentPosition_Inches() > Constants.Elevator.heightMax_Inches) {
+            stop();
+            moveInProgress = false;
+        }
+
         if (moveInProgress) {
             if (atTargetPosition()) {
                 stop();
