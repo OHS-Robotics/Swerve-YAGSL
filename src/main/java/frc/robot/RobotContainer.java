@@ -162,19 +162,19 @@ public class RobotContainer {
 	}
 
 	private void SetupElevatorCommands() {
-		ElevatorJogUp jogUp = new ElevatorJogUp(elevator);
-		ElevatorJogDown jogDown = new ElevatorJogDown(elevator);
-		ElevatorStop stop = new ElevatorStop(elevator);
+		// ElevatorJogUp jogUp = new ElevatorJogUp(elevator);
+		// ElevatorJogDown jogDown = new ElevatorJogDown(elevator);
+		// ElevatorStop stop = new ElevatorStop(elevator);
 		ElevatorBottom bottom = new ElevatorBottom(elevator);
 		ElevatorLevel1 L1 = new ElevatorLevel1(elevator);
 		ElevatorLevel2 L2 = new ElevatorLevel2(elevator);
 		ElevatorLevel3 L3 = new ElevatorLevel3(elevator);
 		ElevatorLevel4 L4 = new ElevatorLevel4(elevator);
 
-		driverJoystick.povUp().onTrue(jogUp);
-		driverJoystick.povUp().onFalse(stop);
-		driverJoystick.povDown().onTrue(jogDown);
-		driverJoystick.povDown().onFalse(stop);
+		// driverJoystick.povUp().onTrue(jogUp);
+		// driverJoystick.povUp().onFalse(stop);
+		// driverJoystick.povDown().onTrue(jogDown);
+		// driverJoystick.povDown().onFalse(stop);
 		driverJoystick.button(5).onTrue(bottom);
 		driverJoystick.button(6).onTrue(L1);
 		driverJoystick.button(7).onTrue(L2);
@@ -183,10 +183,10 @@ public class RobotContainer {
 	}
 
 	private void SetupNudgeCommands() {
-		driverJoystick.button(11).onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistForward_Meters, 180, Constants.Operator.nudgeSpeed_MetersPerSec)); //Forward
-		driverJoystick.button(12).onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistBack_Meters, 0, Constants.Operator.nudgeSpeed_MetersPerSec)); //Backward
-		driverJoystick.button(13).onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistLeft_Meters, 270, Constants.Operator.nudgeSpeed_MetersPerSec)); //Left
-		driverJoystick.button(14).onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistRight_Meters, 90, Constants.Operator.nudgeSpeed_MetersPerSec)); //Right
+		driverJoystick.povUp().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistForward_Meters, 180, Constants.Operator.nudgeSpeed_MetersPerSec)); //Forward
+		driverJoystick.povDown().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistBack_Meters, 0, Constants.Operator.nudgeSpeed_MetersPerSec)); //Backward
+		driverJoystick.povLeft().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistLeft_Meters, 270, Constants.Operator.nudgeSpeed_MetersPerSec)); //Left
+		driverJoystick.povRight().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistRight_Meters, 90, Constants.Operator.nudgeSpeed_MetersPerSec)); //Right
 	}
 
 	public void updateElevator(double change) {
