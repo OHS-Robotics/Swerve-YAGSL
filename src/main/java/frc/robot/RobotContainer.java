@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.autonomous.AutonomousSubsystem;
-import frc.robot.commands.CoralManipulator.LoadCoral;
+import frc.robot.commands.CoralManipulator.LoadOrStopCoral;
 import frc.robot.commands.CoralManipulator.UnloadCoral;
 import frc.robot.commands.CoralManipulator.UnloadCoralTwist;
 import frc.robot.commands.Elevator.ElevatorBottom;
@@ -148,15 +148,15 @@ public class RobotContainer {
 	}
 
 	private void SetupCoralManipulatorCommands() {
-		LoadCoral loadCoral = new LoadCoral(coralManipulator);
+		LoadOrStopCoral loadOrStopCoral = new LoadOrStopCoral(coralManipulator);
         UnloadCoral unloadCoral = new UnloadCoral(coralManipulator);
 		UnloadCoralTwist unloadCoralTwist = new UnloadCoralTwist(coralManipulator);
 
-		loadCoral.coralManipulator = coralManipulator;
+		loadOrStopCoral.coralManipulator = coralManipulator;
 		unloadCoral.coralManipulator = coralManipulator;
 		unloadCoralTwist.coralManipulator = coralManipulator;
 
-		driverJoystick.button(3).onTrue(loadCoral);
+		driverJoystick.button(3).onTrue(loadOrStopCoral);
 		driverJoystick.button(4).onTrue(unloadCoral);
 		driverJoystick.button(1).onTrue(unloadCoralTwist);
 	}
