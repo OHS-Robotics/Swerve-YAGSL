@@ -21,11 +21,12 @@ public class UnloadCoralTwist extends Command{
     }
 
     @Override
+    public void end(boolean interrupted) {
+        coralManipulator.stopMoving();
+    }
+
+    @Override
     public boolean isFinished() {
-        if (!coralManipulator.CoralLoaded()) {
-            coralManipulator.stopMoving();
-            return true;
-        }
-        return false;
+        return !coralManipulator.CoralLoaded();
     }
 }

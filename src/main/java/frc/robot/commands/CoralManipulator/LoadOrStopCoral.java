@@ -14,7 +14,6 @@ public class LoadOrStopCoral extends Command{
     @Override
     public void initialize() {
         if (coralManipulator.isIngestingCoral() || coralManipulator.isExpelingCoral()) {
-            coralManipulator.stopMoving();
             this.cancel();
         }
         else {
@@ -27,11 +26,12 @@ public class LoadOrStopCoral extends Command{
     }
 
     @Override
+    public void end(boolean interrupted) {
+        coralManipulator.stopMoving();
+    }
+
+    @Override
     public boolean isFinished() {
-        if (coralManipulator.CoralLoaded()) {
-            coralManipulator.stopMoving();
-            return true;
-        }
-        return false;
+        return coralManipulator.CoralLoaded();
     }
 }
