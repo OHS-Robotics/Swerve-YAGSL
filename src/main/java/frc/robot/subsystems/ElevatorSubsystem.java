@@ -145,9 +145,8 @@ public class ElevatorSubsystem extends SubsystemBase {
      * Stops elevator motion
      */
     public void stop() {
-        targetVel_Revs = 0;
-        beginAcceleration(targetVel_Revs);
-        motor_left.set(-Constants.Elevator.stopVel_InchesPerSec * Constants.Elevator.revsPerInch);
+        targetVel_Revs = -Constants.Elevator.stopVel_InchesPerSec;
+        beginAcceleration(targetVel_Revs, 0);
     }
 
     /**
@@ -196,7 +195,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         //Safeguard against going too high
         if (currentPosition_Inches() > Constants.Elevator.heightMax_Inches && currentVelocity_InchesPerSec() > 0.1) {
             stop();
-            moveInProgress = false;
+            moveInProgress = false; 
         }
 
         if (moveInProgress) {
@@ -208,7 +207,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
         if (accelerating) {
             if (!atTargetVel()) {
-                motor_left.set(rateLimiterLeft.calculate(targetPosition_Revs));
+                motor_left.set(rateLimiterLeft.calculate(targetVel_Revs));
             }
             else {
                 accelerating = false;

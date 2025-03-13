@@ -33,7 +33,7 @@ public class Nudge extends Command{
     public Nudge(SwerveSubsystem swerve, double distance_Meters, double angle_Degrees, double speed_MetersPerSecond) {
         this.swerve = swerve;
         targetAngle_Degrees = (angle_Degrees + 360) % 180;
-        duration_Seconds = distance_Meters / speed_MetersPerSecond;
+        duration_Seconds = distance_Meters * 1.2 / speed_MetersPerSecond;
         velX = speed_MetersPerSecond * (Rotation2d.fromDegrees(angle_Degrees).minus(swerve.getPose().getRotation())).getCos();
         velY = speed_MetersPerSecond * (Rotation2d.fromDegrees(angle_Degrees).minus(swerve.getPose().getRotation())).getSin();
 

@@ -43,11 +43,11 @@ public final class Constants
     public static final double scaleRotationLowGear = 0.2;
     public static final boolean useKeyboardInSim = true; // Whether to expect keyboard or controller controls in sim
 
-    public static final double nudgeSpeed_MetersPerSec = 5;
-    public static final double nudgeDistForward_Meters = 0.1;
-    public static final double nudgeDistBack_Meters = 0.1;
-    public static final double nudgeDistLeft_Meters = 0.1;
-    public static final double nudgeDistRight_Meters = 0.1;
+    public static final double nudgeSpeed_MetersPerSec = 0.5;
+    public static final double nudgeDistForward_Meters = Units.feetToMeters(1);
+    public static final double nudgeDistBack_Meters = Units.feetToMeters(1);
+    public static final double nudgeDistLeft_Meters = Units.feetToMeters(1);
+    public static final double nudgeDistRight_Meters = Units.feetToMeters(1);
   }
 
   public static final class Autonomous {
@@ -69,7 +69,7 @@ public final class Constants
 
     public static final double revsPerInch = 1.04;
 
-    public static final double slewRate = 0.1;
+    public static final double slewRate = 1;
     public static final double atVelocityToleranceRevs = 0.05;
   }
 
