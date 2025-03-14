@@ -44,10 +44,10 @@ public final class Constants
     public static final boolean useKeyboardInSim = true; // Whether to expect keyboard or controller controls in sim
 
     public static final double nudgeSpeed_MetersPerSec = 0.5;
-    public static final double nudgeDistForward_Meters = Units.feetToMeters(1);
-    public static final double nudgeDistBack_Meters = Units.feetToMeters(1);
-    public static final double nudgeDistLeft_Meters = Units.feetToMeters(1);
-    public static final double nudgeDistRight_Meters = Units.feetToMeters(1);
+    public static final double nudgeDistForward_Meters = Units.inchesToMeters(2);
+    public static final double nudgeDistBack_Meters = Units.inchesToMeters(2);
+    public static final double nudgeDistLeft_Meters = Units.inchesToMeters(2);
+    public static final double nudgeDistRight_Meters = Units.inchesToMeters(2);
   }
 
   public static final class Autonomous {
@@ -56,20 +56,20 @@ public final class Constants
 
   public static final class Elevator {
     public static final double heightBottom_Inches = 0;
-    public static final double heightL1_Inches = 18.5;
-    public static final double heightL2_Inches = 25.5;
-    public static final double heightL3_Inches = 40.0;
-    public static final double heightL4_Inches = 66.75;
+    public static final double heightL1_Inches = 15.5;
+    public static final double heightL2_Inches = 23.5;
+    public static final double heightL3_Inches = 39.0;
+    public static final double heightL4_Inches = 65.25;
     public static final double heightMax_Inches = 68;
     
 
-    public static final double jogUpVel_InchesPerSec = 0.2; //0.1366;
+    public static final double jogUpVel_InchesPerSec = 0.3; //0.1366;
     public static final double stopVel_InchesPerSec = 0.035; //Velocity which we actually apply to stop. Serves as holding torque
     public static final double jogDownVel_InchesPerSec = jogUpVel_InchesPerSec - stopVel_InchesPerSec; //0.0683;
 
     public static final double revsPerInch = 1.04;
 
-    public static final double slewRate = 1;
+    public static final double slewRate = 2;
     public static final double atVelocityToleranceRevs = 0.05;
   }
 
