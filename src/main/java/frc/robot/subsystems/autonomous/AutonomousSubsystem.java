@@ -6,6 +6,7 @@ import java.util.function.LongConsumer;
 import java.util.function.LongSupplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -112,12 +113,24 @@ public class AutonomousSubsystem extends SubsystemBase {
 
     
     public PathPlannerPath getStartPath() {
-        Pose2d offset = new Pose2d(0.0, 0.5, new Rotation2d()).rotateBy(swerveDrive.swerveDrive.getYaw());
+        Pose2d offset = new Pose2d(0.0, 0.5, new Rotation2d());//.rotateBy(swerveDrive.swerveDrive.getYaw());
         return getPathTo(swerveDrive.getPose().plus(new Transform2d(offset.getX(), offset.getY(), new Rotation2d(0.0))));
     }
 
     public Command getStartCommand() {
-        return AutoBuilder.followPath(getStartPath());
+        int method = 1;
+        switch (method) {
+            case 0: {
+                return AutoBuilder.followPath(getStartPath());
+            }
+            case 1: {
+                return new PathPlannerAuto("simpleauto"); // this moves forward a little bit
+            }
+            default: {
+                return Commands.none();
+            }
+        }
+        
     }
 
     public PathPlannerPath getPathTo(Pose2d pose) {

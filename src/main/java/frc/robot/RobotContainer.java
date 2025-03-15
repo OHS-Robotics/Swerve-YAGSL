@@ -119,7 +119,8 @@ public class RobotContainer {
 
 		SmartDashboard.putString("Gear Mode", isInHighGear ? "High" : "Low");
 
-		driverJoystick.button(15).onTrue(autonomous.tweakToCoralCommand());
+		// disabled for competition
+		// driverJoystick.button(15).onTrue(autonomous.tweakToCoralCommand());
 
 		SetupCoralManipulatorCommands();
 		SetupElevatorCommands();
@@ -229,7 +230,8 @@ public class RobotContainer {
 	}
 
 	public Command getAutonomousCommand() {
-
+		// currently unused
+		
 		if (Constants.Autonomous.autoEnabled) {
 			String autoPathName = null;
 
