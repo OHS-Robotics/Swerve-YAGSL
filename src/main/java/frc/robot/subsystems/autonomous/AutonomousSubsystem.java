@@ -115,6 +115,7 @@ public class AutonomousSubsystem extends SubsystemBase {
     public PathPlannerPath getStartPath() {
         Pose2d offset = new Pose2d(0.0, 0.5, new Rotation2d());//.rotateBy(swerveDrive.swerveDrive.getYaw());
         return getPathTo(swerveDrive.getPose().plus(new Transform2d(offset.getX(), offset.getY(), new Rotation2d(0.0))));
+        // return getPathInDirection(null)
     }
 
     public Command getStartCommand() {
@@ -133,10 +134,28 @@ public class AutonomousSubsystem extends SubsystemBase {
         
     }
 
+    // go to a pose
     public PathPlannerPath getPathTo(Pose2d pose) {
         // waypoints is a list of points on the field to go to, with a minimum of two entries
         // since we just want the bot to go to one point, the first one is the position of the bot and the second is the desired position
-        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(swerveDrive.getPose(), pose);
+        // if we include the rotation here, the bot will try to move in that direction which isn't what we want
+        // we correct for this by getting rid of the rotation part
+        Transform2d sdRotationCorrection = new Transform2d(0.0, 0.0, swerveDrive.getPose().getRotation().times(-1.0));
+        Transform2d poseRotationCorrection = new Transform2d(0.0, 0.0, pose.getRotation().times(-1.0));
+        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(swerveDrive.getPose().plus(sdRotationCorrection), pose.plus(poseRotationCorrection));
+        // we want to end with the robot not moving and facing in the desired direction 
+        PathPlannerPath path = new PathPlannerPath(waypoints, constraints, null, new GoalEndState(0.0, pose.getRotation()));
+        path.preventFlipping = true;
+
+        return path;
+    }
+
+    // getPathTo, except this moves relative to a direction
+    public PathPlannerPath getPathInDirection(Pose2d pose) {
+        
+        Transform2d sdRotationCorrection = new Transform2d(0.0, 0.0, swerveDrive.getPose().getRotation().times(-1.0));
+        List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(swerveDrive.getPose().plus(sdRotationCorrection), pose);
+        // we want to end with the robot not moving and facing in the desired direction
         PathPlannerPath path = new PathPlannerPath(waypoints, constraints, null, new GoalEndState(0.0, pose.getRotation()));
         path.preventFlipping = true;
 
