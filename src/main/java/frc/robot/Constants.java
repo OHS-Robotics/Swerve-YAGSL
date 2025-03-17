@@ -53,7 +53,7 @@ public final class Constants
   }
 
   public static final class Autonomous {
-    public static final boolean autoEnabled = false; // Perform Autonomous Mode [SAFETY SWITCH]
+    public static final boolean autoEnabled = true; // Perform Autonomous Mode [SAFETY SWITCH]
   }
 
   public static final class Elevator {

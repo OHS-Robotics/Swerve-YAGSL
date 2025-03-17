@@ -7,6 +7,8 @@ package frc.robot;
 import java.io.File;
 
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 // import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -17,6 +19,7 @@ import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -53,6 +56,8 @@ public class RobotContainer {
 	public final ElevatorSubsystem elevator = new ElevatorSubsystem();
 	public final AutonomousSubsystem autonomous = new AutonomousSubsystem(drivebase);
 
+	private final SendableChooser<Command> autoChooser;
+
 	private boolean referenceFrameIsField = false;
 	public double elevatorPosition = 0.0;
 	public boolean isInHighGear = true;
@@ -69,6 +74,9 @@ public class RobotContainer {
 
 
 	public RobotContainer() {
+		autoChooser = AutoBuilder.buildAutoChooser();
+		SmartDashboard.putData("Auto Chooser", autoChooser);
+
 		configureDriveInputStreams();
 		configureBindings();
 	}
@@ -155,7 +163,7 @@ public class RobotContainer {
 		SetupNudgeCommands();
 
 		if (RobotBase.isSimulation()) {
-			//Reset the robot to a semi-arbritary position
+			// Reset the robot to a semi-arbritary position
 			// driverJoystick.button(14).onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
 		}
 	}
@@ -292,7 +300,7 @@ public class RobotContainer {
 				System.out.println("Autonomous Aliance: " + alliance);
             }
 
-			autoPathName = "blankpath";
+			autoPathName = "simplepath";
 			// autoPathName = "StartCenter";
 			// autoPathName = "StartLeft";
 	
@@ -307,7 +315,7 @@ public class RobotContainer {
 	}
 
 	public Command getAutoInitCommand() {
-		return autonomous.getStartCommand();
+		return autoChooser.getSelected();
 	}
 
 	/**

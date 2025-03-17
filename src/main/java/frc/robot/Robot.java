@@ -45,11 +45,11 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     // disabled for competition
-    /*m_autonomousCommand = m_robotContainer.getAutoInitCommand();
+    m_autonomousCommand = m_robotContainer.getAutoInitCommand();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
-    }*/
+    }
   }
 
   @Override
