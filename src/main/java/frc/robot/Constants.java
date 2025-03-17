@@ -48,6 +48,8 @@ public final class Constants
     public static final double nudgeDistBack_Meters = Units.inchesToMeters(2);
     public static final double nudgeDistLeft_Meters = Units.inchesToMeters(2);
     public static final double nudgeDistRight_Meters = Units.inchesToMeters(2);
+
+    public static final boolean useJoystick = true; //false = use xbox
   }
 
   public static final class Autonomous {
