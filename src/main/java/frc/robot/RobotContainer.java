@@ -249,6 +249,10 @@ public class RobotContainer {
 		}
 	}
 
+	public void teleopInit() {
+		
+	}
+
 	/**
 	 * Execute the swerve drive's drive function.
 	 * Automatically selects the appropriate control scheme (keyboard for simulation) and reference frame (field vs. robot)
