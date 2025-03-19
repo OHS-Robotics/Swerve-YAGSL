@@ -24,8 +24,10 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.commands.CoralManipulator.AutoReleaseCoralCommand;
+import frc.robot.commands.swervedrive.Nudge;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 import frc.robot.subsystems.external.LimelightHelpers;
@@ -101,7 +103,7 @@ public class AutonomousSubsystem extends SubsystemBase {
 
     public AutonomousSubsystem(SwerveSubsystem swerve) {
         swerveDrive = swerve;
-        field = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+        field = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
         
 
         setupPathPlanner();
@@ -292,4 +294,16 @@ public class AutonomousSubsystem extends SubsystemBase {
     public Command tweakToCoralCommand() {
         return Commands.run(() -> tweakToCoral().schedule(), swerveDrive);
     }
+
+    public Command getBasicAutoCommand() {
+			// Create a sequence of commands that will move the robot in a square.
+			// Just for fun, the speed decreases each leg of the square.
+			SequentialCommandGroup cmdGroup = new SequentialCommandGroup(new Command[0]);
+			cmdGroup.addCommands(new Nudge(swerveDrive, 1.0, 0.0, 1.0));
+			cmdGroup.addCommands(new Nudge(swerveDrive, 1.0, 90.0, 0.75));
+			cmdGroup.addCommands(new Nudge(swerveDrive, 1.0, 180.0, 0.50));
+			cmdGroup.addCommands(new Nudge(swerveDrive, 1.0, 270.0, 0.25));
+			return cmdGroup;
+    }
+
 }
