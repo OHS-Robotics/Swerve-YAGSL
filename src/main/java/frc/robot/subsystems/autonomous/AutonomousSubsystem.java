@@ -315,8 +315,10 @@ public class AutonomousSubsystem extends SubsystemBase {
             myDSLocation = optDSLocation.getAsInt();
         }
 
-        // myAlliance = Alliance.Red;  // Red/Blue
+        // myAlliance = Alliance.Blue;  // Red/Blue
         // myDSLocation = 3;  // 1|2|3
+
+        double speed_MPS = 0.75;
 
         System.out.println("Autonomous Alliance: " + myAlliance);
         System.out.println("Drivers Station Location: " + myDSLocation);
@@ -326,19 +328,21 @@ public class AutonomousSubsystem extends SubsystemBase {
                 case 1:
                     swerveDrive.swerveDrive.resetOdometry(new Pose2d(10, 1, Rotation2d.fromDegrees(0)));
                     // Assumption: robot is positioned on proper side...
-                    cmdGroup.addCommands(new Nudge(swerveDrive, 3.0, 30, 0.5));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.40, 0.0, speed_MPS));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.85, 60.0, speed_MPS));
                 break;
     
                 case 3:
                     swerveDrive.swerveDrive.resetOdometry(new Pose2d(10, 7, Rotation2d.fromDegrees(0)));
                     // Assumption: robot is positioned on proper side...
-                    cmdGroup.addCommands(new Nudge(swerveDrive, 3.0, -30, 0.5));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.40, 0.0, speed_MPS));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.85, -60.0, speed_MPS));
                 break;
     
                 default:
                     swerveDrive.swerveDrive.resetOdometry(new Pose2d(10, 4, Rotation2d.fromDegrees(0)));
                     // Assumption: robot is positioned in middle...
-                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.5, 0, 0.5));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.20, 0, speed_MPS));
                 break;
             }
         }
@@ -347,19 +351,21 @@ public class AutonomousSubsystem extends SubsystemBase {
                 case 1:
                     swerveDrive.swerveDrive.resetOdometry(new Pose2d(7.5, 1, Rotation2d.fromDegrees(180)));
                     // Assumption: robot is positioned on proper side...
-                    cmdGroup.addCommands(new Nudge(swerveDrive, 3.0, 150, 0.5));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.40, 180.0, speed_MPS));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.85, 120.0, speed_MPS));
                 break;
     
                 case 3:
                     swerveDrive.swerveDrive.resetOdometry(new Pose2d(7.5, 7, Rotation2d.fromDegrees(180)));
                     // Assumption: robot is positioned on proper side...
-                    cmdGroup.addCommands(new Nudge(swerveDrive, 3.0, 210, 0.5));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.40, 180.0, speed_MPS));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.85, 240.0, speed_MPS));
                 break;
     
                 default:
                     swerveDrive.swerveDrive.resetOdometry(new Pose2d(7.5, 4, Rotation2d.fromDegrees(180)));
                     // Assumption: robot is positioned in middle...
-                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.5, 180, 0.5));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.20, 180, speed_MPS));
                 break;
             }
         }
