@@ -326,14 +326,14 @@ public class AutonomousSubsystem extends SubsystemBase {
         if (myAlliance == Alliance.Red) {
             switch (myDSLocation) {
                 case 1:
-                    swerveDrive.swerveDrive.resetOdometry(new Pose2d(10, 1, Rotation2d.fromDegrees(0)));
+                    swerveDrive.swerveDrive.resetOdometry(new Pose2d(10, 1, Rotation2d.fromDegrees(60)));
                     // Assumption: robot is positioned on proper side...
                     cmdGroup.addCommands(new Nudge(swerveDrive, 1.40, 0.0, speed_MPS));
                     cmdGroup.addCommands(new Nudge(swerveDrive, 1.85, 60.0, speed_MPS));
                 break;
     
                 case 3:
-                    swerveDrive.swerveDrive.resetOdometry(new Pose2d(10, 7, Rotation2d.fromDegrees(0)));
+                    swerveDrive.swerveDrive.resetOdometry(new Pose2d(10, 7, Rotation2d.fromDegrees(-60)));
                     // Assumption: robot is positioned on proper side...
                     cmdGroup.addCommands(new Nudge(swerveDrive, 1.40, 0.0, speed_MPS));
                     cmdGroup.addCommands(new Nudge(swerveDrive, 1.85, -60.0, speed_MPS));
@@ -349,14 +349,14 @@ public class AutonomousSubsystem extends SubsystemBase {
         else {
             switch (myDSLocation) {
                 case 1:
-                    swerveDrive.swerveDrive.resetOdometry(new Pose2d(7.5, 1, Rotation2d.fromDegrees(180)));
+                    swerveDrive.swerveDrive.resetOdometry(new Pose2d(7.5, 1, Rotation2d.fromDegrees(120)));
                     // Assumption: robot is positioned on proper side...
                     cmdGroup.addCommands(new Nudge(swerveDrive, 1.40, 180.0, speed_MPS));
                     cmdGroup.addCommands(new Nudge(swerveDrive, 1.85, 120.0, speed_MPS));
                 break;
     
                 case 3:
-                    swerveDrive.swerveDrive.resetOdometry(new Pose2d(7.5, 7, Rotation2d.fromDegrees(180)));
+                    swerveDrive.swerveDrive.resetOdometry(new Pose2d(7.5, 7, Rotation2d.fromDegrees(240)));
                     // Assumption: robot is positioned on proper side...
                     cmdGroup.addCommands(new Nudge(swerveDrive, 1.40, 180.0, speed_MPS));
                     cmdGroup.addCommands(new Nudge(swerveDrive, 1.85, 240.0, speed_MPS));
