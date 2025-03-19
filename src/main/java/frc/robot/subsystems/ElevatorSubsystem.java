@@ -17,8 +17,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 public class ElevatorSubsystem extends SubsystemBase {
 
-    private final SparkMax motor_left = new SparkMax(17, SparkLowLevel.MotorType.kBrushless);
-    private final SparkMax motor_right = new SparkMax(18, SparkLowLevel.MotorType.kBrushless);
+    private final SparkMax motor_left = new SparkMax(Constants.CANIDs.ElevatorMotorLeft, SparkLowLevel.MotorType.kBrushless);
+    private final SparkMax motor_right = new SparkMax(Constants.CANIDs.ElevatorMotorRight, SparkLowLevel.MotorType.kBrushless);
 
     // IMPORTANT NOTE: Right motor is configured as a follower of the left motor.  We will only command moves to the left motor
     
@@ -38,7 +38,7 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     /**
      * Constructor for the elevator subsystem
-     * @param revsPerInch how many rev's it takes to make the elevator move one inch
+     * @param revsPerDegree how many rev's it takes to make the elevator move one inch
      */
     public ElevatorSubsystem() {
         final SparkMaxConfig baseconf_left = new SparkMaxConfig();

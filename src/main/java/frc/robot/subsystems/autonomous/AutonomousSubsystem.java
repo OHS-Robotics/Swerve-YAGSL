@@ -101,7 +101,7 @@ public class AutonomousSubsystem extends SubsystemBase {
 
     public AutonomousSubsystem(SwerveSubsystem swerve) {
         swerveDrive = swerve;
-        field = AprilTagFieldLayout.loadField(AprilTagFields.k2025Reefscape);
+        field = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
         
 
         setupPathPlanner();

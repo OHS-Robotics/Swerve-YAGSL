@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.autonomous.AutonomousSubsystem;
+import frc.robot.commands.AlgaeManipulator.AlgaeManipulatorBottom;
+import frc.robot.commands.AlgaeManipulator.AlgaeManipulatorTop;
 import frc.robot.commands.CoralManipulator.LoadOrStopCoral;
 import frc.robot.commands.CoralManipulator.UnloadCoral;
 import frc.robot.commands.CoralManipulator.UnloadCoralTwist;
@@ -37,6 +39,7 @@ import frc.robot.commands.Elevator.ElevatorLevel4;
 import frc.robot.commands.Elevator.ElevatorStop;
 import frc.robot.commands.swervedrive.Nudge;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
+import frc.robot.subsystems.AlgaeManipulatorSubsystem;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -55,6 +58,7 @@ public class RobotContainer {
 	public final CoralManipulatorSubsystem coralManipulator = new CoralManipulatorSubsystem();
 	public final ElevatorSubsystem elevator = new ElevatorSubsystem();
 	public final AutonomousSubsystem autonomous = new AutonomousSubsystem(drivebase);
+	public final AlgaeManipulatorSubsystem algaeManipulator = new AlgaeManipulatorSubsystem();
 
 	private final SendableChooser<Command> autoChooser;
 
@@ -161,6 +165,7 @@ public class RobotContainer {
 		SetupCoralManipulatorCommands();
 		SetupElevatorCommands();
 		SetupNudgeCommands();
+		SetupAlgaeManipulatorCommands();
 
 		if (RobotBase.isSimulation()) {
 			// Reset the robot to a semi-arbritary position
@@ -171,6 +176,20 @@ public class RobotContainer {
 	private void SetupAutonomousCommands() {
 		// disabled for competition
 		// driverJoystick.button(15).onTrue(autonomous.tweakToCoralCommand());
+	}
+
+	private void SetupAlgaeManipulatorCommands() {
+		AlgaeManipulatorTop top = new AlgaeManipulatorTop(algaeManipulator);
+		AlgaeManipulatorBottom bottom = new AlgaeManipulatorBottom(algaeManipulator);
+
+		if (Constants.Operator.useJoystick) {
+			driverJoystick.button(13).onTrue(top);
+			driverJoystick.button(14).onTrue(bottom);
+		}
+		else {
+			driverXbox.leftBumper().onTrue(top);
+			driverXbox.leftTrigger().onTrue(bottom);
+		}
 	}
 
 	private void SetupLowGearModeCommands() {
