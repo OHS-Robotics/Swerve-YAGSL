@@ -248,8 +248,8 @@ public class RobotContainer {
 
 	private void SetupNudgeCommands() {
 		if (Constants.Operator.useJoystick) {
-			driverJoystick.povLeft().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistLeft_Meters, 270, Constants.Operator.nudgeSpeed_MetersPerSec)); //Left
-			driverJoystick.povRight().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistRight_Meters, 90, Constants.Operator.nudgeSpeed_MetersPerSec)); //Right
+			driverJoystick.povLeft().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistLeft_Meters, 90, Constants.Operator.nudgeSpeed_MetersPerSec)); //Left
+			driverJoystick.povRight().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistRight_Meters, 270, Constants.Operator.nudgeSpeed_MetersPerSec)); //Right
 		}
 		else {
 			driverXbox.povLeft().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistLeft_Meters, 270, Constants.Operator.nudgeSpeed_MetersPerSec)); //Left
