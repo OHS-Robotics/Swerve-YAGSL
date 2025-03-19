@@ -8,8 +8,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj.shuffleboard.SendableCameraWrapper;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -27,9 +25,6 @@ public class Robot extends TimedRobot {
   
     SmartDashboard.putData("Field", m_robotContainer.drivebase.swerveDrive.field);
     // SmartDashboard.putData(SendableCameraWrapper.wrap("limelight", "http://limelight.local:5800/stream.mjpg"));
-
-    // SmartDashboard.putNumber("Orientation", m_robotContainer.drivebase.getPose().getRotation().getDegrees());
-
     // Shuffleboard.getTab("camera").add(SendableCameraWrapper.wrap("limelight", "http://limelight.local:5800/stream.mjpg"));
   }
 
