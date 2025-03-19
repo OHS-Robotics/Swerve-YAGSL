@@ -183,12 +183,12 @@ public class RobotContainer {
 		AlgaeManipulatorBottom bottom = new AlgaeManipulatorBottom(algaeManipulator);
 
 		if (Constants.Operator.useJoystick) {
-			driverJoystick.button(13).onTrue(top);
-			driverJoystick.button(14).onTrue(bottom);
+			driverJoystick.povLeft().onTrue(top);
+			driverJoystick.povRight().onTrue(bottom);
 		}
 		else {
-			driverXbox.leftBumper().onTrue(top);
-			driverXbox.leftTrigger().onTrue(bottom);
+			driverXbox.povLeft().onTrue(top);
+			driverXbox.povRight().onTrue(bottom);
 		}
 	}
 
@@ -266,14 +266,14 @@ public class RobotContainer {
 	}
 
 	private void SetupNudgeCommands() {
-		if (Constants.Operator.useJoystick) {
-			driverJoystick.povLeft().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistLeft_Meters, 270, Constants.Operator.nudgeSpeed_MetersPerSec)); //Left
-			driverJoystick.povRight().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistRight_Meters, 90, Constants.Operator.nudgeSpeed_MetersPerSec)); //Right
-		}
-		else {
-			driverXbox.povLeft().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistLeft_Meters, 270, Constants.Operator.nudgeSpeed_MetersPerSec)); //Left
-			driverXbox.povRight().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistRight_Meters, 90, Constants.Operator.nudgeSpeed_MetersPerSec)); //Right
-		}
+		// if (Constants.Operator.useJoystick) {
+		// 	driverJoystick.povLeft().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistLeft_Meters, 270, Constants.Operator.nudgeSpeed_MetersPerSec)); //Left
+		// 	driverJoystick.povRight().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistRight_Meters, 90, Constants.Operator.nudgeSpeed_MetersPerSec)); //Right
+		// }
+		// else {
+		// 	driverXbox.povLeft().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistLeft_Meters, 270, Constants.Operator.nudgeSpeed_MetersPerSec)); //Left
+		// 	driverXbox.povRight().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistRight_Meters, 90, Constants.Operator.nudgeSpeed_MetersPerSec)); //Right
+		// }
 	}
 
 	public void teleopInit() {
