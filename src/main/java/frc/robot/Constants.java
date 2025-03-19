@@ -90,8 +90,8 @@ public final class Constants
     public static final double revsPerDegree = 0.2777;
     public static final double atVelocityToleranceRevs = 0.05;
 
-    public static final double posBottom_Degrees = 0;
-    public static final double positionTop_Degrees = 45;
+    public static final double posBottom_Degrees = 45;
+    public static final double positionTop_Degrees = 0;
   }
 
   public static final class CANIDs {
