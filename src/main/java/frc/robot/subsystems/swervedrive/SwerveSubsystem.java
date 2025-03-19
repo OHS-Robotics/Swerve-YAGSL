@@ -142,15 +142,20 @@ public class SwerveSubsystem extends SubsystemBase
 
       LimelightHelpers.SetRobotOrientation("", -swerveDrive.getYaw().getDegrees(), 0.0, 0.0, 0, 0.0, 0.0);
       LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("");
-      if (limelightMeasurement.tagCount >= 3) {  // Only trust measurement if we see multiple tags
+      if (limelightMeasurement != null) {
+        if (limelightMeasurement.tagCount >= 3) {  // Only trust measurement if we see lots of tags because one limelight is somewhat unreliable
           swerveDrive.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
           swerveDrive.addVisionMeasurement(
               limelightMeasurement.pose,
               limelightMeasurement.timestampSeconds
           );
+        }
+        // swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d(""), Timer.getFPGATimestamp());
       }
-      // swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d(""), Timer.getFPGATimestamp());
+      
     }
+
+    SmartDashboard.putNumber("Rotation", getPose().getRotation().getDegrees());
   }
 
   @Override

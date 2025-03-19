@@ -25,23 +25,13 @@ public final class Constants
   public static final double MAX_SPEED  = Units.feetToMeters(10);
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
-//  public static final class AutonConstants
-//  {
-//
-//    public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
-//    public static final PIDConstants ANGLE_PID       = new PIDConstants(0.4, 0, 0.01);
-//  }
-
   public static final class DrivebaseConstants
   {
 
-    // Hold time on motor brakes when disabled
-    public static final double WHEEL_LOCK_TIME = 10; // seconds
   }
 
   public static class Operator
   {
-
     // Joystick Deadband
     public static final double deadband = 0.05;
     public static final double deadbandLeftY = 0.05;
@@ -51,29 +41,38 @@ public final class Constants
     public static final double scaleTranslationLowGear = 0.2;
     public static final double scaleRotationHighGear = 0.8;
     public static final double scaleRotationLowGear = 0.2;
-    public static final boolean useKeyboardInSim = false; // Whether to expect keyboard or controller controls in sim
+    public static final boolean useKeyboardInSim = true; // Whether to expect keyboard or controller controls in sim
+
+    public static final double nudgeSpeed_MetersPerSec = 0.5;
+    public static final double nudgeDistForward_Meters = Units.inchesToMeters(2);
+    public static final double nudgeDistBack_Meters = Units.inchesToMeters(2);
+    public static final double nudgeDistLeft_Meters = Units.inchesToMeters(2);
+    public static final double nudgeDistRight_Meters = Units.inchesToMeters(2);
+
+    public static final boolean useJoystick = true; //false = use xbox
   }
 
   public static final class Autonomous {
-    public static final boolean autoEnabled = false; // Perform Autonomous Mode [SAFETY SWITCH]
+    public static final boolean autoEnabled = true; // Perform Autonomous Mode [SAFETY SWITCH]
   }
 
   public static final class Elevator {
     public static final double heightBottom_Inches = 0;
-    public static final double heightL1_Inches = 18.5;
-    public static final double heightL2_Inches = 25.5;
-    public static final double heightL3_Inches = 40.0;
-    public static final double heightL4_Inches = 66.75;
+    public static final double heightL1_Inches = 15.5;
+    public static final double heightL2_Inches = 23.5;
+    public static final double heightL3_Inches = 39.0;
+    public static final double heightL4_Inches = 65.25;
     public static final double heightMax_Inches = 68;
     
 
-    public static final double jogUpVel_InchesPerSec = 0.2; //0.1366;
+    public static final double jogUpVel_InchesPerSec = 0.3; //0.1366;
     public static final double stopVel_InchesPerSec = 0.035; //Velocity which we actually apply to stop. Serves as holding torque
     public static final double jogDownVel_InchesPerSec = jogUpVel_InchesPerSec - stopVel_InchesPerSec; //0.0683;
 
     public static final double revsPerInch = 1.04;
 
-    public static final boolean limitSlewRate = false;
+    public static final double slewRate = 2;
+    public static final double atVelocityToleranceRevs = 0.05;
   }
 
   public static final class CoralManipulator {

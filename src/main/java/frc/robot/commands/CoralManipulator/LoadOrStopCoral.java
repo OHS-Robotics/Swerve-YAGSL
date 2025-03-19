@@ -3,17 +3,22 @@ package frc.robot.commands.CoralManipulator;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 
-public class UnloadCoralTwist extends Command{
+public class LoadOrStopCoral extends Command{
     public CoralManipulatorSubsystem coralManipulator;
 
-    public UnloadCoralTwist(CoralManipulatorSubsystem manip) {
+    public LoadOrStopCoral(CoralManipulatorSubsystem manip) {
         coralManipulator = manip;
         addRequirements(coralManipulator);
     }
 
     @Override
     public void initialize() {
-        coralManipulator.expelCoralTwist();
+        if (coralManipulator.isIngestingCoral() || coralManipulator.isExpelingCoral()) {
+            this.cancel();
+        }
+        else {
+            coralManipulator.ingestCoral();
+        }
     }
 
     @Override
@@ -27,6 +32,6 @@ public class UnloadCoralTwist extends Command{
 
     @Override
     public boolean isFinished() {
-        return !coralManipulator.CoralLoaded();
+        return coralManipulator.CoralLoaded();
     }
 }

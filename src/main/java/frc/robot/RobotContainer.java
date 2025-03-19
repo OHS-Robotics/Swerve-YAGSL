@@ -7,20 +7,24 @@ package frc.robot;
 import java.io.File;
 
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 // import com.pathplanner.lib.auto.NamedCommands;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.autonomous.AutonomousSubsystem;
-import frc.robot.commands.CoralManipulator.LoadCoral;
+import frc.robot.commands.CoralManipulator.LoadOrStopCoral;
 import frc.robot.commands.CoralManipulator.UnloadCoral;
 import frc.robot.commands.CoralManipulator.UnloadCoralTwist;
 import frc.robot.commands.Elevator.ElevatorBottom;
@@ -31,6 +35,7 @@ import frc.robot.commands.Elevator.ElevatorLevel2;
 import frc.robot.commands.Elevator.ElevatorLevel3;
 import frc.robot.commands.Elevator.ElevatorLevel4;
 import frc.robot.commands.Elevator.ElevatorStop;
+import frc.robot.commands.swervedrive.Nudge;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -51,146 +56,210 @@ public class RobotContainer {
 	public final ElevatorSubsystem elevator = new ElevatorSubsystem();
 	public final AutonomousSubsystem autonomous = new AutonomousSubsystem(drivebase);
 
+	private final SendableChooser<Command> autoChooser;
+
 	private boolean referenceFrameIsField = false;
 	public double elevatorPosition = 0.0;
 	public boolean isInHighGear = true;
 
-	// Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
-	SwerveInputStream driveFieldAngularVelocityStream = SwerveInputStream.of(drivebase.getSwerveDrive(), 
-		() -> applyExpoCurveTranslation(driverJoystick.getY()), 
-		() -> applyExpoCurveTranslation(driverJoystick.getX()))
-		.withControllerRotationAxis(() -> applyExpoCurveRotation(driverJoystick.getTwist()))
-		.deadband(Constants.Operator.deadband)
-		.scaleTranslation(Constants.Operator.scaleTranslationHighGear)
-		.scaleRotation(Constants.Operator.scaleRotationHighGear)
-		.allianceRelativeControl(true);
-	
-	// Clone's the angular velocity input stream and converts it to a fieldRelative input stream.
-	SwerveInputStream driveFieldDirectAngleStream = driveFieldAngularVelocityStream.copy()
-		.withControllerHeadingAxis(driverJoystick::getX, () -> 0.0)
-		.headingWhile(true);
+	SwerveInputStream driveFieldAngularVelocityStream;
+	SwerveInputStream driveRobotAngularVelocityStream;
+	SwerveInputStream driveFieldAngularVelocityKeyboardStream;
+	SwerveInputStream driveRobotAngularVelocityKeyboardStream;
 
-	// Clone's the angular velocity input stream and converts it to a robotRelative input stream.
-	SwerveInputStream driveRobotAngularVelocityStream = driveFieldAngularVelocityStream.copy()
-		.robotRelative(true)
-		.allianceRelativeControl(false);
-	
-	SwerveInputStream driveFieldAngularVelocityKeyboardStream = SwerveInputStream.of(drivebase.getSwerveDrive(), () -> -driverJoystick.getY(), () -> -driverJoystick.getX())
-		.withControllerRotationAxis(() -> driverJoystick.getRawAxis(2))
-		.deadband(Constants.Operator.deadband)
-		.scaleTranslation(Constants.Operator.scaleTranslationHighGear)
-		.scaleRotation(Constants.Operator.scaleRotationHighGear)
-		.allianceRelativeControl(true);
-
-	SwerveInputStream driveRobotAngularVelocityKeyboardStream = driveFieldAngularVelocityStream.copy()
-		.withControllerRotationAxis(() -> driverJoystick.getRawAxis(2))
-		.robotRelative(true)
-		.allianceRelativeControl(false);
-
-	// Derive the heading axis with math!
-	SwerveInputStream driveFieldDirectAngleKeyboardStream = driveFieldAngularVelocityKeyboardStream.copy()
-		.withControllerHeadingAxis(
-			() -> Math.sin(driverJoystick.getRawAxis(2) * Math.PI) * (Math.PI * 2),
-			() -> Math.cos(driverJoystick.getRawAxis(2) * Math.PI) * (Math.PI * 2)).headingWhile(true);
-
-
-	Command driveFieldDirectAngle = drivebase.driveFieldOriented(driveFieldDirectAngleStream);
-	Command driveFieldAnglularVelocity = drivebase.driveFieldOriented(driveFieldAngularVelocityStream);
-	Command driveRobotAngularVelocity = drivebase.driveFieldOriented(driveRobotAngularVelocityStream);
-	// Command driveSetpointGen = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngle);
-	Command driveFieldDirectAngleKeyboard = drivebase.driveFieldOriented(driveFieldDirectAngleKeyboardStream);
-	Command driveFieldAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveFieldAngularVelocityKeyboardStream);
-	Command driveRobotAngularVelocityKeyboard = drivebase.driveFieldOriented(driveRobotAngularVelocityKeyboardStream);
-	// Command driveSetpointGenKeyboard = drivebase.driveWithSetpointGeneratorFieldRelative(driveDirectAngleKeyboard);
+	Command driveFieldAnglularVelocity;
+	Command driveRobotAngularVelocity;
+	Command driveFieldAnglularVelocityKeyboard;
+	Command driveRobotAngularVelocityKeyboard;
 
 
 	public RobotContainer() {
+		autoChooser = AutoBuilder.buildAutoChooser();
+		SmartDashboard.putData("Auto Chooser", autoChooser);
+
+		configureDriveInputStreams();
 		configureBindings();
 	}
 
-	private void configureBindings() {
-		//Delegate the actual calling of the swerve drive function to 
-		drivebase.setDefaultCommand(Commands.run(() -> DriveRobot(referenceFrameIsField), drivebase));
-		// driverJoystick.button(13).onTrue(Commands.runOnce(() -> { referenceFrameIsField = !referenceFrameIsField; SmartDashboard.putString("Reference Frame", referenceFrameIsField ? "Field" : "Robot"); }));
-		driverJoystick.button(2).onTrue(Commands.runOnce(() -> SetGearMode(false)));
-		driverJoystick.button(2).onFalse(Commands.runOnce(() -> SetGearMode(true)));
+	private void configureDriveInputStreams() {
+		if (Constants.Operator.useJoystick) {
+			// Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
+			driveFieldAngularVelocityStream = SwerveInputStream.of(
+					drivebase.getSwerveDrive(), 
+					() -> applyExpoCurveTranslation(driverJoystick.getY()), 
+					() -> applyExpoCurveTranslation(driverJoystick.getX()))
+				.withControllerRotationAxis(() -> applyExpoCurveRotation(driverJoystick.getTwist()))
+				.deadband(Constants.Operator.deadband)
+				.scaleTranslation(Constants.Operator.scaleTranslationHighGear)
+				.scaleRotation(Constants.Operator.scaleRotationHighGear)
+				.allianceRelativeControl(true);
 
-		SmartDashboard.putString("Gear Mode", isInHighGear ? "High" : "Low");
+			// Clone's the angular velocity input stream and converts it to a robotRelative input stream.
+			driveRobotAngularVelocityStream = driveFieldAngularVelocityStream.copy()
+				.robotRelative(true)
+				.allianceRelativeControl(false);
 
-		driverJoystick.button(15).onTrue(autonomous.tweakToCoralCommand());
+			driveFieldAngularVelocityKeyboardStream = SwerveInputStream.of(
+					drivebase.getSwerveDrive(), 
+					() -> -driverJoystick.getY(), 
+					() -> -driverJoystick.getX())
+				.withControllerRotationAxis(() -> driverJoystick.getRawAxis(2))
+				.deadband(Constants.Operator.deadband)
+				.scaleTranslation(Constants.Operator.scaleTranslationHighGear)
+				.scaleRotation(Constants.Operator.scaleRotationHighGear)
+				.allianceRelativeControl(true);
 
-		SetupCoralManipulatorCommands();
-		SetupElevatorCommands();
-
-		if (RobotBase.isSimulation()) {
-			//Reset the robot to a semi-arbritary position
-			driverJoystick.button(14).onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-		} 
-
-		if (DriverStation.isTest()) {
-			// removed cuz we don't really need it
-			/*driverXbox.x().whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
-			driverXbox.y().whileTrue(drivebase.driveToDistanceCommand(1.0, 0.2));
-			driverXbox.start().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-			driverXbox.back().whileTrue(drivebase.centerModulesCommand());
-			driverXbox.leftBumper().onTrue(Commands.none());
-			driverXbox.rightBumper().onTrue(Commands.none());*/
+			driveRobotAngularVelocityKeyboardStream = driveFieldAngularVelocityStream.copy()
+				.withControllerRotationAxis(() -> driverJoystick.getRawAxis(2))
+				.robotRelative(true)
+				.allianceRelativeControl(false);
 		}
 		else {
-			// driverXbox.a().onTrue((Commands.runOnce(drivebase::zeroGyro)));
-			// driverXbox.x().onTrue(Commands.runOnce(drivebase::addFakeVisionReading));
-			// driverXbox.b().whileTrue(drivebase.driveToPose(new Pose2d(new Translation2d(4, 4), Rotation2d.fromDegrees(0))));
-			// driverJoystick.button(8).whileTrue(Commands.runOnce(drivebase::lock, drivebase).repeatedly());
+			// Converts driver input into a field-relative ChassisSpeeds that is controlled by angular velocity.
+			driveFieldAngularVelocityStream = SwerveInputStream.of(
+					drivebase.getSwerveDrive(), 
+					() -> applyExpoCurveTranslation(driverXbox.getLeftY()), 
+					() -> applyExpoCurveTranslation(driverXbox.getLeftX()))
+				.withControllerRotationAxis(() -> applyExpoCurveRotation(driverXbox.getRightX()))
+				.deadband(Constants.Operator.deadband)
+				.scaleTranslation(Constants.Operator.scaleTranslationHighGear)
+				.scaleRotation(Constants.Operator.scaleRotationHighGear)
+				.allianceRelativeControl(true);
+
+			// Clone's the angular velocity input stream and converts it to a robotRelative input stream.
+			driveRobotAngularVelocityStream = driveFieldAngularVelocityStream.copy()
+				.robotRelative(true)
+				.allianceRelativeControl(false);
+
+			driveFieldAngularVelocityKeyboardStream = SwerveInputStream.of(drivebase.getSwerveDrive(), 
+					() -> -driverXbox.getLeftY(), 
+					() -> -driverXbox.getLeftX())
+				.withControllerRotationAxis(() -> driverXbox.getRightX())
+				.deadband(Constants.Operator.deadband)
+				.scaleTranslation(Constants.Operator.scaleTranslationHighGear)
+				.scaleRotation(Constants.Operator.scaleRotationHighGear)
+				.allianceRelativeControl(true);
+
+			driveRobotAngularVelocityKeyboardStream = driveFieldAngularVelocityStream.copy()
+				.withControllerRotationAxis(() -> driverXbox.getRightX())
+				.robotRelative(true)
+				.allianceRelativeControl(false);
 		}
+
+		driveFieldAnglularVelocity = drivebase.driveFieldOriented(driveFieldAngularVelocityStream);
+		driveRobotAngularVelocity = drivebase.driveFieldOriented(driveRobotAngularVelocityStream);
+		driveFieldAnglularVelocityKeyboard = drivebase.driveFieldOriented(driveFieldAngularVelocityKeyboardStream);
+		driveRobotAngularVelocityKeyboard = drivebase.driveFieldOriented(driveRobotAngularVelocityKeyboardStream);		
+	}
+
+	private void configureBindings() {
+		//Delegate the actual calling of the swerve drive function to DriveRobot()
+		drivebase.setDefaultCommand(Commands.run(() -> DriveRobot(referenceFrameIsField), drivebase));
+
+		SetupAutonomousCommands();
+		SetupLowGearModeCommands();
+		SetupCoralManipulatorCommands();
+		SetupElevatorCommands();
+		SetupNudgeCommands();
+
+		if (RobotBase.isSimulation()) {
+			// Reset the robot to a semi-arbritary position
+			// driverJoystick.button(14).onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
+		}
+	}
+
+	private void SetupAutonomousCommands() {
+		// disabled for competition
+		// driverJoystick.button(15).onTrue(autonomous.tweakToCoralCommand());
+	}
+
+	private void SetupLowGearModeCommands() {
+		if (Constants.Operator.useJoystick) {
+			driverJoystick.button(2).onTrue(Commands.runOnce(() -> SetGearMode(false)));
+			driverJoystick.button(2).onFalse(Commands.runOnce(() -> SetGearMode(true)));
+		}
+		else {
+			driverXbox.leftStick().onTrue(Commands.runOnce(() -> SetGearMode(false)));
+			driverXbox.rightStick().onTrue(Commands.runOnce(() -> SetGearMode(false)));
+			driverXbox.leftStick().onFalse(Commands.runOnce(() -> SetGearMode(true)));
+			driverXbox.rightStick().onFalse(Commands.runOnce(() -> SetGearMode(true)));
+		}
+
+		SmartDashboard.putString("Gear Mode", isInHighGear ? "High" : "Low");
 	}
 
 	private void SetupCoralManipulatorCommands() {
-		LoadCoral loadCoral = new LoadCoral(coralManipulator);
+		LoadOrStopCoral loadOrStopCoral = new LoadOrStopCoral(coralManipulator);
         UnloadCoral unloadCoral = new UnloadCoral(coralManipulator);
 		UnloadCoralTwist unloadCoralTwist = new UnloadCoralTwist(coralManipulator);
 
-		loadCoral.coralManipulator = coralManipulator;
+		loadOrStopCoral.coralManipulator = coralManipulator;
 		unloadCoral.coralManipulator = coralManipulator;
 		unloadCoralTwist.coralManipulator = coralManipulator;
 
-		driverJoystick.button(3).onTrue(loadCoral);
-		driverJoystick.button(4).onTrue(unloadCoral);
-		driverJoystick.button(1).onTrue(unloadCoralTwist);
+		if (Constants.Operator.useJoystick) {
+			driverJoystick.button(3).onTrue(loadOrStopCoral);
+			driverJoystick.button(4).onTrue(unloadCoral);
+			driverJoystick.button(1).onTrue(unloadCoralTwist);
+		}
+		else {
+			driverXbox.leftBumper().onTrue(loadOrStopCoral);
+			driverXbox.rightBumper().onTrue(unloadCoral);
+			driverXbox.rightTrigger().onTrue(unloadCoralTwist);
+		}
+		
 	}
 
 	private void SetupElevatorCommands() {
-		ElevatorJogUp jogUp = new ElevatorJogUp(elevator);
-		ElevatorJogDown jogDown = new ElevatorJogDown(elevator);
-		ElevatorStop stop = new ElevatorStop(elevator);
+		
 		ElevatorBottom bottom = new ElevatorBottom(elevator);
 		ElevatorLevel1 L1 = new ElevatorLevel1(elevator);
 		ElevatorLevel2 L2 = new ElevatorLevel2(elevator);
 		ElevatorLevel3 L3 = new ElevatorLevel3(elevator);
 		ElevatorLevel4 L4 = new ElevatorLevel4(elevator);
 
-		driverJoystick.povUp().onTrue(jogUp);
-		driverJoystick.povUp().onFalse(stop);
-		driverJoystick.povDown().onTrue(jogDown);
-		driverJoystick.povDown().onFalse(stop);
-		driverJoystick.button(5).onTrue(bottom);
-		driverJoystick.button(6).onTrue(L1);
-		driverJoystick.button(7).onTrue(L2);
-		driverJoystick.button(10).onTrue(L3);
-		driverJoystick.button(9).onTrue(L4);
+		ElevatorJogUp jogUp = new ElevatorJogUp(elevator);
+		ElevatorJogDown jogDown = new ElevatorJogDown(elevator);
+		ElevatorStop stop = new ElevatorStop(elevator);
+
+		if (Constants.Operator.useJoystick) {
+			driverJoystick.button(5).onTrue(bottom);
+			driverJoystick.button(6).onTrue(L1);
+			driverJoystick.button(7).onTrue(L2);
+			driverJoystick.button(10).onTrue(L3);
+			driverJoystick.button(9).onTrue(L4);
+
+			driverJoystick.povUp().onTrue(jogUp);
+			driverJoystick.povDown().onTrue(jogDown);
+			driverJoystick.povCenter().onTrue(stop);
+		}
+		else {
+			driverXbox.start().onTrue(bottom);
+			driverXbox.a().onTrue(L1);
+			driverXbox.b().onTrue(L2);
+			driverXbox.x().onTrue(L3);
+			driverXbox.y().onTrue(L4);
+
+			driverXbox.povUp().onTrue(jogUp);
+			driverXbox.povDown().onTrue(jogDown);
+			driverXbox.povCenter().onTrue(stop);
+		}
 	}
 
-	public void updateElevator(double change) {
-		// elevatorPosition += change;
-		// // todo: make these actual values
-		// elevatorPosition = Math.max(0.0, Math.min(300.0, elevatorPosition));
-
-		// elevator.moveAbsolute(elevatorPosition);
+	private void SetupNudgeCommands() {
+		if (Constants.Operator.useJoystick) {
+			driverJoystick.povLeft().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistLeft_Meters, 270, Constants.Operator.nudgeSpeed_MetersPerSec)); //Left
+			driverJoystick.povRight().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistRight_Meters, 90, Constants.Operator.nudgeSpeed_MetersPerSec)); //Right
+		}
+		else {
+			driverXbox.povLeft().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistLeft_Meters, 270, Constants.Operator.nudgeSpeed_MetersPerSec)); //Left
+			driverXbox.povRight().onTrue(new Nudge(drivebase, Constants.Operator.nudgeDistRight_Meters, 90, Constants.Operator.nudgeSpeed_MetersPerSec)); //Right
+		}
 	}
 
 	public void teleopInit() {
-		// loadCoralComposed.execute();
+		
 	}
-
 
 	/**
 	 * Execute the swerve drive's drive function.
@@ -219,7 +288,8 @@ public class RobotContainer {
 	}
 
 	public Command getAutonomousCommand() {
-
+		// currently unused
+		
 		if (Constants.Autonomous.autoEnabled) {
 			String autoPathName = null;
 
@@ -230,7 +300,7 @@ public class RobotContainer {
 				System.out.println("Autonomous Aliance: " + alliance);
             }
 
-			autoPathName = "blankpath";
+			autoPathName = "simplepath";
 			// autoPathName = "StartCenter";
 			// autoPathName = "StartLeft";
 	
@@ -245,7 +315,7 @@ public class RobotContainer {
 	}
 
 	public Command getAutoInitCommand() {
-		return autonomous.getStartCommand();
+		return autoChooser.getSelected();
 	}
 
 	/**
@@ -284,30 +354,22 @@ public class RobotContainer {
 		if (isInHighGear) {
 			driveFieldAngularVelocityStream.scaleRotation(Constants.Operator.scaleRotationHighGear);
 			driveFieldAngularVelocityStream.scaleTranslation(Constants.Operator.scaleTranslationHighGear);
-			driveFieldDirectAngleStream.scaleRotation(Constants.Operator.scaleRotationHighGear);
-			driveFieldDirectAngleStream.scaleTranslation(Constants.Operator.scaleTranslationHighGear);
 			driveRobotAngularVelocityStream.scaleRotation(Constants.Operator.scaleRotationHighGear);
 			driveRobotAngularVelocityStream.scaleTranslation(Constants.Operator.scaleTranslationHighGear);
 			driveFieldAngularVelocityKeyboardStream.scaleRotation(Constants.Operator.scaleRotationHighGear);
 			driveFieldAngularVelocityKeyboardStream.scaleTranslation(Constants.Operator.scaleTranslationHighGear);
 			driveRobotAngularVelocityKeyboardStream.scaleRotation(Constants.Operator.scaleRotationHighGear);
 			driveRobotAngularVelocityKeyboardStream.scaleTranslation(Constants.Operator.scaleTranslationHighGear);
-			driveFieldDirectAngleKeyboardStream.scaleRotation(Constants.Operator.scaleRotationHighGear);
-			driveFieldDirectAngleKeyboardStream.scaleTranslation(Constants.Operator.scaleTranslationHighGear);
 		}
 		else {
 			driveFieldAngularVelocityStream.scaleRotation(Constants.Operator.scaleRotationLowGear);
 			driveFieldAngularVelocityStream.scaleTranslation(Constants.Operator.scaleTranslationLowGear);
-			driveFieldDirectAngleStream.scaleRotation(Constants.Operator.scaleRotationLowGear);
-			driveFieldDirectAngleStream.scaleTranslation(Constants.Operator.scaleTranslationLowGear);
 			driveRobotAngularVelocityStream.scaleRotation(Constants.Operator.scaleRotationLowGear);
 			driveRobotAngularVelocityStream.scaleTranslation(Constants.Operator.scaleTranslationLowGear);
 			driveFieldAngularVelocityKeyboardStream.scaleRotation(Constants.Operator.scaleRotationLowGear);
 			driveFieldAngularVelocityKeyboardStream.scaleTranslation(Constants.Operator.scaleTranslationLowGear);
 			driveRobotAngularVelocityKeyboardStream.scaleRotation(Constants.Operator.scaleRotationLowGear);
 			driveRobotAngularVelocityKeyboardStream.scaleTranslation(Constants.Operator.scaleTranslationLowGear);
-			driveFieldDirectAngleKeyboardStream.scaleRotation(Constants.Operator.scaleRotationLowGear);
-			driveFieldDirectAngleKeyboardStream.scaleTranslation(Constants.Operator.scaleTranslationLowGear);
 		}
 
 		SmartDashboard.putString("Gear Mode", isInHighGear ? "High" : "Low");
