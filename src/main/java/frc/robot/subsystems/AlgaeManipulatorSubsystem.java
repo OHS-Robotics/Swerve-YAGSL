@@ -1,8 +1,13 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix6.signals.UpdateModeValue;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.spark.SparkBase.PersistMode;
+import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,7 +27,11 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
     public boolean accelerating = false; //true when the robot is not at target vel, meaning the slew rate limiter is doing work
 
     public AlgaeManipulatorSubsystem() {
-
+        final SparkMaxConfig baseConfLift = new SparkMaxConfig();
+        zeroEncoders();
+        baseConfLift.smartCurrentLimit(30);
+        baseConfLift.idleMode(IdleMode.kBrake);
+        motorLift.configure(baseConfLift, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     public double currentPosition_Revs() {
@@ -41,7 +50,7 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
         return -encoderLift.getVelocity() / Constants.AlgaeManipulator.revsPerDegree;
     }
     
-    public void update() {
+    public void updateSmartDashboard() {
         SmartDashboard.putNumber("Algae Manipulator Lift Pos (deg)", currentPosition_Degrees());
     }
 
@@ -178,6 +187,6 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
             }
         }
 
-        SmartDashboard.putNumber("Algae Manipulator Pos (Deg)", currentPosition_Degrees());
+        updateSmartDashboard();
     }
 }

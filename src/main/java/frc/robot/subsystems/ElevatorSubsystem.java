@@ -44,8 +44,7 @@ public class ElevatorSubsystem extends SubsystemBase {
         final SparkMaxConfig baseconf_left = new SparkMaxConfig();
         final SparkMaxConfig baseconf_right = new SparkMaxConfig();
 
-        encoder_left.setPosition(0);
-        encoder_right.setPosition(0);
+        zeroEncoders();
 
         baseconf_right.follow(motor_left, true);
 
@@ -75,9 +74,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         return -encoder_left.getVelocity() / Constants.Elevator.revsPerInch;
     }
     
-    public void update() {
-        SmartDashboard.putNumber("Elevator Left", -encoder_left.getPosition());
-        SmartDashboard.putNumber("Elevator Right", -encoder_right.getPosition());
+    public void updateSmartDashboard() {
+        SmartDashboard.putNumber("Elevator Height (in)", currentPosition_Inches());
     }
 
     /**
@@ -214,6 +212,6 @@ public class ElevatorSubsystem extends SubsystemBase {
             }
         }
 
-        SmartDashboard.putNumber("Elevator Height (in.)", currentPosition_Inches());
+        updateSmartDashboard();
     }
 }
