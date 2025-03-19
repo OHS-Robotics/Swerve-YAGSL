@@ -2,6 +2,7 @@ package frc.robot.subsystems.autonomous;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.function.LongConsumer;
 import java.util.function.LongSupplier;
 
@@ -22,6 +23,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -296,14 +298,50 @@ public class AutonomousSubsystem extends SubsystemBase {
     }
 
     public Command getBasicAutoCommand() {
-			// Create a sequence of commands that will move the robot in a square.
-			// Just for fun, the speed decreases each leg of the square.
-			SequentialCommandGroup cmdGroup = new SequentialCommandGroup(new Command[0]);
-			cmdGroup.addCommands(new Nudge(swerveDrive, 1.0, 0.0, 1.0));
-			cmdGroup.addCommands(new Nudge(swerveDrive, 1.0, 90.0, 0.75));
-			cmdGroup.addCommands(new Nudge(swerveDrive, 1.0, 180.0, 0.50));
-			cmdGroup.addCommands(new Nudge(swerveDrive, 1.0, 270.0, 0.25));
-			return cmdGroup;
+        SequentialCommandGroup cmdGroup = new SequentialCommandGroup(new Command[0]);
+
+        // Use the alliance and Driver Station Location to determine our path...
+        Optional<Alliance> optAlliance = DriverStation.getAlliance();
+        OptionalInt optDSLocation = DriverStation.getLocation();
+
+        Alliance myAlliance = null;
+        int myDSLocation = 0;
+
+        if (optAlliance.isPresent()) {
+            myAlliance = optAlliance.get();
+        }
+
+        if (optDSLocation.isPresent()) {
+            myDSLocation = optDSLocation.getAsInt();
+        }
+
+        // myAlliance = Alliance.Red;  // Red/Blue
+        // myDSLocation = 3;  // 1|2|3
+
+        System.out.println("Autonomous Alliance: " + myAlliance);
+        System.out.println("Drivers Station Location: " + myDSLocation);
+
+        switch (myDSLocation) {
+            case 1:
+                // Assumption: robot is positioned on proper side...
+    			cmdGroup.addCommands(new Nudge(swerveDrive, 3.0, 60.0, 0.5));
+                break;
+            case 3:
+                // Assumption: robot is positioned on proper side...
+                cmdGroup.addCommands(new Nudge(swerveDrive, 3.0, -60.0, 0.5));
+            break;
+            default:
+                // Assumption: robot is positioned in middle...
+                cmdGroup.addCommands(new Nudge(swerveDrive, 1.5, 0.0, 0.5));
+            break;
+        }
+
+        // TODO: Add commands to:
+        //   - position the elevator
+        //   - eject the coral
+        //   - etc...
+
+        return cmdGroup;
     }
 
 }
