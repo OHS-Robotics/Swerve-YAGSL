@@ -294,51 +294,6 @@ public class AutonomousSubsystem extends SubsystemBase {
         return Commands.run(() -> tweakToCoral().schedule(), swerveDrive);
     }
 
-    //Didn't realize this was basicaly a duplicate of existing code above.  Not deleting yet in case it could help
-    // private void configureAutoBuilder() {
-	// 	Supplier<Pose2d> poseSupplier = () -> swerveDrive.getSwerveDrive().getPose();
-	// 	Consumer<Pose2d> resetPoseConsumer = (pose) -> swerveDrive.getSwerveDrive().resetOdometry(pose);
-	// 	Supplier<ChassisSpeeds> robotSpeedSupplier = () -> swerveDrive.getRobotVelocity();
-
-	// 	PIDConstants translationConstants = new PIDConstants(Constants.Autonomous.kP, Constants.Autonomous.kI, Constants.Autonomous.kD);
-	// 	PIDConstants rotationConstants = new PIDConstants(Constants.Autonomous.kP, Constants.Autonomous.kI, Constants.Autonomous.kD);
-
-	// 	boolean enableFeedForward = true;
-
-	// 	BiConsumer<ChassisSpeeds, DriveFeedforwards> driveOutput = (speedsRobotRelative, moduleFeedForwards) -> {
-	// 		if (enableFeedForward) {
-	// 			swerveDrive.getSwerveDrive().drive(
-	// 				speedsRobotRelative,
-	// 				swerveDrive.getSwerveDrive().kinematics.toSwerveModuleStates(speedsRobotRelative),
-	// 				moduleFeedForwards.linearForces());
-	// 		}
-	// 		else {
-	// 			swerveDrive.drive(speedsRobotRelative);
-	// 		}
-	// 		swerveDrive.swerveDrive.drive(speedsRobotRelative);
-	// 	};
-	// 	var holonomicDriveController = new PPHolonomicDriveController(translationConstants, rotationConstants);
-	// 	BooleanSupplier shouldFlip = () -> { return DriverStation.getAlliance().equals(Alliance.Blue) ? true : false; };
-
-	// 	RobotConfig config;
-	// 	try{
-	// 		config = RobotConfig.fromGUISettings();
-	// 		AutoBuilder.configure(
-	// 			poseSupplier, 
-	// 			resetPoseConsumer, 
-	// 			robotSpeedSupplier, 
-	// 			driveOutput, 
-	// 			holonomicDriveController, 
-	// 			config, 
-	// 			() -> { return DriverStation.getAlliance().equals(Alliance.Blue) ? true : false; },
-	// 			swerveDrive);
-	// 	}
-	// 	catch (Exception e) {
-	// 		// Handle exception as needed
-	// 		e.printStackTrace();
-	// 	}
-	// }
-
     public Command getBasicAutoCommand() {
         SequentialCommandGroup cmdGroup = new SequentialCommandGroup(new Command[0]);
 
