@@ -309,7 +309,7 @@ public class RobotContainer {
 	public Command getAutonomousCommand() {
 		// currently unused
 		
-		if (Constants.Autonomous.autoEnabled) {
+		if ("PathFinder".equals(Constants.Autonomous.autoMode)) {
 			String autoPathName = null;
 
 			// Paths should be configured for the "BLUE" alliance ad they will be
@@ -334,7 +334,13 @@ public class RobotContainer {
 	}
 
 	public Command getAutoInitCommand() {
-		return autoChooser.getSelected();
+		if ("AutoChooser".equals(Constants.Autonomous.autoMode)) {
+			return autoChooser.getSelected();
+		} else if ("BasicAuto".equals(Constants.Autonomous.autoMode)) {
+			return autonomous.getBasicAutoCommand();
+		} else {
+			return Commands.print("WARNING: AUTONOMOUS MODE IS DISABLED");
+		}
 	}
 
 	/**

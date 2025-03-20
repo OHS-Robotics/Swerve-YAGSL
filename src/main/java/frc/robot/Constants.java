@@ -53,7 +53,7 @@ public final class Constants
   }
 
   public static final class Autonomous {
-    public static final boolean autoEnabled = true; // Perform Autonomous Mode [SAFETY SWITCH]
+    public static final String autoMode = "BasicAuto"; // AutoChooser|BasicAuto|PathFinder|disabled...
   }
 
   public static final class Elevator {

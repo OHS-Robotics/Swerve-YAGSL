@@ -27,7 +27,7 @@ public class Nudge extends Command{
      * Creates a command to move the swerve drive at a certain angle, speed, and distance
      * @param swerve The swerve drive to control
      * @param distance_Meters The distance to move, in meters
-     * @param angle_Degrees The angle at which to move, in degrees (0 = back, 90 = right, 180 = forward, 270 = left)
+     * @param angle_Degrees The angle at which to move, in degrees (0 = towards red alliance, 90 = towards blue park area)
      * @param speed_MetersPerSecond The speed at which to move, in m/s
      */
     public Nudge(SwerveSubsystem swerve, double distance_Meters, double angle_Degrees, double speed_MetersPerSecond) {
