@@ -365,8 +365,8 @@ public class AutonomousSubsystem extends SubsystemBase {
             myDSLocation = optDSLocation.getAsInt();
         }
 
-        myAlliance = Alliance.Blue;  // Red|Blue
-        myDSLocation = 3;           // 1|2|3
+//      myAlliance = Alliance.Blue;  // Red|Blue
+//      myDSLocation = 3;            // 1|2|3
 
         System.out.println("Autonomous Alliance: " + myAlliance);
         System.out.println("Drivers Station Location: " + myDSLocation);
