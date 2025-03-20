@@ -151,8 +151,8 @@ public class AutonomousSubsystem extends SubsystemBase {
                     }
                 },
                 new PPHolonomicDriveController(
-                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-                    new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+                    new PIDConstants(Constants.Autonomous.kP, Constants.Autonomous.kI, Constants.Autonomous.kD), // Translation PID constants
+                    new PIDConstants(Constants.Autonomous.kP, Constants.Autonomous.kI, Constants.Autonomous.kD) // Rotation PID constants
                 ),
                 config, // The robot configuration
                 () -> {
