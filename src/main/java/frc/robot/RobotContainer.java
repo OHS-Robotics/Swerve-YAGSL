@@ -6,15 +6,6 @@ package frc.robot;
 
 import java.io.File;
 
-import com.pathplanner.lib.auto.NamedCommands;
-import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.path.PathPlannerPath;
-
-// import com.pathplanner.lib.auto.NamedCommands;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -24,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.autonomous.AutonomousSubsystem;
+import frc.robot.subsystems.autonomous.AutonomousSubsystem.AutoCommandSource;
 import frc.robot.commands.AlgaeManipulator.AlgaeManipulatorBottom;
 import frc.robot.commands.AlgaeManipulator.AlgaeManipulatorTop;
 import frc.robot.commands.CoralManipulator.LoadOrStopCoral;
@@ -37,7 +29,6 @@ import frc.robot.commands.Elevator.ElevatorLevel2;
 import frc.robot.commands.Elevator.ElevatorLevel3;
 import frc.robot.commands.Elevator.ElevatorLevel4;
 import frc.robot.commands.Elevator.ElevatorStop;
-import frc.robot.commands.swervedrive.Nudge;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.AlgaeManipulatorSubsystem;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
@@ -60,7 +51,8 @@ public class RobotContainer {
 	public final AutonomousSubsystem autonomous = new AutonomousSubsystem(drivebase);
 	public final AlgaeManipulatorSubsystem algaeManipulator = new AlgaeManipulatorSubsystem();
 
-	private final SendableChooser<Command> autoChooser;
+	private final SendableChooser<Command> pathPlannerChooser;
+	private final SendableChooser<AutoCommandSource> autoCommandSourceChooser;
 
 	private boolean referenceFrameIsField = false;
 	public double elevatorPosition = 0.0;
@@ -78,8 +70,15 @@ public class RobotContainer {
 
 
 	public RobotContainer() {
-		autoChooser = AutoBuilder.buildAutoChooser();
-		SmartDashboard.putData("Auto Chooser", autoChooser);
+		pathPlannerChooser = AutoBuilder.buildAutoChooser();
+		SmartDashboard.putData("PathPlanner Chooser", pathPlannerChooser);
+
+		autoCommandSourceChooser = new SendableChooser<AutoCommandSource>();
+		autoCommandSourceChooser.addOption("Disabled", AutoCommandSource.Disabled);
+		autoCommandSourceChooser.addOption("Manual Nudge", AutoCommandSource.ManualNudge);
+		autoCommandSourceChooser.addOption("PathPlanner via AutoChooser", AutoCommandSource.PathPlannerAutoChooser);
+		autoCommandSourceChooser.setDefaultOption("Disabled", AutoCommandSource.Disabled);
+		SmartDashboard.putData("Auto Command Source", autoCommandSourceChooser);
 
 		configureDriveInputStreams();
 		configureBindings();
@@ -306,37 +305,37 @@ public class RobotContainer {
 		
 	}
 
-	public Command getAutonomousCommand() {
-		// currently unused
+	// public Command getAutonomousCommand() {
+	// 	// currently unused
 		
-		if ("PathFinder".equals(Constants.Autonomous.autoMode)) {
-			String autoPathName = null;
+	// 	if ("PathFinder".equals(Constants.Autonomous.autoMode)) {
+	// 		String autoPathName = null;
 
-			// Paths should be configured for the "BLUE" alliance ad they will be
-			// automtically reversed for the "RED" alliance as configured...
-            var alliance = DriverStation.getAlliance();
-            if (alliance.isPresent()) {
-				System.out.println("Autonomous Aliance: " + alliance);
-            }
+	// 		// Paths should be configured for the "BLUE" alliance ad they will be
+	// 		// automtically reversed for the "RED" alliance as configured...
+    //         var alliance = DriverStation.getAlliance();
+    //         if (alliance.isPresent()) {
+	// 			System.out.println("Autonomous Aliance: " + alliance);
+    //         }
 
-			autoPathName = "simplepath";
-			// autoPathName = "StartCenter";
-			// autoPathName = "StartLeft";
+	// 		autoPathName = "simplepath";
+	// 		// autoPathName = "StartCenter";
+	// 		// autoPathName = "StartLeft";
 	
-			return drivebase.getAutonomousCommand(autoPathName);	
-		} else {
-			return Commands.print("WARNING: AUTONOMOUS MODE IS DISABLED");
-		}
-	}
+	// 		return drivebase.getAutonomousCommand(autoPathName);	
+	// 	} else {
+	// 		return Commands.print("WARNING: AUTONOMOUS MODE IS DISABLED");
+	// 	}
+	// }
 
 	public void setMotorBrake(boolean brake) {
 		drivebase.setMotorBrake(brake);
 	}
 
 	public Command getAutoInitCommand() {
-		if ("AutoChooser".equals(Constants.Autonomous.autoMode)) {
-			return autoChooser.getSelected();
-		} else if ("BasicAuto".equals(Constants.Autonomous.autoMode)) {
+		if (autoCommandSourceChooser.getSelected() == AutoCommandSource.PathPlannerAutoChooser) {
+			return pathPlannerChooser.getSelected();
+		} else if (autoCommandSourceChooser.getSelected() == AutoCommandSource.ManualNudge) {
 			return autonomous.getBasicAutoCommand();
 		} else {
 			return Commands.print("WARNING: AUTONOMOUS MODE IS DISABLED");

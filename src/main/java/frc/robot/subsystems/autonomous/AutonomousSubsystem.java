@@ -4,8 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.LongConsumer;
 import java.util.function.LongSupplier;
+import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -16,6 +20,7 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
+import com.pathplanner.lib.util.DriveFeedforwards;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -23,12 +28,15 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.commands.CoralManipulator.AutoReleaseCoralCommand;
 import frc.robot.commands.swervedrive.Nudge;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
@@ -113,72 +121,60 @@ public class AutonomousSubsystem extends SubsystemBase {
     }
 
 
-     /**
-   * Setup AutoBuilder for PathPlanner.
-   */
-  public void setupPathPlanner()
-  {
-    // Load the RobotConfig from the GUI settings. You should probably
-    // store this in your Constants file
-    RobotConfig config;
-    try
+    /**
+     * Setup AutoBuilder for PathPlanner.
+     */
+    public void setupPathPlanner()
     {
-      config = RobotConfig.fromGUISettings();
+        RobotConfig config; // Load the RobotConfig from the GUI settings. You should probably store this in your Constants file
+        try
+        {
+            config = RobotConfig.fromGUISettings();
+            final boolean enableFeedforward = true;
 
-      final boolean enableFeedforward = true;
-      // Configure AutoBuilder last
-      AutoBuilder.configure(
-          swerveDrive::getPose,
-          // Robot pose supplier
-          swerveDrive::resetOdometry,
-          // Method to reset odometry (will be called if your auto has a starting pose)
-          swerveDrive::getRobotVelocity,
-          // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
-          (speedsRobotRelative, moduleFeedForwards) -> {
-            if (enableFeedforward)
-            {
-              swerveDrive.swerveDrive.drive(
-                  speedsRobotRelative,
-                  swerveDrive.swerveDrive.kinematics.toSwerveModuleStates(speedsRobotRelative),
-                  moduleFeedForwards.linearForces()
-                               );
-            } else
-            {
-              swerveDrive.setChassisSpeeds(speedsRobotRelative);
-            }
-          },
-          // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
-          new PPHolonomicDriveController(
-              // PPHolonomicController is the built in path following controller for holonomic drive trains
-              new PIDConstants(5.0, 0.0, 0.0),
-              // Translation PID constants
-              new PIDConstants(5.0, 0.0, 0.0)
-              // Rotation PID constants
-          ),
-          config,
-          // The robot configuration
-          () -> {
-            // Boolean supplier that controls when the path will be mirrored for the red alliance
-            // This will flip the path being followed to the red side of the field.
-            // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
+            // Configure AutoBuilder last
+            AutoBuilder.configure(
+                swerveDrive::getPose, // Robot pose supplier
+                swerveDrive::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+                swerveDrive::getRobotVelocity, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
+                (speedsRobotRelative, moduleFeedForwards) -> { // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
+                    if (enableFeedforward)
+                    {
+                        swerveDrive.swerveDrive.drive(
+                        speedsRobotRelative,
+                        swerveDrive.swerveDrive.kinematics.toSwerveModuleStates(speedsRobotRelative),
+                        moduleFeedForwards.linearForces());
+                    }
+                    else
+                    {
+                        swerveDrive.setChassisSpeeds(speedsRobotRelative);
+                    }
+                },
+                new PPHolonomicDriveController(
+                    new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+                    new PIDConstants(5.0, 0.0, 0.0) // Rotation PID constants
+                ),
+                config, // The robot configuration
+                () -> {
+                    // Boolean supplier that controls when the path will be mirrored for the red alliance
+                    // This will flip the path being followed to the red side of the field.
+                    // THE ORIGIN WILL REMAIN ON THE BLUE SIDE
 
-            var alliance = DriverStation.getAlliance();
-            if (alliance.isPresent())
-            {
-              return alliance.get() == DriverStation.Alliance.Red;
-            }
-            return false;
-          },
-          this
-          // Reference to this subsystem to set requirements
-                           );
-
-    } catch (Exception e)
-    {
-      // Handle exception as needed
-      e.printStackTrace();
+                    var alliance = DriverStation.getAlliance();
+                    if (alliance.isPresent())
+                    {
+                        return alliance.get() == DriverStation.Alliance.Red;
+                    }
+                    return false;
+                },
+                swerveDrive // Reference to this subsystem to set requirements
+            );
+        } catch (Exception e)
+        {
+            // Handle exception as needed
+            e.printStackTrace();
+        }
     }
-  }
 
 
     public Command getReleaseCoralCommand() {
@@ -298,6 +294,51 @@ public class AutonomousSubsystem extends SubsystemBase {
         return Commands.run(() -> tweakToCoral().schedule(), swerveDrive);
     }
 
+    //Didn't realize this was basicaly a duplicate of existing code above.  Not deleting yet in case it could help
+    // private void configureAutoBuilder() {
+	// 	Supplier<Pose2d> poseSupplier = () -> swerveDrive.getSwerveDrive().getPose();
+	// 	Consumer<Pose2d> resetPoseConsumer = (pose) -> swerveDrive.getSwerveDrive().resetOdometry(pose);
+	// 	Supplier<ChassisSpeeds> robotSpeedSupplier = () -> swerveDrive.getRobotVelocity();
+
+	// 	PIDConstants translationConstants = new PIDConstants(Constants.Autonomous.kP, Constants.Autonomous.kI, Constants.Autonomous.kD);
+	// 	PIDConstants rotationConstants = new PIDConstants(Constants.Autonomous.kP, Constants.Autonomous.kI, Constants.Autonomous.kD);
+
+	// 	boolean enableFeedForward = true;
+
+	// 	BiConsumer<ChassisSpeeds, DriveFeedforwards> driveOutput = (speedsRobotRelative, moduleFeedForwards) -> {
+	// 		if (enableFeedForward) {
+	// 			swerveDrive.getSwerveDrive().drive(
+	// 				speedsRobotRelative,
+	// 				swerveDrive.getSwerveDrive().kinematics.toSwerveModuleStates(speedsRobotRelative),
+	// 				moduleFeedForwards.linearForces());
+	// 		}
+	// 		else {
+	// 			swerveDrive.drive(speedsRobotRelative);
+	// 		}
+	// 		swerveDrive.swerveDrive.drive(speedsRobotRelative);
+	// 	};
+	// 	var holonomicDriveController = new PPHolonomicDriveController(translationConstants, rotationConstants);
+	// 	BooleanSupplier shouldFlip = () -> { return DriverStation.getAlliance().equals(Alliance.Blue) ? true : false; };
+
+	// 	RobotConfig config;
+	// 	try{
+	// 		config = RobotConfig.fromGUISettings();
+	// 		AutoBuilder.configure(
+	// 			poseSupplier, 
+	// 			resetPoseConsumer, 
+	// 			robotSpeedSupplier, 
+	// 			driveOutput, 
+	// 			holonomicDriveController, 
+	// 			config, 
+	// 			() -> { return DriverStation.getAlliance().equals(Alliance.Blue) ? true : false; },
+	// 			swerveDrive);
+	// 	}
+	// 	catch (Exception e) {
+	// 		// Handle exception as needed
+	// 		e.printStackTrace();
+	// 	}
+	// }
+
     public Command getBasicAutoCommand() {
         SequentialCommandGroup cmdGroup = new SequentialCommandGroup(new Command[0]);
 
@@ -403,5 +444,11 @@ public class AutonomousSubsystem extends SubsystemBase {
         //   - etc...
 
         return cmds.toArray(new Command[0]);
+    }
+
+    public enum AutoCommandSource {
+        Disabled,
+        ManualNudge,
+        PathPlannerAutoChooser
     }
 }

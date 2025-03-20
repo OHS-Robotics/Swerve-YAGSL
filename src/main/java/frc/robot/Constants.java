@@ -53,7 +53,13 @@ public final class Constants
   }
 
   public static final class Autonomous {
-    public static final String autoMode = "BasicAuto"; // AutoChooser|BasicAuto|PathFinder|disabled...
+    // public static final String autoMode = "BasicAuto"; // AutoChooser|BasicAuto|PathFinder|disabled...
+    public static final double maxSpeed_MetersPerSecond = 3;
+    public static final double maxAccel_MetersPerSecondSquared = 10;
+
+    public static final double kP = 1;
+    public static final double kI = 0;
+    public static final double kD = 0;
   }
 
   public static final class Elevator {
