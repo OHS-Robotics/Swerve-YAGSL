@@ -10,13 +10,9 @@ import au.grapplerobotics.interfaces.LaserCanInterface.Measurement;
 import au.grapplerobotics.interfaces.LaserCanInterface.RangingMode;
 
 public class CoralManipulatorSubsystem extends SubsystemBase{
-    private SparkMax motorLeft = new SparkMax(2, MotorType.kBrushless);
-    private SparkMax motorRight = new SparkMax(3, MotorType.kBrushless);
-    public final LaserCan laser = new LaserCan(38);
-    
-    private final double ingestCoralSpeed = -0.15;
-    private final double expelCoralSpeed = -0.75;
-    private final double speedCheckMargin = 0.05;
+    private SparkMax motorLeft = new SparkMax(Constants.CANIDs.CoralManipulatorMotorLeft, MotorType.kBrushless);
+    private SparkMax motorRight = new SparkMax(Constants.CANIDs.CoralManipulatorMotorRight, MotorType.kBrushless);
+    public final LaserCan laser = new LaserCan(Constants.CANIDs.CoralManipulatorLaser);
 
     public CoralManipulatorSubsystem() {
         try {
@@ -28,18 +24,18 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
     }
     
     public void ingestCoral() {
-        motorLeft.set(ingestCoralSpeed);
-        motorRight.set(-ingestCoralSpeed);
+        motorLeft.set(Constants.CoralManipulator.ingestCoralSpeed);
+        motorRight.set(-Constants.CoralManipulator.ingestCoralSpeed);
     }
 
     public void expelCoral() {
-        motorLeft.set(expelCoralSpeed);
-        motorRight.set(-expelCoralSpeed);
+        motorLeft.set(Constants.CoralManipulator.expelCoralSpeed);
+        motorRight.set(-Constants.CoralManipulator.expelCoralSpeed);
     }
 
     public void expelCoralTwist() {
-        motorLeft.set(expelCoralSpeed);
-        motorRight.set(-expelCoralSpeed * 0.5);
+        motorLeft.set(Constants.CoralManipulator.expelCoralSpeed);
+        motorRight.set(-Constants.CoralManipulator.expelCoralSpeed * 0.5);
     }
 
     public void stopMoving() {
@@ -58,7 +54,7 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
      * @return
      */
     public boolean isIngestingCoral() {
-        return motorLeft.get() > (ingestCoralSpeed - speedCheckMargin) && motorLeft.get() < (ingestCoralSpeed - speedCheckMargin);
+        return motorLeft.get() > (Constants.CoralManipulator.ingestCoralSpeed - Constants.CoralManipulator.speedCheckMargin) && motorLeft.get() < (Constants.CoralManipulator.ingestCoralSpeed - Constants.CoralManipulator.speedCheckMargin);
     }
 
     /**
@@ -66,6 +62,6 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
      * @return
      */
     public boolean isExpelingCoral() {
-        return motorLeft.get() > (expelCoralSpeed - speedCheckMargin) && motorLeft.get() < (expelCoralSpeed - speedCheckMargin); 
+        return motorLeft.get() > (Constants.CoralManipulator.expelCoralSpeed - Constants.CoralManipulator.speedCheckMargin) && motorLeft.get() < (Constants.CoralManipulator.expelCoralSpeed - Constants.CoralManipulator.speedCheckMargin); 
     }
 }

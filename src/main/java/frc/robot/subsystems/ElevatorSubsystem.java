@@ -17,8 +17,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 public class ElevatorSubsystem extends SubsystemBase {
 
-    private final SparkMax motor_left = new SparkMax(17, SparkLowLevel.MotorType.kBrushless);
-    private final SparkMax motor_right = new SparkMax(18, SparkLowLevel.MotorType.kBrushless);
+    private final SparkMax motor_left = new SparkMax(Constants.CANIDs.ElevatorMotorLeft, SparkLowLevel.MotorType.kBrushless);
+    private final SparkMax motor_right = new SparkMax(Constants.CANIDs.ElevatorMotorRight, SparkLowLevel.MotorType.kBrushless);
 
     // IMPORTANT NOTE: Right motor is configured as a follower of the left motor.  We will only command moves to the left motor
     
@@ -38,14 +38,13 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     /**
      * Constructor for the elevator subsystem
-     * @param revsPerInch how many rev's it takes to make the elevator move one inch
+     * @param revsPerDegree how many rev's it takes to make the elevator move one inch
      */
     public ElevatorSubsystem() {
         final SparkMaxConfig baseconf_left = new SparkMaxConfig();
         final SparkMaxConfig baseconf_right = new SparkMaxConfig();
 
-        encoder_left.setPosition(0);
-        encoder_right.setPosition(0);
+        zeroEncoders();
 
         baseconf_right.follow(motor_left, true);
 
@@ -75,9 +74,8 @@ public class ElevatorSubsystem extends SubsystemBase {
         return -encoder_left.getVelocity() / Constants.Elevator.revsPerInch;
     }
     
-    public void update() {
-        SmartDashboard.putNumber("Elevator Left", -encoder_left.getPosition());
-        SmartDashboard.putNumber("Elevator Right", -encoder_right.getPosition());
+    public void updateSmartDashboard() {
+        SmartDashboard.putNumber("Elevator Height (in)", currentPosition_Inches());
     }
 
     /**
@@ -214,6 +212,6 @@ public class ElevatorSubsystem extends SubsystemBase {
             }
         }
 
-        SmartDashboard.putNumber("Elevator Height (in.)", currentPosition_Inches());
+        updateSmartDashboard();
     }
 }

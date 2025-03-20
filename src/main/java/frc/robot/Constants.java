@@ -77,6 +77,32 @@ public final class Constants
 
   public static final class CoralManipulator {
     public static final double coralSenseDistance_mm = 30; //Maximum threshold for sensing coral with the laser
+    public static final double ingestCoralSpeed = -0.15;
+    public static final double expelCoralSpeed = -0.75;
+    public static final double speedCheckMargin = 0.05;
+  }
+
+  public static final class AlgaeManipulator {
+    public static final double speedRaise_DegPerSec = 0.05;
+    public static final double speedHold = 0.01;
+    public static final double speedLower_DegPerSecond = speedRaise_DegPerSec - speedHold;
+    public static final double slewRate = 1;
+    public static final double revsPerDegree = 0.2777;
+    public static final double atVelocityToleranceRevs = 0.05;
+
+    public static final double posBottom_Degrees = 45;
+    public static final double positionTop_Degrees = 0;
+  }
+
+  public static final class CANIDs {
+    public static final int CoralManipulatorMotorLeft = 2;
+    public static final int CoralManipulatorMotorRight = 3;
+    public static final int CoralManipulatorLaser = 38;
+
+    public static final int ElevatorMotorLeft = 17;
+    public static final int ElevatorMotorRight = 18;
+    
+    public static final int AlgaeManipulatorMotor = 20;
   }
 
 }
