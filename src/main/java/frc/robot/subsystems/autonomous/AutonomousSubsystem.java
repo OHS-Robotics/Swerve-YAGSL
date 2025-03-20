@@ -1,5 +1,6 @@
 package frc.robot.subsystems.autonomous;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -315,34 +316,46 @@ public class AutonomousSubsystem extends SubsystemBase {
             myDSLocation = optDSLocation.getAsInt();
         }
 
-        // myAlliance = Alliance.Blue;  // Red/Blue
-        // myDSLocation = 3;  // 1|2|3
-
-        double speed_MPS = 0.75;
+        // myAlliance = Alliance.Red;  // Red|Blue
+        // myDSLocation = 1;           // 1|2|3
 
         System.out.println("Autonomous Alliance: " + myAlliance);
         System.out.println("Drivers Station Location: " + myDSLocation);
+
+        double speed_MPS = 0.75;
+
+        // Lengths of paths from the sides
+        double length_1 = 1.40;
+        double length_2 = 1.65;
+        double length_3 = 4.00;
 
         if (myAlliance == Alliance.Red) {
             switch (myDSLocation) {
                 case 1:
                     swerveDrive.swerveDrive.resetOdometry(new Pose2d(10, 1, Rotation2d.fromDegrees(60)));
                     // Assumption: robot is positioned on proper side...
-                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.40, 0.0, speed_MPS));
-                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.85, 60.0, speed_MPS));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, length_1, 0.0, speed_MPS));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, length_2, 60.0, speed_MPS));
+                    cmdGroup.addCommands(getCoralCommands());
+                    cmdGroup.addCommands(new Nudge(swerveDrive, length_2, 240.0, speed_MPS));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, length_3, 0.0, speed_MPS));
                 break;
     
                 case 3:
-                    swerveDrive.swerveDrive.resetOdometry(new Pose2d(10, 7, Rotation2d.fromDegrees(-60)));
+                    swerveDrive.swerveDrive.resetOdometry(new Pose2d(10, 7, Rotation2d.fromDegrees(300)));
                     // Assumption: robot is positioned on proper side...
-                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.40, 0.0, speed_MPS));
-                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.85, -60.0, speed_MPS));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, length_1, 0.0, speed_MPS));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, length_2, 300.0, speed_MPS));
+                    cmdGroup.addCommands(getCoralCommands());
+                    cmdGroup.addCommands(new Nudge(swerveDrive, length_2, 120.0, speed_MPS));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, length_3, 0.0, speed_MPS));
                 break;
     
                 default:
                     swerveDrive.swerveDrive.resetOdometry(new Pose2d(10, 4, Rotation2d.fromDegrees(0)));
                     // Assumption: robot is positioned in middle...
                     cmdGroup.addCommands(new Nudge(swerveDrive, 1.20, 0, speed_MPS));
+                    cmdGroup.addCommands(getCoralCommands());
                 break;
             }
         }
@@ -351,33 +364,44 @@ public class AutonomousSubsystem extends SubsystemBase {
                 case 1:
                     swerveDrive.swerveDrive.resetOdometry(new Pose2d(7.5, 1, Rotation2d.fromDegrees(120)));
                     // Assumption: robot is positioned on proper side...
-                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.40, 180.0, speed_MPS));
-                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.85, 120.0, speed_MPS));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, length_1, 180.0, speed_MPS));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, length_2, 120.0, speed_MPS));
+                    cmdGroup.addCommands(getCoralCommands());
+                    cmdGroup.addCommands(new Nudge(swerveDrive, length_2, 300.0, speed_MPS));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, length_3, 180.0, speed_MPS));
                 break;
     
                 case 3:
                     swerveDrive.swerveDrive.resetOdometry(new Pose2d(7.5, 7, Rotation2d.fromDegrees(240)));
                     // Assumption: robot is positioned on proper side...
-                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.40, 180.0, speed_MPS));
-                    cmdGroup.addCommands(new Nudge(swerveDrive, 1.85, 240.0, speed_MPS));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, length_1, 180.0, speed_MPS));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, length_2, 240.0, speed_MPS));
+                    cmdGroup.addCommands(getCoralCommands());
+                    cmdGroup.addCommands(new Nudge(swerveDrive, length_2, 60.0, speed_MPS));
+                    cmdGroup.addCommands(new Nudge(swerveDrive, length_3, 180.0, speed_MPS));
                 break;
     
                 default:
                     swerveDrive.swerveDrive.resetOdometry(new Pose2d(7.5, 4, Rotation2d.fromDegrees(180)));
                     // Assumption: robot is positioned in middle...
                     cmdGroup.addCommands(new Nudge(swerveDrive, 1.20, 180, speed_MPS));
+                    cmdGroup.addCommands(getCoralCommands());
                 break;
             }
         }
 
-        
+        return cmdGroup;
+    }
 
+    private Command[] getCoralCommands() {
+        ArrayList<Command> cmds = new ArrayList<>();
+
+        cmds.add(Commands.print("TODO: Coral Commands..."));
         // TODO: Add commands to:
         //   - position the elevator
         //   - eject the coral
         //   - etc...
 
-        return cmdGroup;
+        return cmds.toArray(new Command[0]);
     }
-
 }
