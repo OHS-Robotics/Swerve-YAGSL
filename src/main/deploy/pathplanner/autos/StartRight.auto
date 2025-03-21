@@ -13,25 +13,13 @@
         {
           "type": "named",
           "data": {
-            "name": "releaseCoral"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Right-2-Path"
+            "name": "expelCoral"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 3.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Right-3-Path"
+            "waitTime": 0.5
           }
         },
         {
@@ -41,9 +29,63 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "ingestCoral"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Right-3-Path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "expelCoral"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right-2-Path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "ingestCoral"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Right-3-Path"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "expelCoral"
           }
         }
       ]

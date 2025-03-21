@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import au.grapplerobotics.LaserCan;
@@ -44,9 +46,12 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
     }
 
     public boolean CoralLoaded() {
-        var dist = laser.getMeasurement();
-        if (dist == null) dist = new Measurement(0, 0, 0, false, 0, null);
-        return dist.distance_mm < Constants.CoralManipulator.coralSenseDistance_mm;
+        if (RobotBase.isReal()) {
+            var dist = laser.getMeasurement();
+            if (dist == null) dist = new Measurement(0, 0, 0, false, 0, null);
+            return dist.distance_mm < Constants.CoralManipulator.coralSenseDistance_mm;
+        }
+        return true;
     }
 
     /**

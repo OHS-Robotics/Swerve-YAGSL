@@ -12,6 +12,7 @@ import java.util.function.LongSupplier;
 import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -37,7 +38,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.CoralManipulatorSubsystem;
 import frc.robot.commands.CoralManipulator.AutoReleaseCoralCommand;
+import frc.robot.commands.CoralManipulator.LoadOrStopCoral;
+import frc.robot.commands.CoralManipulator.UnloadCoralTwist;
 import frc.robot.commands.swervedrive.Nudge;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
@@ -85,6 +89,7 @@ import frc.robot.subsystems.external.LimelightHelpers.RawFiducial;
  */
 public class AutonomousSubsystem extends SubsystemBase {
     public SwerveSubsystem swerveDrive;
+    public CoralManipulatorSubsystem coralManipulator;
     private final PathConstraints constraints = new PathConstraints(1.0, 1.0, 2*Math.PI, 4*Math.PI);
     private AprilTagFieldLayout field;
 
@@ -94,11 +99,13 @@ public class AutonomousSubsystem extends SubsystemBase {
         * 1 = go to the april tag's position based on where it appears on the limelight
         * 2 = ignore april tag related commands
         */
-        private long aprilTagMethod = 1;
+        private long aprilTagMethod = 2;
+        
         @SuppressWarnings("unused")
         LongSupplier getAprilTagMethod = () -> aprilTagMethod;
         @SuppressWarnings("unused")
         LongConsumer setAprilTagMethod = (method) -> aprilTagMethod = method;
+
         
         
         /*@Override
@@ -112,10 +119,13 @@ public class AutonomousSubsystem extends SubsystemBase {
     
     public AprilTagController aprilTagController = new AprilTagController();
 
-    public AutonomousSubsystem(SwerveSubsystem swerve) {
+    public AutonomousSubsystem(SwerveSubsystem swerve, CoralManipulatorSubsystem coral) {
+        coralManipulator = coral;
         swerveDrive = swerve;
         field = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
-        
+
+        NamedCommands.registerCommand("ingestCoral", new UnloadCoralTwist(coralManipulator));
+        NamedCommands.registerCommand("expelCoral", new LoadOrStopCoral(coralManipulator));
 
         setupPathPlanner();
     }
@@ -272,7 +282,7 @@ public class AutonomousSubsystem extends SubsystemBase {
                 // get the vector to the target and move in that direction
                 // this won't adjust rotation because you can't get the direction of the april tag
                 // from raw fiducials
-                Pose2d targetOffset = new Pose2d(Math.sin(target.txnc * (Math.PI / 180.0)) * target.distToRobot * 0.9, Math.cos(target.txnc * (Math.PI / 180.0)) * target.distToRobot * 0.9, new Rotation2d()).rotateBy(swerveDrive.swerveDrive.getYaw());
+                Pose2d targetOffset = new Pose2d(Math.sin(target.txnc) * target.distToRobot * 0.9, Math.cos(target.txnc) * target.distToRobot * 0.9, new Rotation2d()).rotateBy(swerveDrive.swerveDrive.getYaw());
                 Pose2d targetPose = swerveDrive.getPose()
                 .plus(new Transform2d(targetOffset.getX(), targetOffset.getY(), new Rotation2d())) // offset by vector
                 .plus(new Transform2d(-0.4572, -0.2032, new Rotation2d())); // account for limelight offset
@@ -280,6 +290,10 @@ public class AutonomousSubsystem extends SubsystemBase {
 
                 System.out.println("Tweaking");
                 return AutoBuilder.followPath(getPathTo(targetPose));
+            }
+
+            case 2: {
+                return new Nudge(swerveDrive, target.distToRobot * 0.9, target.txnc + swerveDrive.swerveDrive.getYaw().getDegrees(), Constants.MAX_SPEED*0.5);
             }
 
             default: {

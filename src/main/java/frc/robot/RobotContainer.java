@@ -48,8 +48,8 @@ public class RobotContainer {
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 	public final CoralManipulatorSubsystem coralManipulator = new CoralManipulatorSubsystem();
 	public final ElevatorSubsystem elevator = new ElevatorSubsystem();
-	public final AutonomousSubsystem autonomous = new AutonomousSubsystem(drivebase);
 	public final AlgaeManipulatorSubsystem algaeManipulator = new AlgaeManipulatorSubsystem();
+	public final AutonomousSubsystem autonomous = new AutonomousSubsystem(drivebase, coralManipulator);
 
 	private final SendableChooser<Command> pathPlannerChooser;
 	private final SendableChooser<AutoCommandSource> autoCommandSourceChooser;
@@ -333,6 +333,7 @@ public class RobotContainer {
 	}
 
 	public Command getAutoInitCommand() {
+		System.out.println(autoCommandSourceChooser.getSelected().toString());
 		if (autoCommandSourceChooser.getSelected() == AutoCommandSource.PathPlannerAutoChooser) {
 			return pathPlannerChooser.getSelected();
 		} else if (autoCommandSourceChooser.getSelected() == AutoCommandSource.ManualNudge) {

@@ -1,5 +1,6 @@
 package frc.robot.commands.CoralManipulator;
 
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 
@@ -27,6 +28,6 @@ public class UnloadCoral extends Command{
 
     @Override
     public boolean isFinished() {
-        return !coralManipulator.CoralLoaded();
+        return RobotBase.isReal() ? !coralManipulator.CoralLoaded() : true;
     }
 }
