@@ -25,29 +25,90 @@ public final class Constants
   public static final double MAX_SPEED  = Units.feetToMeters(10);
   // Maximum speed of the robot in meters per second, used to limit acceleration.
 
-//  public static final class AutonConstants
-//  {
-//
-//    public static final PIDConstants TRANSLATION_PID = new PIDConstants(0.7, 0, 0);
-//    public static final PIDConstants ANGLE_PID       = new PIDConstants(0.4, 0, 0.01);
-//  }
-
   public static final class DrivebaseConstants
   {
 
-    // Hold time on motor brakes when disabled
-    public static final double WHEEL_LOCK_TIME = 10; // seconds
   }
 
-  public static class OperatorConstants
+  public static class Operator
   {
-
     // Joystick Deadband
-    public static final double DEADBAND = 0.25;
-    public static final double LEFT_Y_DEADBAND = 0.25;
-    public static final double RIGHT_X_DEADBAND = 0.25;
-    public static final double TURN_CONSTANT = 6;
-    public static final double JOYSTICK_SCALE_FACTOR = 0.8;
-    public static final boolean USE_KEYBOARD_IN_SIM = true; // Whether to expect keyboard or controller controls in sim
+    public static final double deadband = 0.05;
+    public static final double deadbandLeftY = 0.05;
+    public static final double deadbandRightX = 0.05;
+    public static final double turnConstant = 6;
+    public static final double scaleTranslationHighGear = 0.8;
+    public static final double scaleTranslationLowGear = 0.2;
+    public static final double scaleRotationHighGear = 0.8;
+    public static final double scaleRotationLowGear = 0.2;
+    public static final boolean useKeyboardInSim = true; // Whether to expect keyboard or controller controls in sim
+
+    public static final double nudgeSpeed_MetersPerSec = 0.5;
+    public static final double nudgeDistForward_Meters = Units.inchesToMeters(2);
+    public static final double nudgeDistBack_Meters = Units.inchesToMeters(2);
+    public static final double nudgeDistLeft_Meters = Units.inchesToMeters(2);
+    public static final double nudgeDistRight_Meters = Units.inchesToMeters(2);
+
+    public static final boolean useJoystick = true; //false = use xbox
   }
+
+  public static final class Autonomous {
+    // public static final String autoMode = "BasicAuto"; // AutoChooser|BasicAuto|PathFinder|disabled...
+    public static final double maxSpeed_MetersPerSecond = 3;
+    public static final double maxAccel_MetersPerSecondSquared = 10;
+
+    public static final double kP = 1;
+    public static final double kI = 0;
+    public static final double kD = 0;
+  }
+
+  public static final class Elevator {
+    public static final double heightBottom_Inches = 0;
+    public static final double heightL1_Inches = 15.5;
+    public static final double heightL2_Inches = 23.5;
+    public static final double heightL3_Inches = 39.0;
+    public static final double heightL4_Inches = 65.25;
+    public static final double heightMax_Inches = 68;
+    
+
+    public static final double jogUpVel_InchesPerSec = 0.3; //0.1366;
+    public static final double stopVel_InchesPerSec = 0.035; //Velocity which we actually apply to stop. Serves as holding torque
+    public static final double jogDownVel_InchesPerSec = jogUpVel_InchesPerSec - stopVel_InchesPerSec; //0.0683;
+
+    public static final double revsPerInch = 1.04;
+
+    public static final double slewRate = 2;
+    public static final double atVelocityToleranceRevs = 0.05;
+  }
+
+  public static final class CoralManipulator {
+    public static final double coralSenseDistance_mm = 30; //Maximum threshold for sensing coral with the laser
+    public static final double ingestCoralSpeed = -0.15;
+    public static final double expelCoralSpeed = -0.75;
+    public static final double speedCheckMargin = 0.05;
+  }
+
+  public static final class AlgaeManipulator {
+    public static final double speedRaise_DegPerSec = 0.05;
+    public static final double speedHold = 0.01;
+    public static final double speedLower_DegPerSecond = speedRaise_DegPerSec - speedHold;
+    public static final double slewRate = 1;
+    public static final double revsPerDegree = 0.2777;
+    public static final double atVelocityToleranceRevs = 0.05;
+
+    public static final double posBottom_Degrees = 45;
+    public static final double positionTop_Degrees = 0;
+  }
+
+  public static final class CANIDs {
+    public static final int CoralManipulatorMotorLeft = 2;
+    public static final int CoralManipulatorMotorRight = 3;
+    public static final int CoralManipulatorLaser = 38;
+
+    public static final int ElevatorMotorLeft = 17;
+    public static final int ElevatorMotorRight = 18;
+    
+    public static final int AlgaeManipulatorMotor = 20;
+  }
+
 }

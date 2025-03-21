@@ -13,7 +13,6 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
-
   public Robot() {
     m_robotContainer = new RobotContainer();
     enableLiveWindowInTest(true);
@@ -21,23 +20,17 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic() {
+    // System.out.println(m_robotContainer.driverJoystick.getTwist());
     CommandScheduler.getInstance().run();
+  
+    SmartDashboard.putData("Field", m_robotContainer.drivebase.swerveDrive.field);
 
-    SmartDashboard.putNumber("Front Left - Drive Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[0].getDriveMotor().getPosition());
-    SmartDashboard.putNumber("Front Left - Turn Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[0].getAngleMotor().getPosition());
-    SmartDashboard.putNumber("Front Left - Abs Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[0].getAbsoluteEncoder().getAbsolutePosition());
+    SmartDashboard.putNumber("Swerve Pose (X, m)", m_robotContainer.drivebase.swerveDrive.getPose().getX());
+    SmartDashboard.putNumber("Swerve Pose (Y, m)", m_robotContainer.drivebase.swerveDrive.getPose().getY());
+    SmartDashboard.putNumber("Swerve Pose (R, deg)", m_robotContainer.drivebase.swerveDrive.getPose().getRotation().getDegrees());
 
-    SmartDashboard.putNumber("Front Right - Drive Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[1].getDriveMotor().getPosition());
-    SmartDashboard.putNumber("Front Right - Turn Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[1].getAngleMotor().getPosition());
-    SmartDashboard.putNumber("Front Right - Abs Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[1].getAbsoluteEncoder().getAbsolutePosition());
-
-    SmartDashboard.putNumber("Back Left - Drive Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[2].getDriveMotor().getPosition());
-    SmartDashboard.putNumber("Back Left - Turn Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[2].getAngleMotor().getPosition());
-    SmartDashboard.putNumber("Back Left - Abs Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[2].getAbsoluteEncoder().getAbsolutePosition());
-
-    SmartDashboard.putNumber("Back Right - Drive Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[3].getDriveMotor().getPosition());
-    SmartDashboard.putNumber("Back Right - Turn Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[3].getAngleMotor().getPosition());
-    SmartDashboard.putNumber("Back Right - Abs Pos", m_robotContainer.drivebase.getSwerveDrive().getModules()[3].getAbsoluteEncoder().getAbsolutePosition());
+    // SmartDashboard.putData(SendableCameraWrapper.wrap("limelight", "http://limelight.local:5800/stream.mjpg"));
+    // Shuffleboard.getTab("camera").add(SendableCameraWrapper.wrap("limelight", "http://limelight.local:5800/stream.mjpg"));
   }
 
   @Override
@@ -51,7 +44,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    // disabled for competition
+    m_autonomousCommand = m_robotContainer.getAutoInitCommand();
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
@@ -66,13 +60,16 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    m_robotContainer.teleopInit();
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    m_robotContainer.elevator.updateSmartDashboard();
+  }
 
   @Override
   public void teleopExit() {}
