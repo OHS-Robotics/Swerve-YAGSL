@@ -52,6 +52,7 @@ public class SwerveSubsystem extends SubsystemBase
    */
   public final SwerveDrive swerveDrive;
   public boolean real = RobotBase.isReal();
+  public long startTime;
   /**
    * AprilTag field layout.
    */
@@ -73,6 +74,7 @@ public class SwerveSubsystem extends SubsystemBase
   public SwerveSubsystem(File directory) {
     // Configure the Telemetry before creating the SwerveDrive to avoid unnecessary objects being created.
     SwerveDriveTelemetry.verbosity = TelemetryVerbosity.HIGH; // todo: change this to INFO
+    startTime = System.currentTimeMillis();
     try {
       swerveDrive = new SwerveParser(directory).createSwerveDrive(
         Constants.MAX_SPEED,
@@ -108,6 +110,7 @@ public class SwerveSubsystem extends SubsystemBase
    * @param controllerCfg Swerve Controller.
    */
   public SwerveSubsystem(SwerveDriveConfiguration driveCfg, SwerveControllerConfiguration controllerCfg) {
+    startTime = System.currentTimeMillis();
     swerveDrive = new SwerveDrive(
         driveCfg,
         controllerCfg,
@@ -143,8 +146,8 @@ public class SwerveSubsystem extends SubsystemBase
       LimelightHelpers.SetRobotOrientation("", -swerveDrive.getYaw().getDegrees(), 0.0, 0.0, 0, 0.0, 0.0);
       LimelightHelpers.PoseEstimate limelightMeasurement = LimelightHelpers.getBotPoseEstimate_wpiBlue("");
       if (limelightMeasurement != null) {
-        if (limelightMeasurement.tagCount >= 3) {  // Only trust measurement if we see lots of tags because one limelight is somewhat unreliable
-          swerveDrive.setVisionMeasurementStdDevs(VecBuilder.fill(.7, .7, 9999999));
+        if (limelightMeasurement.tagCount >= 3 || (limelightMeasurement.tagCount >= 2 && System.currentTimeMillis() - startTime < 5000)) {  // Only trust measurement if we see lots of tags or during the first few seconds because otherwise it's unreliable
+          swerveDrive.setVisionMeasurementStdDevs(VecBuilder.fill(limelightMeasurement.tagCount >= 3 ? .3 : .7, limelightMeasurement.tagCount >= 3 ? .3 : .7, 9999999));
           swerveDrive.addVisionMeasurement(
               limelightMeasurement.pose,
               limelightMeasurement.timestampSeconds
