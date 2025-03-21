@@ -52,7 +52,7 @@
     "rotation": 61.18920625702696
   },
   "reversed": false,
-  "folder": "StartRightPaths",
+  "folder": "coralStartPaths",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0

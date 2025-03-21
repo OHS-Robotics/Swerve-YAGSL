@@ -68,7 +68,8 @@ public final class Constants
     public static final double heightL2_Inches = 23.5;
     public static final double heightL3_Inches = 39.0;
     public static final double heightL4_Inches = 65.25;
-    public static final double heightMax_Inches = 68;
+    public static final double heightNet_Inches = 101.0; // this might be wrong, we need to check
+    public static final double heightMax_Inches = 68; // possibly change to ~105 to be able to score in the barge's net
     
 
     public static final double jogUpVel_InchesPerSec = 0.3; //0.1366;

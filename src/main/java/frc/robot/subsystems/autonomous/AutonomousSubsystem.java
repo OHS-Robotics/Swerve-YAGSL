@@ -91,6 +91,8 @@ import frc.robot.subsystems.external.LimelightHelpers.RawFiducial;
  *        - The PathPlanner "Auto" runs the command when the robot has reached the Coral tree.
  */
 public class AutonomousSubsystem extends SubsystemBase {
+    // note: don't make different versions of the same path to change depending on the team
+    // if you check "reset odometry" then it will be relative to whatever team you start on
     public SwerveSubsystem swerveDrive;
     public CoralManipulatorSubsystem coralManipulator;
     public ElevatorSubsystem elevatorSubsystem;
@@ -101,7 +103,8 @@ public class AutonomousSubsystem extends SubsystemBase {
         /*
         * 0 = go to april tag's position on the field using the position estimation
         * 1 = go to the april tag's position based on where it appears on the limelight
-        * 2 = ignore april tag related commands
+        * 2 = go to april tag's position based on where it appears on the limelight using the nudge command
+        * anything else = ignore april tag related commands
         */
         private long aprilTagMethod = 2;
         
@@ -129,8 +132,15 @@ public class AutonomousSubsystem extends SubsystemBase {
         elevatorSubsystem = elevator;
         field = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
-        NamedCommands.registerCommand("ingestCoral", new UnloadCoralTwist(coralManipulator));
-        NamedCommands.registerCommand("expelCoral", new LoadOrStopCoral(coralManipulator));
+        NamedCommands.registerCommand("ingestCoral", (new ElevatorBottom(elevatorSubsystem)).andThen(new LoadOrStopCoral(coralManipulator)));
+        NamedCommands.registerCommand("elevatorL1", new ElevatorLevel1(elevatorSubsystem));
+        NamedCommands.registerCommand("expelL1", (new ElevatorLevel1(elevatorSubsystem)).andThen(new UnloadCoralTwist(coralManipulator)));
+
+        // placeholders, to be replaced when algae commands are finished
+        NamedCommands.registerCommand("collectL2Algae", (new ElevatorLevel2(elevatorSubsystem).andThen(Commands.none())));
+        NamedCommands.registerCommand("depositAlgaeProcessor", (new ElevatorBottom(elevatorSubsystem).andThen(Commands.none())));
+        // v this is bad and we need to test the elevator height first!
+        NamedCommands.registerCommand("depositAlgaeNet", (new ElevatorNet(elevatorSubsystem)).andThen(Commands.none()));
 
         setupPathPlanner();
     }
