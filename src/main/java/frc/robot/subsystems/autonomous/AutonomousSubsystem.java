@@ -93,6 +93,7 @@ import frc.robot.subsystems.external.LimelightHelpers.RawFiducial;
 public class AutonomousSubsystem extends SubsystemBase {
     public SwerveSubsystem swerveDrive;
     public CoralManipulatorSubsystem coralManipulator;
+    public ElevatorSubsystem elevatorSubsystem;
     private final PathConstraints constraints = new PathConstraints(1.0, 1.0, 2*Math.PI, 4*Math.PI);
     private AprilTagFieldLayout field;
 
@@ -124,8 +125,8 @@ public class AutonomousSubsystem extends SubsystemBase {
 
     public AutonomousSubsystem(SwerveSubsystem swerve, ElevatorSubsystem elevator, CoralManipulatorSubsystem coral) {
         swerveDrive = swerve;
-        this.elevatorSBS = elevator;
-        this.coralSBS = coral;
+        coralManipulator = coral;
+        elevatorSubsystem = elevator;
         field = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
 
         NamedCommands.registerCommand("ingestCoral", new UnloadCoralTwist(coralManipulator));
@@ -440,11 +441,11 @@ public class AutonomousSubsystem extends SubsystemBase {
     }
 
     private Command getElevatorUpCommand() {
-        return new ElevatorLevel1(elevatorSBS);
+        return new ElevatorLevel1(elevatorSubsystem);
     }
 
     private Command getElevatorDownCommand() {
-        return new ElevatorBottom(elevatorSBS);
+        return new ElevatorBottom(elevatorSubsystem);
     }
 
     public enum AutoCommandSource {
