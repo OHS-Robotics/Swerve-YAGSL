@@ -48,6 +48,7 @@ public class RobotContainer {
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 	public final CoralManipulatorSubsystem coralManipulator = new CoralManipulatorSubsystem();
 	public final ElevatorSubsystem elevator = new ElevatorSubsystem();
+	public final AutonomousSubsystem autonomous = new AutonomousSubsystem(drivebase, elevator, coralManipulator);
 	public final AlgaeManipulatorSubsystem algaeManipulator = new AlgaeManipulatorSubsystem();
 	public final AutonomousSubsystem autonomous = new AutonomousSubsystem(drivebase, coralManipulator);
 
