@@ -10,6 +10,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -19,6 +20,9 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
     private SparkMax motorLift = new SparkMax(Constants.CANIDs.AlgaeManipulatorMotor, MotorType.kBrushless);
     private SlewRateLimiter rateLimiterLeft = new SlewRateLimiter(Constants.AlgaeManipulator.slewRate);
     private final RelativeEncoder encoderLift = motorLift.getEncoder();
+
+    DigitalInput limitHigh = new DigitalInput(Constants.AlgaeManipulator.limitIOSlotHigh);
+    DigitalInput limitLow = new DigitalInput(Constants.AlgaeManipulator.limitIOSlotLow);
 
     public double targetPosition_Revs = 0;
     private double targetVel_Revs = 0;
@@ -52,6 +56,14 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
     
     public void updateSmartDashboard() {
         SmartDashboard.putNumber("Algae Manipulator Lift Pos (deg)", currentPosition_Degrees());
+    }
+
+    public boolean atHighLimit() {
+        return limitHigh.get();
+    }
+
+    public boolean atLowLimit() {
+        return limitLow.get();
     }
 
     /**
@@ -157,6 +169,22 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
         return valueIsWithinTolerance(encoderLift.getVelocity(), targetVelCheckValue_Revs, Constants.AlgaeManipulator.atVelocityToleranceRevs);
     }
 
+    /**
+     * Tells whether the algae manipulator's velocity is close to zero, within the threshold set in the constants file
+     * @return Whether the algae manipulator is moving
+     */
+    public boolean isMoving() {
+        return isMoving(Constants.AlgaeManipulator.atVelocityToleranceRevs);
+    }
+
+    /**
+     * Tells whether the algae manipulator's velocity is close to zero, within a custom threshold
+     * @return Whether the algae manipulator is moving
+     */
+    public boolean isMoving(double tolerance_RevsPerSecond) {
+        return !valueIsWithinTolerance(currentVelocity_RevsPerSec(), 0, tolerance_RevsPerSecond);
+    }
+
     public boolean valueIsWithinTolerance(double val, double target, double tolerance) {
         var absTarget = Math.abs(target);
         var absVal = Math.abs(val);
@@ -185,6 +213,10 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
             else {
                 accelerating = false;
             }
+        }
+
+        if (isMoving() && (atHighLimit() || atLowLimit())) {
+            stop();
         }
 
         updateSmartDashboard();

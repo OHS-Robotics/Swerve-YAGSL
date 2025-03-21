@@ -16,8 +16,9 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.autonomous.AutonomousSubsystem;
 import frc.robot.subsystems.autonomous.AutonomousSubsystem.AutoCommandSource;
-import frc.robot.commands.AlgaeManipulator.AlgaeManipulatorBottom;
-import frc.robot.commands.AlgaeManipulator.AlgaeManipulatorTop;
+import frc.robot.commands.AlgaeManipulator.AlgaeManipulatorJogDown;
+import frc.robot.commands.AlgaeManipulator.AlgaeManipulatorJogUp;
+import frc.robot.commands.AlgaeManipulator.AlgaeManipulatorStop;
 import frc.robot.commands.CoralManipulator.LoadOrStopCoral;
 import frc.robot.commands.CoralManipulator.UnloadCoral;
 import frc.robot.commands.CoralManipulator.UnloadCoralTwist;
@@ -178,16 +179,19 @@ public class RobotContainer {
 	}
 
 	private void SetupAlgaeManipulatorCommands() {
-		AlgaeManipulatorTop top = new AlgaeManipulatorTop(algaeManipulator);
-		AlgaeManipulatorBottom bottom = new AlgaeManipulatorBottom(algaeManipulator);
+		AlgaeManipulatorJogUp jogUp = new AlgaeManipulatorJogUp(algaeManipulator);
+		AlgaeManipulatorJogDown jogDown = new AlgaeManipulatorJogDown(algaeManipulator);
+		AlgaeManipulatorStop stop = new AlgaeManipulatorStop(algaeManipulator);
 
 		if (Constants.Operator.useJoystick) {
-			driverJoystick.povLeft().onTrue(top);
-			driverJoystick.povRight().onTrue(bottom);
+			driverJoystick.povLeft().onTrue(jogUp);
+			driverJoystick.povRight().onTrue(jogDown);
+			driverJoystick.povCenter().onTrue(stop);
 		}
 		else {
-			driverXbox.povLeft().onTrue(top);
-			driverXbox.povRight().onTrue(bottom);
+			driverXbox.povLeft().onTrue(jogUp);
+			driverXbox.povRight().onTrue(jogDown);
+			driverXbox.povCenter().onTrue(stop);
 		}
 	}
 
