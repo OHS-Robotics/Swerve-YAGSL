@@ -9,7 +9,6 @@ import java.io.File;
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -40,9 +39,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import swervelib.SwerveInputStream;
 
 public class RobotContainer {
-	// public final AutonomousSubsystem autonomousSubsystem = new AutonomousSubsystem();
 
-	// final CommandXboxController driverXbox = new CommandXboxController(0);
 	final CommandJoystick driverJoystick = new CommandJoystick(0);
 	final CommandXboxController driverXbox = new CommandXboxController(0);
 
@@ -166,11 +163,6 @@ public class RobotContainer {
 		SetupElevatorCommands();
 		SetupNudgeCommands();
 		SetupAlgaeManipulatorCommands();
-
-		if (RobotBase.isSimulation()) {
-			// Reset the robot to a semi-arbritary position
-			// driverJoystick.button(14).onTrue(Commands.runOnce(() -> drivebase.resetOdometry(new Pose2d(3, 3, new Rotation2d()))));
-		}
 	}
 
 	private void SetupAutonomousCommands() {
@@ -288,7 +280,6 @@ public class RobotContainer {
 	 * Execute the swerve drive's drive function.
 	 * Automatically selects the appropriate control scheme (keyboard for simulation) and reference frame (field vs. robot)
 	*/
-	@SuppressWarnings("unused")
 	public void DriveRobot(boolean referenceFrameIsField) {
 		if (referenceFrameIsField) {
 			if (Robot.isSimulation() && Constants.Operator.useKeyboardInSim) {
@@ -309,29 +300,6 @@ public class RobotContainer {
 		}
 		
 	}
-
-	// public Command getAutonomousCommand() {
-	// 	// currently unused
-		
-	// 	if ("PathFinder".equals(Constants.Autonomous.autoMode)) {
-	// 		String autoPathName = null;
-
-	// 		// Paths should be configured for the "BLUE" alliance ad they will be
-	// 		// automtically reversed for the "RED" alliance as configured...
-    //         var alliance = DriverStation.getAlliance();
-    //         if (alliance.isPresent()) {
-	// 			System.out.println("Autonomous Aliance: " + alliance);
-    //         }
-
-	// 		autoPathName = "simplepath";
-	// 		// autoPathName = "StartCenter";
-	// 		// autoPathName = "StartLeft";
-	
-	// 		return drivebase.getAutonomousCommand(autoPathName);	
-	// 	} else {
-	// 		return Commands.print("WARNING: AUTONOMOUS MODE IS DISABLED");
-	// 	}
-	// }
 
 	public void setMotorBrake(boolean brake) {
 		drivebase.setMotorBrake(brake);

@@ -1,15 +1,10 @@
 package frc.robot.subsystems.autonomous;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.function.BiConsumer;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 import java.util.function.LongConsumer;
 import java.util.function.LongSupplier;
-import java.util.function.Supplier;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -21,7 +16,6 @@ import com.pathplanner.lib.path.GoalEndState;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.Waypoint;
-import com.pathplanner.lib.util.DriveFeedforwards;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -29,8 +23,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.util.struct.Struct;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -42,11 +34,9 @@ import frc.robot.subsystems.CoralManipulatorSubsystem;
 import frc.robot.commands.CoralManipulator.AutoReleaseCoralCommand;
 import frc.robot.commands.CoralManipulator.LoadOrStopCoral;
 import frc.robot.commands.CoralManipulator.UnloadCoralTwist;
-import frc.robot.commands.CoralManipulator.UnloadCoralTwist;
 import frc.robot.commands.Elevator.*;
 import frc.robot.commands.swervedrive.Nudge;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
-import frc.robot.subsystems.CoralManipulatorSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.external.LimelightHelpers;
 import frc.robot.subsystems.external.LimelightHelpers.RawFiducial;
