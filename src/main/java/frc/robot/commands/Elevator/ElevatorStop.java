@@ -12,7 +12,6 @@ public class ElevatorStop extends Command{
 
     @Override
     public void initialize() {
-        System.out.println("Elevator Stop");
     }
 
     @Override

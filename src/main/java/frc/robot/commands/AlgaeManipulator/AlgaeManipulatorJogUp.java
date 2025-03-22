@@ -9,11 +9,13 @@ public class AlgaeManipulatorJogUp extends Command{
 
     public AlgaeManipulatorJogUp(AlgaeManipulatorSubsystem algaeManipulator) {
         this.algaeManipulator = algaeManipulator;
+        
     }
 
     @Override
     public void initialize() {
         algaeManipulator.jogUp(Constants.AlgaeManipulator.speedRaise_DegPerSec);
+        System.out.println("Algae Jog Up");
     }
 
     @Override

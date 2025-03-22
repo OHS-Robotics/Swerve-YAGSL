@@ -69,7 +69,7 @@ public final class Constants
     public static final double heightL3_Inches = 39.0;
     public static final double heightL4_Inches = 65.25;
     public static final double heightNet_Inches = 101.0; // this might be wrong, we need to check
-    public static final double heightMax_Inches = 68; // possibly change to ~105 to be able to score in the barge's net
+    public static final double heightMax_Inches = 77; // possibly change to ~105 to be able to score in the barge's net
     
 
     public static final double jogUpVel_InchesPerSec = 0.3; //0.1366;
@@ -90,12 +90,12 @@ public final class Constants
   }
 
   public static final class AlgaeManipulator {
-    public static final double speedRaise_DegPerSec = 0.05;
-    public static final double speedHold = 0.01;
-    public static final double speedLower_DegPerSec = speedRaise_DegPerSec - speedHold;
-    public static final double slewRate = 1;
+    public static final double speedRaise_DegPerSec = 0.5;
+    public static final double speedHold_DegPerSec = 0.000;
+    public static final double speedLower_DegPerSec = 0.2;
+    public static final double slewRate_DegPerSecPerSec = 0.4;
     public static final double revsPerDegree = 0.2777;
-    public static final double atVelocityToleranceRevs = 0.05;
+    public static final double atVelocityToleranceRevs = 0.001;
 
     public static final double posBottom_Degrees = 45;
     public static final double positionTop_Degrees = 0;
@@ -107,12 +107,11 @@ public final class Constants
   public static final class CANIDs {
     public static final int CoralManipulatorMotorLeft = 2;
     public static final int CoralManipulatorMotorRight = 3;
-    public static final int CoralManipulatorLaser = 38;
+    public static final int CoralManipulatorLaser = 37;
 
     public static final int ElevatorMotorLeft = 17;
     public static final int ElevatorMotorRight = 18;
     
     public static final int AlgaeManipulatorMotor = 20;
   }
-
 }

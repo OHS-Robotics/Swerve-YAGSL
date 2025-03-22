@@ -9,11 +9,13 @@ public class AlgaeManipulatorStop extends Command{
 
     public AlgaeManipulatorStop(AlgaeManipulatorSubsystem algaeManipulator) {
         this.algaeManipulator = algaeManipulator;
+        
     }
 
     @Override
     public void initialize() {
         algaeManipulator.stop();
+        System.out.println("Algae Stop");
     }
 
     @Override

@@ -451,11 +451,13 @@ public class AutonomousSubsystem extends SubsystemBase {
     }
 
     private Command getElevatorUpCommand() {
-        return new ElevatorLevel1(elevatorSubsystem);
+        return Commands.print("***** Elevaroor Up *****");
+        // return new ElevatorLevel1(elevatorSubsystem);
     }
 
     private Command getElevatorDownCommand() {
-        return new ElevatorBottom(elevatorSubsystem);
+        return Commands.print("***** Elevator Down *****");
+        // return new ElevatorBottom(elevatorSubsystem);
     }
 
     public enum AutoCommandSource {

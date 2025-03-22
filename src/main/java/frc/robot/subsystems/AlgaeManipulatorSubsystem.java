@@ -18,7 +18,7 @@ import frc.robot.Constants;
 public class AlgaeManipulatorSubsystem extends SubsystemBase {
 
     private SparkMax motorLift = new SparkMax(Constants.CANIDs.AlgaeManipulatorMotor, MotorType.kBrushless);
-    private SlewRateLimiter rateLimiterLeft = new SlewRateLimiter(Constants.AlgaeManipulator.slewRate);
+    private SlewRateLimiter rateLimiterLeft = new SlewRateLimiter(Constants.AlgaeManipulator.slewRate_DegPerSecPerSec * Constants.AlgaeManipulator.revsPerDegree);
     private final RelativeEncoder encoderLift = motorLift.getEncoder();
 
     DigitalInput limitHigh = new DigitalInput(Constants.AlgaeManipulator.limitIOSlotHigh);
@@ -59,11 +59,11 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
     }
 
     public boolean atHighLimit() {
-        return limitHigh.get();
+        return !limitHigh.get();
     }
 
     public boolean atLowLimit() {
-        return limitLow.get();
+        return !limitLow.get();
     }
 
     /**
@@ -110,7 +110,8 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
         }
 
         //Up is negative for this elevator
-        beginAcceleration(-speed_DegPerSecond * Constants.AlgaeManipulator.revsPerDegree);
+        // beginAcceleration(-speed_DegPerSecond * Constants.AlgaeManipulator.revsPerDegree);
+        motorLift.set(-speed_DegPerSecond * Constants.AlgaeManipulator.revsPerDegree);
     }
 
     /**
@@ -124,7 +125,8 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
         }
 
         //Down is positive for this elevator
-        beginAcceleration(speed_DegPerSecond * Constants.AlgaeManipulator.revsPerDegree);
+        // beginAcceleration(speed_DegPerSecond * Constants.AlgaeManipulator.revsPerDegree);
+        motorLift.set(speed_DegPerSecond * Constants.AlgaeManipulator.revsPerDegree);
     }
 
     /**
@@ -132,7 +134,8 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
      */
     public void stop() {
         targetVel_Revs = Constants.AlgaeManipulator.revsPerDegree;
-        beginAcceleration(targetVel_Revs, 0);
+        // beginAcceleration(targetVel_Revs, 0);
+        motorLift.set(Constants.AlgaeManipulator.speedHold_DegPerSec * Constants.AlgaeManipulator.revsPerDegree);
     }
 
     /**
@@ -185,6 +188,14 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
         return !valueIsWithinTolerance(currentVelocity_RevsPerSec(), 0, tolerance_RevsPerSecond);
     }
 
+    public boolean isMovingUp() {
+        return isMoving() && (currentVelocity_RevsPerSec() > 0);
+    }
+
+    public boolean isMovingDown() {
+        return isMoving() && (currentVelocity_RevsPerSec() < 0);
+    }
+
     public boolean valueIsWithinTolerance(double val, double target, double tolerance) {
         var absTarget = Math.abs(target);
         var absVal = Math.abs(val);
@@ -215,9 +226,18 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
             }
         }
 
-        if (isMoving() && (atHighLimit() || atLowLimit())) {
+        if (isMovingUp() && atHighLimit()) {
             stop();
         }
+
+        if (isMovingDown() && atLowLimit()) {
+            stop();
+        }
+
+        SmartDashboard.putBoolean("Algae Limit High", atHighLimit());
+        SmartDashboard.putBoolean("Algae Limit Low", atLowLimit());
+        SmartDashboard.putBoolean("Algae Moving Up", isMovingUp());
+        SmartDashboard.putBoolean("Algae Moving Down", isMovingDown());
 
         updateSmartDashboard();
     }

@@ -14,6 +14,7 @@ public class AlgaeManipulatorJogDown extends Command{
     @Override
     public void initialize() {
         algaeManipulator.jogDown(Constants.AlgaeManipulator.speedLower_DegPerSec);
+        System.out.println("Algae Jog Down");
     }
 
     @Override

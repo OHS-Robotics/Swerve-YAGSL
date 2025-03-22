@@ -5,6 +5,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import au.grapplerobotics.LaserCan;
@@ -68,5 +69,10 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
      */
     public boolean isExpelingCoral() {
         return motorLeft.get() > (Constants.CoralManipulator.expelCoralSpeed - Constants.CoralManipulator.speedCheckMargin) && motorLeft.get() < (Constants.CoralManipulator.expelCoralSpeed - Constants.CoralManipulator.speedCheckMargin); 
+    }
+
+    @Override
+    public void periodic() {
+        SmartDashboard.putNumber("Coral Laser Dist (in.)", laser.getMeasurement().distance_mm / 25.4);
     }
 }

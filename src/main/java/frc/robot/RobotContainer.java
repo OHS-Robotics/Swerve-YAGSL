@@ -44,7 +44,7 @@ public class RobotContainer {
 
 	// final CommandXboxController driverXbox = new CommandXboxController(0);
 	final CommandJoystick driverJoystick = new CommandJoystick(0);
-	final CommandXboxController driverXbox = new CommandXboxController(1);
+	final CommandXboxController driverXbox = new CommandXboxController(0);
 
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 	public final CoralManipulatorSubsystem coralManipulator = new CoralManipulatorSubsystem();
@@ -189,9 +189,10 @@ public class RobotContainer {
 			driverJoystick.povCenter().onTrue(stop);
 		}
 		else {
-			driverXbox.povLeft().onTrue(jogUp);
-			driverXbox.povRight().onTrue(jogDown);
-			driverXbox.povCenter().onTrue(stop);
+			driverXbox.povLeft().onTrue(jogDown);
+			driverXbox.povLeft().onFalse(stop);
+			driverXbox.povRight().onTrue(jogUp);
+			driverXbox.povRight().onFalse(stop);
 		}
 	}
 
