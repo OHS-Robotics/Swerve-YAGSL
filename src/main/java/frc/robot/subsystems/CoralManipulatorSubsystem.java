@@ -72,6 +72,8 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Coral Laser Dist (in.)", laser.getMeasurement().distance_mm / 25.4);
+        if (RobotBase.isReal()) {
+            SmartDashboard.putNumber("Coral Laser Dist (in.)", laser.getMeasurement().distance_mm / 25.4);
+        }
     }
 }

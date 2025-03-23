@@ -1,5 +1,6 @@
 package frc.robot.subsystems.autonomous;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -25,6 +26,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -354,100 +356,124 @@ public class AutonomousSubsystem extends SubsystemBase {
 
         // Lengths of paths from the sides
         double length_side_1 = 1.40;
-        double length_side_2 = 1.55;
+        double length_side_2 = 1.55;  // Towards the reef
+        double length_side_2b = 1.20; // Back from the reef
         double length_side_3 = 4.00;
 
-        if (myAlliance == Alliance.Red) {
-            switch (myDSLocation) {
-                case 1:
-                    swerveDrive.swerveDrive.resetOdometry(new Pose2d(redStartLine, position_1, Rotation2d.fromDegrees(60)));
-                    // Assumption: robot is positioned on proper side...
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_side_1, 0.0, speed_MPS));
-                    cmdGroup.addCommands(getElevatorUpCommand());
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_side_2, 60.0, speed_MPS));
-                    cmdGroup.addCommands(getCoralEjectCommand());
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_side_2, 240.0, speed_MPS));
-                    cmdGroup.addCommands(getElevatorDownCommand());
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_side_3, 0.0, speed_MPS));
-                break;
-    
-                case 3:
-                    swerveDrive.swerveDrive.resetOdometry(new Pose2d(redStartLine, position_3, Rotation2d.fromDegrees(300)));
-                    // Assumption: robot is positioned on proper side...
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_side_1, 0.0, speed_MPS));
-                    cmdGroup.addCommands(getElevatorUpCommand());
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_side_2, 300.0, speed_MPS));
-                    cmdGroup.addCommands(getCoralEjectCommand());
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_side_2, 120.0, speed_MPS));
-                    cmdGroup.addCommands(getElevatorDownCommand());
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_side_3, 0.0, speed_MPS));
-                break;
-    
-                default:
-                    swerveDrive.swerveDrive.resetOdometry(new Pose2d(redStartLine, position_2, Rotation2d.fromDegrees(0)));
-                    // Assumption: robot is positioned in middle...
-                    cmdGroup.addCommands(getElevatorUpCommand());
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_middle_1, 0.0, speed_MPS));
-                    cmdGroup.addCommands(getCoralEjectCommand());
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_middle_2, 180.0, speed_MPS));
-                    cmdGroup.addCommands(getElevatorDownCommand());
-                break;
-            }
+        // Initial for RED...
+        double myStartLine = redStartLine;
+        double myPosition1 = position_1;
+        double myPosition2 = position_2;
+        double myPosition3 = position_3;
+        double myDS1Rotation = 60.0;
+        double myDS2Rotation = 0.0;
+        double myDS3Rotation = 300.0;
+
+        // Blue overrides...
+        if (myAlliance == Alliance.Blue) {
+            myStartLine = blueStartLine;
+            myPosition1 = position_3;
+            myPosition2 = position_2;
+            myPosition3 = position_1;
+            myDS1Rotation = 240.0;
+            myDS2Rotation = 180.0;
+            myDS3Rotation = 120.0;
         }
-        else {
-            switch (myDSLocation) {
-                case 1:
-                    swerveDrive.swerveDrive.resetOdometry(new Pose2d(blueStartLine, position_1, Rotation2d.fromDegrees(120)));
-                    // Assumption: robot is positioned on proper side...
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_side_1, 180.0, speed_MPS));
-                    cmdGroup.addCommands(getElevatorUpCommand());
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_side_2, 120.0, speed_MPS));
-                    cmdGroup.addCommands(getCoralEjectCommand());
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_side_2, 300.0, speed_MPS));
-                    cmdGroup.addCommands(getElevatorDownCommand());
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_side_3, 180.0, speed_MPS));
-                break;
-    
-                case 3:
-                    swerveDrive.swerveDrive.resetOdometry(new Pose2d(blueStartLine, position_3, Rotation2d.fromDegrees(240)));
-                    // Assumption: robot is positioned on proper side...
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_side_1, 180.0, speed_MPS));
-                    cmdGroup.addCommands(getElevatorUpCommand());
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_side_2, 240.0, speed_MPS));
-                    cmdGroup.addCommands(getCoralEjectCommand());
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_side_2, 60.0, speed_MPS));
-                    cmdGroup.addCommands(getElevatorDownCommand());
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_side_3, 180.0, speed_MPS));
-                break;
-    
-                default:
-                    swerveDrive.swerveDrive.resetOdometry(new Pose2d(blueStartLine, position_2, Rotation2d.fromDegrees(180)));
-                    // Assumption: robot is positioned in middle...
-                    cmdGroup.addCommands(getElevatorUpCommand());
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_middle_1, 180.0, speed_MPS));
-                    cmdGroup.addCommands(getCoralEjectCommand());
-                    cmdGroup.addCommands(new Nudge(swerveDrive, length_middle_2, 0.0, speed_MPS));
-                    cmdGroup.addCommands(getElevatorDownCommand());
-                break;
-            }
+
+        switch (myDSLocation) {
+            case 1:
+                Pose2d resetPose1 = new Pose2d(myStartLine, myPosition1, Rotation2d.fromDegrees(myDS1Rotation));
+                swerveDrive.swerveDrive.resetOdometry(resetPose1);
+
+                cmdGroup.addCommands(getCoralInjectCommands());
+                cmdGroup.addCommands(new Nudge(swerveDrive, length_side_1, simConversion(180.0, myAlliance), speed_MPS));
+                cmdGroup.addCommands(getElevatorUpCommands());
+                cmdGroup.addCommands(new Nudge(swerveDrive, length_side_2, simConversion(240.0, myAlliance), speed_MPS));
+                cmdGroup.addCommands(getCoralEjectCommands());
+                cmdGroup.addCommands(new Nudge(swerveDrive, length_side_2b, simConversion(60.0, myAlliance), speed_MPS));
+                cmdGroup.addCommands(getElevatorDownCommands());
+                cmdGroup.addCommands(new Nudge(swerveDrive, length_side_3, simConversion(180.0, myAlliance), speed_MPS));
+            break;
+
+            case 3:
+                Pose2d resetPose3 = new Pose2d(myStartLine, myPosition3, Rotation2d.fromDegrees(myDS3Rotation));
+                swerveDrive.swerveDrive.resetOdometry(resetPose3);
+
+                cmdGroup.addCommands(getCoralInjectCommands());
+                cmdGroup.addCommands(new Nudge(swerveDrive, length_side_1, simConversion(180.0, myAlliance), speed_MPS));
+                cmdGroup.addCommands(getElevatorUpCommands());
+                cmdGroup.addCommands(new Nudge(swerveDrive, length_side_2, simConversion(120.0, myAlliance), speed_MPS));
+                cmdGroup.addCommands(getCoralEjectCommands());
+                cmdGroup.addCommands(new Nudge(swerveDrive, length_side_2b, simConversion(300.0,myAlliance), speed_MPS));
+                cmdGroup.addCommands(getElevatorDownCommands());
+                cmdGroup.addCommands(new Nudge(swerveDrive, length_side_3, simConversion(180.0, myAlliance), speed_MPS));
+            break;
+
+            default:
+                Pose2d resetPose2 = new Pose2d(myStartLine, myPosition2, Rotation2d.fromDegrees(myDS2Rotation));
+                swerveDrive.swerveDrive.resetOdometry(resetPose2);
+
+                cmdGroup.addCommands(getCoralInjectCommands());
+                cmdGroup.addCommands(getElevatorUpCommands());
+                cmdGroup.addCommands(new Nudge(swerveDrive, length_middle_1, simConversion(180.0, myAlliance), speed_MPS));
+                cmdGroup.addCommands(getCoralEjectCommands());
+                cmdGroup.addCommands(new Nudge(swerveDrive, length_middle_2, simConversion(0.0, myAlliance), speed_MPS));
+                cmdGroup.addCommands(getElevatorDownCommands());
+            break;
         }
 
         return cmdGroup;
     }
 
-    private Command getCoralEjectCommand() {
-        return Commands.print("***** EJECTING CORAL *****");
-        // return new UnloadCoralTwist(coralSBS);
+    /**
+     * The robot behaves differently in "simulation" vs. "real" mode...
+     * For the "RED" alliance simulation, the direction is inversed 180 degrees.
+     * For the "BLUE" alliance...
+     * @param angle 360 degree notation
+     * @param alliance
+     * @return
+     */
+     private double simConversion(double angle, Alliance alliance) {
+        if (alliance == Alliance.Red) {
+            if (RobotBase.isReal()) {
+                return angle;
+            }
+            return (angle + 180.0) % 360.0;
+        } else {
+            if (RobotBase.isReal()) {
+                // TODO: TEST THIS...
+                return (angle + 180.0) % 360.0;            
+            }
+            return angle;
+        }
     }
 
-    private Command getElevatorUpCommand() {
-        return Commands.print("***** Elevaroor Up *****");
-        // return new ElevatorLevel1(elevatorSubsystem);
+    private Command[] getCoralInjectCommands() {
+        ArrayList<Command> cmds = new ArrayList<>();
+        cmds.add(Commands.print("***** INJECTING CORAL *****"));
+        // cmds.add(new LoadOrStopCoral(coralManipulator));
+        return cmds.toArray(new Command[0]);
     }
 
-    private Command getElevatorDownCommand() {
-        return Commands.print("***** Elevator Down *****");
-        // return new ElevatorBottom(elevatorSubsystem);
+    private Command[] getCoralEjectCommands() {
+        ArrayList<Command> cmds = new ArrayList<>();
+        cmds.add(Commands.print("***** EJECTING CORAL *****"));
+        // cmds.add(new UnloadCoralTwist(coralManipulator));
+        return cmds.toArray(new Command[0]);
+    }
+
+    private Command[] getElevatorUpCommands() {
+        ArrayList<Command> cmds = new ArrayList<>();
+        cmds.add(Commands.print("***** Elevator Up *****"));
+        // cmds.add(new ElevatorLevel1(elevatorSubsystem));
+        return cmds.toArray(new Command[0]);
+    }
+
+    private Command[] getElevatorDownCommands() {
+        ArrayList<Command> cmds = new ArrayList<>();
+        cmds.add(Commands.print("***** Elevator Down *****"));
+        // cmds.add(new ElevatorBottom(elevatorSubsystem));
+        return cmds.toArray(new Command[0]);
     }
 
     public enum AutoCommandSource {
