@@ -204,7 +204,7 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         //Safeguard against going too high
-        if (currentPosition_Degrees() > Constants.Elevator.heightMax_Inches && currentVelocity_DegreesPerSec() > 0.1) {
+        if (currentPosition_Degrees() > Constants.Elevator.heightSoftLimit_Inches && currentVelocity_DegreesPerSec() > 0.1) {
             stop();
             moveInProgress = false; 
         }

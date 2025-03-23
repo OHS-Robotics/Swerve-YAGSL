@@ -63,23 +63,25 @@ public final class Constants
   }
 
   public static final class Elevator {
-    public static final double heightBottom_Inches = 0;
-    public static final double heightL1_Inches = 15.5;
-    public static final double heightL2_Inches = 23.5;
-    public static final double heightL3_Inches = 39.0;
-    public static final double heightL4_Inches = 65.25;
+    public static final double heightBottom_Inches = 1;
+    public static final double heightL1_Inches = 18;
+    public static final double heightL2_Inches = 26;
+    public static final double heightL3_Inches = 41.5;
+    public static final double heightL4_Inches = 67.75;
+    public static final double heightSoftLimit_Inches = 75; // possibly change to ~105 to be able to score in the barge's net
     public static final double heightNet_Inches = 101.0; // this might be wrong, we need to check
-    public static final double heightMax_Inches = 77; // possibly change to ~105 to be able to score in the barge's net
-    
+    public static final double heightStopVelTransition = 51; //height above which we change to the high stop vel
 
     public static final double jogUpVel_InchesPerSec = 0.3; //0.1366;
-    public static final double stopVel_InchesPerSec = 0.035; //Velocity which we actually apply to stop. Serves as holding torque
-    public static final double jogDownVel_InchesPerSec = jogUpVel_InchesPerSec - stopVel_InchesPerSec; //0.0683;
+    public static final double stopVelLow_InchesPerSec = 0.038; //Velocity which we actually apply to stop. Serves as holding torque
+    public static final double stopVelHigh_InchesPerSec = 0.05; //Velocity which we actually apply to stop. Serves as holding torque
+    public static final double jogDownVel_InchesPerSec = jogUpVel_InchesPerSec - stopVelLow_InchesPerSec; //0.0683;
 
     public static final double revsPerInch = 1.04;
 
     public static final double slewRate = 2;
     public static final double atVelocityToleranceRevs = 0.05;
+    public static final double atPositionToleranceInches = 0.5;
   }
 
   public static final class CoralManipulator {
@@ -90,7 +92,7 @@ public final class Constants
   }
 
   public static final class AlgaeManipulator {
-    public static final double speedRaise_DegPerSec = 0.5;
+    public static final double speedRaise_DegPerSec = 0.8;
     public static final double speedHold_DegPerSec = 0.000;
     public static final double speedLower_DegPerSec = 0.2;
     public static final double slewRate_DegPerSecPerSec = 0.4;
@@ -107,7 +109,7 @@ public final class Constants
   public static final class CANIDs {
     public static final int CoralManipulatorMotorLeft = 2;
     public static final int CoralManipulatorMotorRight = 3;
-    public static final int CoralManipulatorLaser = 37;
+    public static final int CoralManipulatorLaser = 38;
 
     public static final int ElevatorMotorLeft = 17;
     public static final int ElevatorMotorRight = 18;

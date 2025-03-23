@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+import com.fasterxml.jackson.databind.util.CompactStringObjectMap;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkLowLevel;
 import com.revrobotics.spark.SparkMax;
@@ -83,21 +84,22 @@ public class ElevatorSubsystem extends SubsystemBase {
      */
     public void moveAbsoluteBegin(double position_Inches, double speed_InchesPerSecond) { // position is in inches
         targetPosition_Revs = position_Inches * Constants.Elevator.revsPerInch;
-        targetVel_Revs = speed_InchesPerSecond * Constants.Elevator.revsPerInch;
+        // targetVel_Revs = speed_InchesPerSecond * Constants.Elevator.revsPerInch;
         moveInProgress = true;
 
-        if (targetPosition_Revs > currentPosition_Revs()) {
-            jogUp(targetVel_Revs);
+        if (position_Inches > currentPosition_Inches()) {
+            jogUp(speed_InchesPerSecond);
         }
         else {
-            jogDown(targetVel_Revs);
+            jogDown(speed_InchesPerSecond);
         }
 
-        System.out.println("Commanded Speed: " + targetVel_Revs);
+        System.out.println("Commanded Position: " + position_Inches);
+        System.out.println("Commanded Speed: " + speed_InchesPerSecond);
     }
 
     public boolean atTargetPosition() {
-        return valueIsWithinTolerance(currentPosition_Revs(), targetPosition_Revs, 0.5);
+        return valueIsWithinTolerance(currentPosition_Revs(), targetPosition_Revs, Constants.Elevator.atPositionToleranceInches * Constants.Elevator.revsPerInch);
     }
 
     /**
@@ -121,7 +123,9 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
 
         //Up is negative for this elevator
-        beginAcceleration(-speed_InchesPerSecond * Constants.Elevator.revsPerInch);
+        // beginAcceleration(-speed_InchesPerSecond * Constants.Elevator.revsPerInch);
+        targetVel_Revs = -speed_InchesPerSecond * Constants.Elevator.revsPerInch;
+        motor_left.set(targetVel_Revs);
     }
 
     /**
@@ -135,15 +139,24 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
 
         //Down is positive for this elevator
-        beginAcceleration(speed_InchesPerSecond * Constants.Elevator.revsPerInch);
+        // beginAcceleration(speed_InchesPerSecond * Constants.Elevator.revsPerInch);
+        targetVel_Revs = speed_InchesPerSecond * Constants.Elevator.revsPerInch;
+        motor_left.set(targetVel_Revs);
     }
 
     /**
      * Stops elevator motion
      */
     public void stop() {
-        targetVel_Revs = -Constants.Elevator.stopVel_InchesPerSec;
-        beginAcceleration(targetVel_Revs, 0);
+        if (currentPosition_Inches() > Constants.Elevator.heightStopVelTransition) {
+            targetVel_Revs = -Constants.Elevator.stopVelHigh_InchesPerSec * Constants.Elevator.revsPerInch;
+        }
+        else {
+            targetVel_Revs = -Constants.Elevator.stopVelLow_InchesPerSec * Constants.Elevator.revsPerInch;
+        }
+        
+        // beginAcceleration(targetVel_Revs, 0);
+        motor_left.set(targetVel_Revs);
     }
 
     /**
@@ -190,7 +203,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         //Safeguard against going too high
-        if (currentPosition_Inches() > Constants.Elevator.heightMax_Inches && currentVelocity_InchesPerSec() > 0.1) {
+        if (currentPosition_Inches() > Constants.Elevator.heightSoftLimit_Inches && currentVelocity_InchesPerSec() > 0.1) {
             stop();
             moveInProgress = false; 
         }
