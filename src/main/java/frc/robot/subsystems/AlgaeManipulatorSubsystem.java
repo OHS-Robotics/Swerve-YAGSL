@@ -9,6 +9,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -54,7 +56,7 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
     }
     
     public void updateSmartDashboard() {
-        SmartDashboard.putNumber("Algae Manipulator Lift Pos (deg)", currentPosition_Degrees());
+        SmartDashboard.putData("Algae Manipulator", new AlgaeManipulatorData(this));
     }
 
     public boolean atHighLimit() {
@@ -168,7 +170,7 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
      * @return Whether we're within tolerance of our target value
      */
     public boolean atTargetVel() {
-        return valueIsWithinTolerance(encoderLift.getVelocity(), targetVelCheckValue_Revs, Constants.AlgaeManipulator.atVelocityToleranceRevs);
+        return valueIsWithinTolerance(encoderLift.getVelocity(), targetVelCheckValue_Revs, Constants.AlgaeManipulator.atVelocityTolerance_RevsPerSec);
     }
 
     /**
@@ -176,7 +178,7 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
      * @return Whether the algae manipulator is moving
      */
     public boolean isMoving() {
-        return isMoving(Constants.AlgaeManipulator.atVelocityToleranceRevs);
+        return isMoving(Constants.AlgaeManipulator.atVelocityTolerance_RevsPerSec);
     }
 
     /**
@@ -233,11 +235,35 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
             stop();
         }
 
-        SmartDashboard.putBoolean("Algae Limit High", atHighLimit());
-        SmartDashboard.putBoolean("Algae Limit Low", atLowLimit());
-        SmartDashboard.putBoolean("Algae Moving Up", isMovingUp());
-        SmartDashboard.putBoolean("Algae Moving Down", isMovingDown());
-
         updateSmartDashboard();
+    }
+
+    class AlgaeManipulatorData implements Sendable{
+        AlgaeManipulatorSubsystem algaeManip;
+
+        AlgaeManipulatorData(AlgaeManipulatorSubsystem algaeManip) {
+            this.algaeManip = algaeManip;
+        }
+
+        boolean getIsAtTop() {
+            return algaeManip.atHighLimit();
+        }
+
+        boolean getIsAtBottom() {
+            return algaeManip.atLowLimit();
+        }
+
+        double getVelocity_DegPerSec() {
+            return algaeManip.currentVelocity_DegreesPerSec();
+        }
+
+
+        @Override
+        public void initSendable(SendableBuilder builder) {
+            builder.setSmartDashboardType("Algae Manip");
+            builder.addBooleanProperty("At Top", this::getIsAtTop, null);
+            builder.addBooleanProperty("At Bottom", this::getIsAtBottom, null);
+            builder.addDoubleProperty("Velocity (deg/sec)", this::getVelocity_DegPerSec, null);
+        }
     }
 }

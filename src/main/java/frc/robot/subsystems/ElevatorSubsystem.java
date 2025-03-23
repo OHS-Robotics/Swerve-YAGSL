@@ -2,6 +2,8 @@ package frc.robot.subsystems;
 
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -74,7 +76,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     }
     
     public void updateSmartDashboard() {
-        SmartDashboard.putNumber("Elevator Height (in)", currentPosition_Inches());
+        SmartDashboard.putData("Elevator", new ElevatorData(this));
     }
 
     /**
@@ -212,5 +214,30 @@ public class ElevatorSubsystem extends SubsystemBase {
         }
 
         updateSmartDashboard();
+    }
+
+    class ElevatorData implements Sendable{
+        ElevatorSubsystem elevator;
+
+        ElevatorData(ElevatorSubsystem elevator) {
+            this.elevator = elevator;
+        }
+
+        double getHeight() {
+            return elevator.currentPosition_Inches();
+        }
+
+        double getVelocity() {
+            return elevator.currentVelocity_InchesPerSec();
+        }
+
+
+        @Override
+        public void initSendable(SendableBuilder builder) {
+            // TODO Auto-generated method stub
+            builder.setSmartDashboardType("Elevator");
+            builder.addDoubleProperty("Height (in)", this::getHeight, null);
+            builder.addDoubleProperty("Velocity (in/s)", this::getVelocity, null);
+        }
     }
 }

@@ -87,6 +87,7 @@ public final class Constants
     public static final double ingestCoralSpeed = -0.15;
     public static final double expelCoralSpeed = -0.75;
     public static final double speedCheckMargin = 0.05;
+    public static final double expalCoralTwistRightMotorScale = 0.5;
   }
 
   public static final class AlgaeManipulator {
@@ -95,7 +96,7 @@ public final class Constants
     public static final double speedLower_DegPerSec = 0.2;
     public static final double slewRate_DegPerSecPerSec = 0.4;
     public static final double revsPerDegree = 0.2777;
-    public static final double atVelocityToleranceRevs = 0.001;
+    public static final double atVelocityTolerance_RevsPerSec = 0.001;
 
     public static final double posBottom_Degrees = 45;
     public static final double positionTop_Degrees = 0;
