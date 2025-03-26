@@ -14,10 +14,10 @@ public class ElevatorBottom extends Command{
     @Override
     public void initialize() {
         if (elevator.currentPosition_Revs() < Constants.Elevator.heightBottom_Inches) {
-            elevator.moveAbsoluteBegin(Constants.Elevator.heightBottom_Inches,  Constants.Elevator.jogUpVel_InchesPerSec);
+            elevator.moveAbsoluteBegin(Constants.Elevator.heightBottom_Inches,  Constants.Elevator.moveUpVel_InchesPerSec);
         }
         else {
-            elevator.moveAbsoluteBegin(Constants.Elevator.heightBottom_Inches,  Constants.Elevator.jogDownVel_InchesPerSec);
+            elevator.moveAbsoluteBegin(Constants.Elevator.heightBottom_Inches,  Constants.Elevator.moveDownVel_InchesPerSec);
         }
     }
 

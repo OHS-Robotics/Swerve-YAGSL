@@ -72,10 +72,12 @@ public final class Constants
     public static final double heightNet_Inches = 101.0; // this might be wrong, we need to check
     public static final double heightStopVelTransition = 51; //height above which we change to the high stop vel
 
-    public static final double jogUpVel_InchesPerSec = 0.3; //0.1366;
+    public static final double moveUpVel_InchesPerSec = 0.3; //Velocity for moving up when commanding moves to reef levels
     public static final double stopVelLow_InchesPerSec = 0.038; //Velocity which we actually apply to stop. Serves as holding torque
     public static final double stopVelHigh_InchesPerSec = 0.05; //Velocity which we actually apply to stop. Serves as holding torque
-    public static final double jogDownVel_InchesPerSec = jogUpVel_InchesPerSec - stopVelLow_InchesPerSec; //0.0683;
+    public static final double moveDownVel_InchesPerSec = moveUpVel_InchesPerSec - stopVelLow_InchesPerSec; //Velocity for moving down when commanding moves to reef levels
+    public static final double jogUpVel_InchesPerSec = 0.15; //velocity for manual jogging up
+    public static final double jogDownVel_InchesPerSec = jogUpVel_InchesPerSec - stopVelLow_InchesPerSec; //velocity for manual jogging down
 
     public static final double revsPerInch = 1.04;
 

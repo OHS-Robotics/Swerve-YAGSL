@@ -14,10 +14,10 @@ public class ElevatorNet extends Command{
     @Override
     public void initialize() {
         if (elevator.currentPosition_Inches() < Constants.Elevator.heightNet_Inches) {
-            elevator.moveAbsoluteBegin(Constants.Elevator.heightNet_Inches,  Constants.Elevator.jogUpVel_InchesPerSec);
+            elevator.moveAbsoluteBegin(Constants.Elevator.heightNet_Inches,  Constants.Elevator.moveUpVel_InchesPerSec);
         }
         else {
-            elevator.moveAbsoluteBegin(Constants.Elevator.heightNet_Inches,  Constants.Elevator.jogDownVel_InchesPerSec);
+            elevator.moveAbsoluteBegin(Constants.Elevator.heightNet_Inches,  Constants.Elevator.moveDownVel_InchesPerSec);
         }
 
     }

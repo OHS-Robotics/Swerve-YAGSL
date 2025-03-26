@@ -351,14 +351,14 @@ public class AutonomousSubsystem extends SubsystemBase {
         double speed_MPS = 0.75;
 
         // Middle path
-        double length_middle_1 = 1.15;
+        double length_middle_1 = 1.90;
         double length_middle_2 = 0.25;
 
         // Lengths of paths from the sides
-        double length_side_1 = 1.40;
-        double length_side_2 = 1.55;  // Towards the reef
-        double length_side_2b = 1.20; // Back from the reef
-        double length_side_3 = 4.00;
+        double length_side_1 = 1.30;
+        double length_side_2 = 2.05;  // Towards the reef
+        double length_side_2b = 1.50; // Back from the reef
+        double length_side_3 = 1.00;
 
         // Initial for RED...
         double myStartLine = redStartLine;
@@ -386,13 +386,13 @@ public class AutonomousSubsystem extends SubsystemBase {
                 swerveDrive.swerveDrive.resetOdometry(resetPose1);
 
                 cmdGroup.addCommands(getCoralInjectCommands());
-                cmdGroup.addCommands(new Nudge(swerveDrive, length_side_1, simConversion(180.0, myAlliance), speed_MPS));
+                cmdGroup.addCommands(getNudgeCommands(length_side_1, 180.0, myAlliance, speed_MPS));
                 cmdGroup.addCommands(getElevatorUpCommands());
-                cmdGroup.addCommands(new Nudge(swerveDrive, length_side_2, simConversion(240.0, myAlliance), speed_MPS));
+                cmdGroup.addCommands(getNudgeCommands(length_side_2, 240.0, myAlliance, speed_MPS));
                 cmdGroup.addCommands(getCoralEjectCommands());
-                cmdGroup.addCommands(new Nudge(swerveDrive, length_side_2b, simConversion(60.0, myAlliance), speed_MPS));
+                //cmdGroup.addCommands(getNudgeCommands(length_side_2b, 60.0, myAlliance, speed_MPS));
                 cmdGroup.addCommands(getElevatorDownCommands());
-                cmdGroup.addCommands(new Nudge(swerveDrive, length_side_3, simConversion(180.0, myAlliance), speed_MPS));
+                //cmdGroup.addCommands(getNudgeCommands(length_side_3, 180.0, myAlliance, speed_MPS));
             break;
 
             case 3:
@@ -400,13 +400,13 @@ public class AutonomousSubsystem extends SubsystemBase {
                 swerveDrive.swerveDrive.resetOdometry(resetPose3);
 
                 cmdGroup.addCommands(getCoralInjectCommands());
-                cmdGroup.addCommands(new Nudge(swerveDrive, length_side_1, simConversion(180.0, myAlliance), speed_MPS));
+                cmdGroup.addCommands(getNudgeCommands(length_side_1, 180.0, myAlliance, speed_MPS));
                 cmdGroup.addCommands(getElevatorUpCommands());
-                cmdGroup.addCommands(new Nudge(swerveDrive, length_side_2, simConversion(120.0, myAlliance), speed_MPS));
+                cmdGroup.addCommands(getNudgeCommands(length_side_2, 120.0, myAlliance, speed_MPS));
                 cmdGroup.addCommands(getCoralEjectCommands());
-                cmdGroup.addCommands(new Nudge(swerveDrive, length_side_2b, simConversion(300.0,myAlliance), speed_MPS));
+                //cmdGroup.addCommands(getNudgeCommands(length_side_2b, 300.0, myAlliance, speed_MPS));
                 cmdGroup.addCommands(getElevatorDownCommands());
-                cmdGroup.addCommands(new Nudge(swerveDrive, length_side_3, simConversion(180.0, myAlliance), speed_MPS));
+                //cmdGroup.addCommands(getNudgeCommands(length_side_3, 180.0, myAlliance, speed_MPS));
             break;
 
             default:
@@ -415,9 +415,9 @@ public class AutonomousSubsystem extends SubsystemBase {
 
                 cmdGroup.addCommands(getCoralInjectCommands());
                 cmdGroup.addCommands(getElevatorUpCommands());
-                cmdGroup.addCommands(new Nudge(swerveDrive, length_middle_1, simConversion(180.0, myAlliance), speed_MPS));
+                cmdGroup.addCommands(getNudgeCommands(length_middle_1, 180.0, myAlliance, speed_MPS));
                 cmdGroup.addCommands(getCoralEjectCommands());
-                cmdGroup.addCommands(new Nudge(swerveDrive, length_middle_2, simConversion(0.0, myAlliance), speed_MPS));
+                cmdGroup.addCommands(getNudgeCommands(length_middle_2, 0.0, myAlliance, speed_MPS));
                 cmdGroup.addCommands(getElevatorDownCommands());
             break;
         }
@@ -442,37 +442,44 @@ public class AutonomousSubsystem extends SubsystemBase {
         } else {
             if (RobotBase.isReal()) {
                 // TODO: TEST THIS...
-                return (angle + 180.0) % 360.0;            
+                return (angle + 180.0) % 360.0;
             }
             return angle;
         }
     }
 
+    private Command[] getNudgeCommands(double length, double angle, Alliance alliance, double speed_MPS) {
+        ArrayList<Command> cmds = new ArrayList<>();
+        cmds.add(new Nudge(swerveDrive, 0.001, simConversion(angle, alliance), 3.0));
+        cmds.add(new Nudge(swerveDrive, length, simConversion(angle, alliance), speed_MPS));
+        return cmds.toArray(new Command[0]);
+    }
+
     private Command[] getCoralInjectCommands() {
         ArrayList<Command> cmds = new ArrayList<>();
         cmds.add(Commands.print("***** INJECTING CORAL *****"));
-        // cmds.add(new LoadOrStopCoral(coralManipulator));
+        cmds.add(new LoadOrStopCoral(coralManipulator));
         return cmds.toArray(new Command[0]);
     }
 
     private Command[] getCoralEjectCommands() {
         ArrayList<Command> cmds = new ArrayList<>();
         cmds.add(Commands.print("***** EJECTING CORAL *****"));
-        // cmds.add(new UnloadCoralTwist(coralManipulator));
+        cmds.add(new UnloadCoralTwist(coralManipulator));
         return cmds.toArray(new Command[0]);
     }
 
     private Command[] getElevatorUpCommands() {
         ArrayList<Command> cmds = new ArrayList<>();
         cmds.add(Commands.print("***** Elevator Up *****"));
-        // cmds.add(new ElevatorLevel1(elevatorSubsystem));
+        cmds.add(new ElevatorLevel1(elevatorSubsystem));
         return cmds.toArray(new Command[0]);
     }
 
     private Command[] getElevatorDownCommands() {
         ArrayList<Command> cmds = new ArrayList<>();
         cmds.add(Commands.print("***** Elevator Down *****"));
-        // cmds.add(new ElevatorBottom(elevatorSubsystem));
+        cmds.add(new ElevatorBottom(elevatorSubsystem));
         return cmds.toArray(new Command[0]);
     }
 

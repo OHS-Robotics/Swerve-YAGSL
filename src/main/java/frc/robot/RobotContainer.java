@@ -7,6 +7,8 @@ package frc.robot;
 import java.io.File;
 
 import edu.wpi.first.wpilibj.Filesystem;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -28,6 +30,7 @@ import frc.robot.commands.Elevator.ElevatorLevel1;
 import frc.robot.commands.Elevator.ElevatorLevel2;
 import frc.robot.commands.Elevator.ElevatorLevel3;
 import frc.robot.commands.Elevator.ElevatorLevel4;
+import frc.robot.commands.Elevator.ElevatorSetZero;
 import frc.robot.commands.Elevator.ElevatorStop;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.AlgaeManipulatorSubsystem;
@@ -42,6 +45,7 @@ public class RobotContainer {
 
 	final CommandJoystick driverJoystick = new CommandJoystick(0);
 	final CommandXboxController driverXbox = new CommandXboxController(0);
+	final CommandGenericHID driverGenericHID = new CommandGenericHID(0);
 
 	public final SwerveSubsystem drivebase = new SwerveSubsystem(new File(Filesystem.getDeployDirectory(), "swerve"));
 	public final CoralManipulatorSubsystem coralManipulator = new CoralManipulatorSubsystem();
@@ -163,6 +167,43 @@ public class RobotContainer {
 		SetupElevatorCommands();
 		SetupNudgeCommands();
 		SetupAlgaeManipulatorCommands();
+
+		// SetupXboxProTest();
+	}
+
+	private void SetupXboxProTest() {
+
+		// driverGenericHID.button(1).onTrue(Commands.run(() -> System.out.println("1")));
+		// driverGenericHID.button(2).onTrue(Commands.run(() -> System.out.println("2")));
+		// driverGenericHID.button(3).onTrue(Commands.run(() -> System.out.println("3")));
+		// driverGenericHID.button(4).onTrue(Commands.run(() -> System.out.println("4")));
+		// driverGenericHID.button(5).onTrue(Commands.run(() -> System.out.println("5")));
+		// driverGenericHID.button(6).onTrue(Commands.run(() -> System.out.println("6")));
+		// driverGenericHID.button(7).onTrue(Commands.run(() -> System.out.println("7")));
+		// driverGenericHID.button(8).onTrue(Commands.run(() -> System.out.println("8")));
+		// driverGenericHID.button(9).onTrue(Commands.run(() -> System.out.println("9")));
+		// driverGenericHID.button(10).onTrue(Commands.run(() -> System.out.println("10")));
+		// driverGenericHID.button(11).onTrue(Commands.run(() -> System.out.println("11")));
+		// driverGenericHID.button(12).onTrue(Commands.run(() -> System.out.println("12")));
+		// driverGenericHID.button(13).onTrue(Commands.run(() -> System.out.println("13")));
+		// driverGenericHID.button(14).onTrue(Commands.run(() -> System.out.println("14")));
+		// driverGenericHID.button(15).onTrue(Commands.run(() -> System.out.println("15")));
+		// driverGenericHID.button(16).onTrue(Commands.run(() -> System.out.println("16")));
+		// driverGenericHID.button(17).onTrue(Commands.run(() -> System.out.println("17")));
+		// driverGenericHID.button(18).onTrue(Commands.run(() -> System.out.println("18")));
+		// driverGenericHID.button(19).onTrue(Commands.run(() -> System.out.println("19")));
+		// driverGenericHID.button(20).onTrue(Commands.run(() -> System.out.println("20")));
+		// driverGenericHID.button(21).onTrue(Commands.run(() -> System.out.println("21")));
+		// driverGenericHID.button(22).onTrue(Commands.run(() -> System.out.println("22")));
+		// driverGenericHID.button(23).onTrue(Commands.run(() -> System.out.println("23")));
+		// driverGenericHID.button(24).onTrue(Commands.run(() -> System.out.println("24")));
+		// driverGenericHID.button(25).onTrue(Commands.run(() -> System.out.println("25")));
+		// driverGenericHID.button(26).onTrue(Commands.run(() -> System.out.println("26")));
+		// driverGenericHID.button(27).onTrue(Commands.run(() -> System.out.println("27")));
+		// driverGenericHID.button(28).onTrue(Commands.run(() -> System.out.println("28")));
+		// driverGenericHID.button(29).onTrue(Commands.run(() -> System.out.println("29")));
+		// driverGenericHID.button(30).onTrue(Commands.run(() -> System.out.println("30")));
+
 	}
 
 	private void SetupAutonomousCommands() {
@@ -237,6 +278,8 @@ public class RobotContainer {
 		ElevatorJogDown jogDown = new ElevatorJogDown(elevator);
 		ElevatorStop stop = new ElevatorStop(elevator);
 
+		ElevatorSetZero zero = new ElevatorSetZero(elevator);
+
 		if (Constants.Operator.useJoystick) {
 			driverJoystick.button(5).onTrue(bottom);
 			driverJoystick.button(6).onTrue(L1);
@@ -247,6 +290,8 @@ public class RobotContainer {
 			driverJoystick.povUp().onTrue(jogUp);
 			driverJoystick.povDown().onTrue(jogDown);
 			driverJoystick.povCenter().onTrue(stop);
+			
+			driverJoystick.button(15).onTrue(zero);
 		}
 		else {
 			driverXbox.start().onTrue(bottom);
@@ -258,6 +303,8 @@ public class RobotContainer {
 			driverXbox.povUp().onTrue(jogUp);
 			driverXbox.povDown().onTrue(jogDown);
 			driverXbox.povCenter().onTrue(stop);
+
+			driverXbox.back().onTrue(zero);
 		}
 	}
 

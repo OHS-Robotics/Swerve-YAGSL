@@ -14,10 +14,10 @@ public class ElevatorLevel2 extends Command{
     @Override
     public void initialize() {
         if (elevator.currentPosition_Inches() < Constants.Elevator.heightL2_Inches) {
-            elevator.moveAbsoluteBegin(Constants.Elevator.heightL2_Inches,  Constants.Elevator.jogUpVel_InchesPerSec);
+            elevator.moveAbsoluteBegin(Constants.Elevator.heightL2_Inches,  Constants.Elevator.moveUpVel_InchesPerSec);
         }
         else {
-            elevator.moveAbsoluteBegin(Constants.Elevator.heightL2_Inches,  Constants.Elevator.jogDownVel_InchesPerSec);
+            elevator.moveAbsoluteBegin(Constants.Elevator.heightL2_Inches,  Constants.Elevator.moveDownVel_InchesPerSec);
         }
         
     }
