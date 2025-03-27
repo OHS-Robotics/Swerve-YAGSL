@@ -4,17 +4,17 @@ import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 
-public class UnloadCoralTwist extends Command{
+public class UnloadCoralTwistRight extends Command{
     public CoralManipulatorSubsystem coralManipulator;
 
-    public UnloadCoralTwist(CoralManipulatorSubsystem manip) {
+    public UnloadCoralTwistRight(CoralManipulatorSubsystem manip) {
         coralManipulator = manip;
         addRequirements(coralManipulator);
     }
 
     @Override
     public void initialize() {
-        coralManipulator.expelCoralTwist();
+        coralManipulator.expelCoralTwistRight();
     }
 
     @Override

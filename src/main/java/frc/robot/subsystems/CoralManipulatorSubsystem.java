@@ -35,9 +35,14 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
         motorRight.set(-Constants.CoralManipulator.expelCoralSpeed);
     }
 
-    public void expelCoralTwist() {
+    public void expelCoralTwistRight() {
         motorLeft.set(Constants.CoralManipulator.expelCoralSpeed);
         motorRight.set(-Constants.CoralManipulator.expelCoralSpeed * 0.5);
+    }
+
+    public void expelCoralTwistLeft() {
+        motorLeft.set(Constants.CoralManipulator.expelCoralSpeed * 0.5);
+        motorRight.set(-Constants.CoralManipulator.expelCoralSpeed);
     }
 
     public void stopMoving() {

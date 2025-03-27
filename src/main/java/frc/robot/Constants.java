@@ -69,7 +69,7 @@ public final class Constants
     public static final double heightL3_Inches = 41.5;
     public static final double heightL4_Inches = 67.75;
     public static final double heightSoftLimit_Inches = 75; // possibly change to ~105 to be able to score in the barge's net
-    public static final double heightNet_Inches = 101.0; // this might be wrong, we need to check
+    public static final double heightNet_Inches = 73.3; // this might be wrong, we need to check
     public static final double heightStopVelTransition = 51; //height above which we change to the high stop vel
 
     public static final double moveUpVel_InchesPerSec = 0.3; //Velocity for moving up when commanding moves to reef levels
@@ -96,7 +96,7 @@ public final class Constants
   public static final class AlgaeManipulator {
     public static final double speedRaise_DegPerSec = 0.8;
     public static final double speedHold_DegPerSec = 0.000;
-    public static final double speedLower_DegPerSec = 0.2;
+    public static final double speedLower_DegPerSec = 0.25;
     public static final double slewRate_DegPerSecPerSec = 0.4;
     public static final double revsPerDegree = 0.2777;
     public static final double atVelocityToleranceRevs = 0.001;

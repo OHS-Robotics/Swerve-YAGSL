@@ -28,11 +28,13 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
     private double targetVelCheckValue_Revs = 0;
     public boolean moveInProgress = false;
     public boolean accelerating = false; //true when the robot is not at target vel, meaning the slew rate limiter is doing work
+    private boolean joggingDown = false;
+    private boolean joggingUp = false;
 
     public AlgaeManipulatorSubsystem() {
         final SparkMaxConfig baseConfLift = new SparkMaxConfig();
         zeroEncoders();
-        baseConfLift.smartCurrentLimit(30);
+        baseConfLift.smartCurrentLimit(60);
         baseConfLift.idleMode(IdleMode.kBrake);
         motorLift.configure(baseConfLift, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     }
@@ -111,6 +113,7 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
         //Up is negative for this elevator
         // beginAcceleration(-speed_DegPerSecond * Constants.AlgaeManipulator.revsPerDegree);
         motorLift.set(-speed_DegPerSecond * Constants.AlgaeManipulator.revsPerDegree);
+        joggingUp = true;
     }
 
     /**
@@ -126,6 +129,7 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
         //Down is positive for this elevator
         // beginAcceleration(speed_DegPerSecond * Constants.AlgaeManipulator.revsPerDegree);
         motorLift.set(speed_DegPerSecond * Constants.AlgaeManipulator.revsPerDegree);
+        joggingDown = true;
     }
 
     /**
@@ -135,6 +139,8 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
         targetVel_Revs = Constants.AlgaeManipulator.revsPerDegree;
         // beginAcceleration(targetVel_Revs, 0);
         motorLift.set(Constants.AlgaeManipulator.speedHold_DegPerSec * Constants.AlgaeManipulator.revsPerDegree);
+        joggingDown = false;
+        joggingUp = false;
     }
 
     /**
@@ -225,11 +231,11 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
             }
         }
 
-        if (isMovingUp() && atHighLimit()) {
+        if (isMovingUp() && atHighLimit() && !joggingDown) {
             stop();
         }
 
-        if (isMovingDown() && atLowLimit()) {
+        if (isMovingDown() && atLowLimit() && !joggingUp) {
             stop();
         }
 

@@ -26,6 +26,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -35,7 +36,7 @@ import frc.robot.Constants;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 import frc.robot.commands.CoralManipulator.AutoReleaseCoralCommand;
 import frc.robot.commands.CoralManipulator.LoadOrStopCoral;
-import frc.robot.commands.CoralManipulator.UnloadCoralTwist;
+import frc.robot.commands.CoralManipulator.UnloadCoralTwistRight;
 import frc.robot.commands.Elevator.*;
 import frc.robot.commands.swervedrive.Nudge;
 import frc.robot.subsystems.swervedrive.SwerveSubsystem;
@@ -126,7 +127,7 @@ public class AutonomousSubsystem extends SubsystemBase {
 
         NamedCommands.registerCommand("ingestCoral", (new ElevatorBottom(elevatorSubsystem)).andThen(new LoadOrStopCoral(coralManipulator)));
         NamedCommands.registerCommand("elevatorL1", new ElevatorLevel1(elevatorSubsystem));
-        NamedCommands.registerCommand("expelL1", (new ElevatorLevel1(elevatorSubsystem)).andThen(new UnloadCoralTwist(coralManipulator)));
+        NamedCommands.registerCommand("expelL1", (new ElevatorLevel1(elevatorSubsystem)).andThen(new UnloadCoralTwistRight(coralManipulator)));
 
         // placeholders, to be replaced when algae commands are finished
         NamedCommands.registerCommand("collectL2Algae", (new ElevatorLevel2(elevatorSubsystem).andThen(Commands.none())));
@@ -315,23 +316,19 @@ public class AutonomousSubsystem extends SubsystemBase {
         return Commands.run(() -> tweakToCoral().schedule(), swerveDrive);
     }
 
-    public Command getBasicAutoCommand() {
+    public Command getBasicAutoCommand(SendableChooser<Alliance> teamChooser, SendableChooser<Integer> positionChooser) {
         SequentialCommandGroup cmdGroup = new SequentialCommandGroup(new Command[0]);
 
         // Use the alliance and Driver Station Location to determine our path...
-        Optional<Alliance> optAlliance = DriverStation.getAlliance();
-        OptionalInt optDSLocation = DriverStation.getLocation();
+        Alliance optAlliance = teamChooser.getSelected();
+        int myDSLocation = positionChooser.getSelected();
 
         Alliance myAlliance = null;
-        int myDSLocation = 0;
 
-        if (optAlliance.isPresent()) {
-            myAlliance = optAlliance.get();
+        if (optAlliance != null) {
+            myAlliance = optAlliance;
         }
 
-        if (optDSLocation.isPresent()) {
-            myDSLocation = optDSLocation.getAsInt();
-        }
 
 //      myAlliance = Alliance.Blue;  // Red|Blue
 //      myDSLocation = 3;            // 1|2|3
@@ -390,8 +387,12 @@ public class AutonomousSubsystem extends SubsystemBase {
                 cmdGroup.addCommands(getElevatorUpCommands());
                 cmdGroup.addCommands(getNudgeCommands(length_side_2, 240.0, myAlliance, speed_MPS));
                 cmdGroup.addCommands(getCoralEjectCommands());
+                
                 //cmdGroup.addCommands(getNudgeCommands(length_side_2b, 60.0, myAlliance, speed_MPS));
+                
                 cmdGroup.addCommands(getElevatorDownCommands());
+                
+                
                 //cmdGroup.addCommands(getNudgeCommands(length_side_3, 180.0, myAlliance, speed_MPS));
             break;
 
@@ -465,7 +466,7 @@ public class AutonomousSubsystem extends SubsystemBase {
     private Command[] getCoralEjectCommands() {
         ArrayList<Command> cmds = new ArrayList<>();
         cmds.add(Commands.print("***** EJECTING CORAL *****"));
-        cmds.add(new UnloadCoralTwist(coralManipulator));
+        cmds.add(new UnloadCoralTwistRight(coralManipulator));
         return cmds.toArray(new Command[0]);
     }
 
@@ -487,5 +488,14 @@ public class AutonomousSubsystem extends SubsystemBase {
         Disabled,
         ManualNudge,
         PathPlannerAutoChooser
+    }
+
+    public enum Position {
+        Red1,
+        Red2,
+        Red3,
+        Blue1,
+        Blue2,
+        Blue3
     }
 }

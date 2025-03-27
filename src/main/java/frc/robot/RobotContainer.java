@@ -8,6 +8,7 @@ import java.io.File;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -17,12 +18,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import frc.robot.subsystems.autonomous.AutonomousSubsystem;
 import frc.robot.subsystems.autonomous.AutonomousSubsystem.AutoCommandSource;
+import frc.robot.subsystems.autonomous.AutonomousSubsystem.Position;
 import frc.robot.commands.AlgaeManipulator.AlgaeManipulatorJogDown;
 import frc.robot.commands.AlgaeManipulator.AlgaeManipulatorJogUp;
 import frc.robot.commands.AlgaeManipulator.AlgaeManipulatorStop;
 import frc.robot.commands.CoralManipulator.LoadOrStopCoral;
 import frc.robot.commands.CoralManipulator.UnloadCoral;
-import frc.robot.commands.CoralManipulator.UnloadCoralTwist;
+import frc.robot.commands.CoralManipulator.UnloadCoralTwistLeft;
+import frc.robot.commands.CoralManipulator.UnloadCoralTwistRight;
 import frc.robot.commands.Elevator.ElevatorBottom;
 import frc.robot.commands.Elevator.ElevatorJogDown;
 import frc.robot.commands.Elevator.ElevatorJogUp;
@@ -55,6 +58,8 @@ public class RobotContainer {
 
 	private final SendableChooser<Command> pathPlannerChooser;
 	private final SendableChooser<AutoCommandSource> autoCommandSourceChooser;
+	private final SendableChooser<Alliance> teamChooser;
+	private final SendableChooser<Integer> positionChooser;
 
 	private boolean referenceFrameIsField = false;
 	public double elevatorPosition = 0.0;
@@ -81,6 +86,17 @@ public class RobotContainer {
 		autoCommandSourceChooser.addOption("PathPlanner via AutoChooser", AutoCommandSource.PathPlannerAutoChooser);
 		autoCommandSourceChooser.setDefaultOption("Disabled", AutoCommandSource.Disabled);
 		SmartDashboard.putData("Auto Command Source", autoCommandSourceChooser);
+
+		teamChooser = new SendableChooser<Alliance>();
+		teamChooser.addOption("Red", Alliance.Red);
+		teamChooser.addOption("Blue", Alliance.Blue);
+		SmartDashboard.putData("Auto Team", teamChooser);
+
+		positionChooser = new SendableChooser<Integer>();
+		for (int i = 1; i < 4; i++) {
+			positionChooser.addOption("" + i, i);
+		}
+		SmartDashboard.putData("Auto Position", positionChooser);
 
 		configureDriveInputStreams();
 		configureBindings();
@@ -167,43 +183,6 @@ public class RobotContainer {
 		SetupElevatorCommands();
 		SetupNudgeCommands();
 		SetupAlgaeManipulatorCommands();
-
-		// SetupXboxProTest();
-	}
-
-	private void SetupXboxProTest() {
-
-		// driverGenericHID.button(1).onTrue(Commands.run(() -> System.out.println("1")));
-		// driverGenericHID.button(2).onTrue(Commands.run(() -> System.out.println("2")));
-		// driverGenericHID.button(3).onTrue(Commands.run(() -> System.out.println("3")));
-		// driverGenericHID.button(4).onTrue(Commands.run(() -> System.out.println("4")));
-		// driverGenericHID.button(5).onTrue(Commands.run(() -> System.out.println("5")));
-		// driverGenericHID.button(6).onTrue(Commands.run(() -> System.out.println("6")));
-		// driverGenericHID.button(7).onTrue(Commands.run(() -> System.out.println("7")));
-		// driverGenericHID.button(8).onTrue(Commands.run(() -> System.out.println("8")));
-		// driverGenericHID.button(9).onTrue(Commands.run(() -> System.out.println("9")));
-		// driverGenericHID.button(10).onTrue(Commands.run(() -> System.out.println("10")));
-		// driverGenericHID.button(11).onTrue(Commands.run(() -> System.out.println("11")));
-		// driverGenericHID.button(12).onTrue(Commands.run(() -> System.out.println("12")));
-		// driverGenericHID.button(13).onTrue(Commands.run(() -> System.out.println("13")));
-		// driverGenericHID.button(14).onTrue(Commands.run(() -> System.out.println("14")));
-		// driverGenericHID.button(15).onTrue(Commands.run(() -> System.out.println("15")));
-		// driverGenericHID.button(16).onTrue(Commands.run(() -> System.out.println("16")));
-		// driverGenericHID.button(17).onTrue(Commands.run(() -> System.out.println("17")));
-		// driverGenericHID.button(18).onTrue(Commands.run(() -> System.out.println("18")));
-		// driverGenericHID.button(19).onTrue(Commands.run(() -> System.out.println("19")));
-		// driverGenericHID.button(20).onTrue(Commands.run(() -> System.out.println("20")));
-		// driverGenericHID.button(21).onTrue(Commands.run(() -> System.out.println("21")));
-		// driverGenericHID.button(22).onTrue(Commands.run(() -> System.out.println("22")));
-		// driverGenericHID.button(23).onTrue(Commands.run(() -> System.out.println("23")));
-		// driverGenericHID.button(24).onTrue(Commands.run(() -> System.out.println("24")));
-		// driverGenericHID.button(25).onTrue(Commands.run(() -> System.out.println("25")));
-		// driverGenericHID.button(26).onTrue(Commands.run(() -> System.out.println("26")));
-		// driverGenericHID.button(27).onTrue(Commands.run(() -> System.out.println("27")));
-		// driverGenericHID.button(28).onTrue(Commands.run(() -> System.out.println("28")));
-		// driverGenericHID.button(29).onTrue(Commands.run(() -> System.out.println("29")));
-		// driverGenericHID.button(30).onTrue(Commands.run(() -> System.out.println("30")));
-
 	}
 
 	private void SetupAutonomousCommands() {
@@ -247,21 +226,25 @@ public class RobotContainer {
 	private void SetupCoralManipulatorCommands() {
 		LoadOrStopCoral loadOrStopCoral = new LoadOrStopCoral(coralManipulator);
         UnloadCoral unloadCoral = new UnloadCoral(coralManipulator);
-		UnloadCoralTwist unloadCoralTwist = new UnloadCoralTwist(coralManipulator);
+		UnloadCoralTwistRight unloadCoralTwistRight = new UnloadCoralTwistRight(coralManipulator);
+		UnloadCoralTwistLeft unloadCoralTwistLeft = new UnloadCoralTwistLeft(coralManipulator);
 
 		loadOrStopCoral.coralManipulator = coralManipulator;
 		unloadCoral.coralManipulator = coralManipulator;
-		unloadCoralTwist.coralManipulator = coralManipulator;
+		unloadCoralTwistRight.coralManipulator = coralManipulator;
+		unloadCoralTwistLeft.coralManipulator = coralManipulator;
 
 		if (Constants.Operator.useJoystick) {
 			driverJoystick.button(3).onTrue(loadOrStopCoral);
 			driverJoystick.button(4).onTrue(unloadCoral);
-			driverJoystick.button(1).onTrue(unloadCoralTwist);
+			driverJoystick.button(1).onTrue(unloadCoralTwistRight);
+			//twist left not bound on joystick
 		}
 		else {
 			driverXbox.leftBumper().onTrue(loadOrStopCoral);
 			driverXbox.rightBumper().onTrue(unloadCoral);
-			driverXbox.rightTrigger().onTrue(unloadCoralTwist);
+			driverXbox.rightTrigger().onTrue(unloadCoralTwistRight);
+			driverXbox.leftTrigger().onTrue(unloadCoralTwistLeft);
 		}
 		
 	}
@@ -357,7 +340,7 @@ public class RobotContainer {
 		if (autoCommandSourceChooser.getSelected() == AutoCommandSource.PathPlannerAutoChooser) {
 			return pathPlannerChooser.getSelected();
 		} else if (autoCommandSourceChooser.getSelected() == AutoCommandSource.ManualNudge) {
-			return autonomous.getBasicAutoCommand();
+			return autonomous.getBasicAutoCommand(teamChooser, positionChooser);
 		} else {
 			return Commands.print("WARNING: AUTONOMOUS MODE IS DISABLED");
 		}
