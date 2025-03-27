@@ -352,7 +352,8 @@ public class RobotContainer {
 	 * @return
 	 */
 	public double applyExpoCurveTranslation(double input) {
-		return Math.pow(input, Constants.Operator.expoCurveExponentTranslation);
+		double sign = input / Math.abs(input);
+		return Math.pow(input, Constants.Operator.expoCurveExponentTranslation) * sign;
 	}
 
 	/**
@@ -361,7 +362,8 @@ public class RobotContainer {
 	 * @return
 	 */
 	public double applyExpoCurveRotation(double input) {
-		return Math.pow(input, Constants.Operator.expoCurveExponentRotation);
+		double sign = input / Math.abs(input);
+		return Math.pow(input, Constants.Operator.expoCurveExponentRotation) * sign;
 	}
 
 	/**
