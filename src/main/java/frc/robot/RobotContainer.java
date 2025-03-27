@@ -352,7 +352,7 @@ public class RobotContainer {
 	 * @return
 	 */
 	public double applyExpoCurveTranslation(double input) {
-		return input;
+		return Math.pow(input, Constants.Operator.expoCurveExponentTranslation);
 	}
 
 	/**
@@ -361,7 +361,7 @@ public class RobotContainer {
 	 * @return
 	 */
 	public double applyExpoCurveRotation(double input) {
-		return input;
+		return Math.pow(input, Constants.Operator.expoCurveExponentRotation);
 	}
 
 	/**

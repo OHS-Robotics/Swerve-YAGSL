@@ -50,6 +50,9 @@ public final class Constants
     public static final double nudgeDistRight_Meters = Units.inchesToMeters(2);
 
     public static final boolean useJoystick = false; //false = use xbox
+
+    public static final double expoCurveExponentTranslation = 2;
+    public static final double expoCurveExponentRotation = 2;
   }
 
   public static final class Autonomous {
