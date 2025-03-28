@@ -96,6 +96,7 @@ public class RobotContainer {
 		for (int i = 1; i < 4; i++) {
 			positionChooser.addOption("" + i, i);
 		}
+		positionChooser.setDefaultOption("Default(2)", 2);
 		SmartDashboard.putData("Auto Position", positionChooser);
 
 		configureDriveInputStreams();

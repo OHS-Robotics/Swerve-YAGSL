@@ -329,6 +329,12 @@ public class AutonomousSubsystem extends SubsystemBase {
             myAlliance = optAlliance;
         }
 
+        // If we do not have an alliance selected, get one from the Drivers Station if we can...
+        if (myAlliance == null) {
+            if (DriverStation.getAlliance().isPresent()) {
+                myAlliance = DriverStation.getAlliance().get();
+            }
+        }
 
 //      myAlliance = Alliance.Blue;  // Red|Blue
 //      myDSLocation = 3;            // 1|2|3
