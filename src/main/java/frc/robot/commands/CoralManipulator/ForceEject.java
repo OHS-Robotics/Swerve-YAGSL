@@ -1,38 +1,35 @@
 package frc.robot.commands.CoralManipulator;
 
-import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants;
 import frc.robot.subsystems.CoralManipulatorSubsystem;
 
-public class UnloadCoralTwistRight extends Command{
+public class ForceEject extends Command{
     public CoralManipulatorSubsystem coralManipulator;
-    private int cycles;
+    public long startTime = 0;
 
-    public UnloadCoralTwistRight(CoralManipulatorSubsystem manip) {
+    public ForceEject(CoralManipulatorSubsystem manip) {
         coralManipulator = manip;
         addRequirements(coralManipulator);
     }
 
     @Override
     public void initialize() {
-        coralManipulator.expelCoralTwistRight();
-        cycles = 0;
+        coralManipulator.expelCoral();
+        startTime = System.currentTimeMillis();
     }
 
     @Override
     public void execute() {
-        cycles++;
     }
 
     @Override
     public void end(boolean interrupted) {
         coralManipulator.stopMoving();
-        System.out.println("Unload Coral Twist Right End (" + cycles + " cycles)");
-        System.out.println(interrupted ? "Interrupted" : "Not Interrupted");
     }
 
     @Override
     public boolean isFinished() {
-        return RobotBase.isReal() ? !coralManipulator.CoralLoaded() : true;
+        return System.currentTimeMillis() - startTime > Constants.CoralManipulator.forceEjectDuration_ms;
     }
 }

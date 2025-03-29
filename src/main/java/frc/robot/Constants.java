@@ -67,7 +67,7 @@ public final class Constants
 
   public static final class Elevator {
     public static final double heightBottom_Inches = 1;
-    public static final double heightL1_Inches = 18;
+    public static final double heightL1_Inches = 15;
     public static final double heightL2_Inches = 26;
     public static final double heightL3_Inches = 41.5;
     public static final double heightL4_Inches = 67.75;
@@ -93,7 +93,15 @@ public final class Constants
     public static final double coralSenseDistance_mm = 30; //Maximum threshold for sensing coral with the laser
     public static final double ingestCoralSpeed = -0.15;
     public static final double expelCoralSpeed = -0.75;
+    // public static final double autoExpelCoralMultiplier = 0.7166667; // from .81....
+
+    public static final double expelCoralTwistFast = -0.55;
+    public static final double expelCoralTwistSlow = expelCoralTwistFast * 0.5;
+
+    
     public static final double speedCheckMargin = 0.05;
+
+    public static final double forceEjectDuration_ms = 2000;
   }
 
   public static final class AlgaeManipulator {

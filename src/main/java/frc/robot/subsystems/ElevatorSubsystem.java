@@ -212,6 +212,9 @@ public class ElevatorSubsystem extends SubsystemBase {
             if (atTargetPosition()) {
                 stop();
                 moveInProgress = false;
+                if ((targetPosition_Revs / Constants.Elevator.revsPerInch) == Constants.Elevator.heightBottom_Inches) {
+                    zeroEncoders();
+                }
             }
         }
 

@@ -22,6 +22,7 @@ import frc.robot.subsystems.autonomous.AutonomousSubsystem.Position;
 import frc.robot.commands.AlgaeManipulator.AlgaeManipulatorJogDown;
 import frc.robot.commands.AlgaeManipulator.AlgaeManipulatorJogUp;
 import frc.robot.commands.AlgaeManipulator.AlgaeManipulatorStop;
+import frc.robot.commands.CoralManipulator.ForceEject;
 import frc.robot.commands.CoralManipulator.LoadOrStopCoral;
 import frc.robot.commands.CoralManipulator.UnloadCoral;
 import frc.robot.commands.CoralManipulator.UnloadCoralTwistLeft;
@@ -216,9 +217,9 @@ public class RobotContainer {
 		}
 		else {
 			driverXbox.leftStick().onTrue(Commands.runOnce(() -> SetGearMode(false)));
-			driverXbox.rightStick().onTrue(Commands.runOnce(() -> SetGearMode(false)));
+			// driverXbox.rightStick().onTrue(Commands.runOnce(() -> SetGearMode(false)));
 			driverXbox.leftStick().onFalse(Commands.runOnce(() -> SetGearMode(true)));
-			driverXbox.rightStick().onFalse(Commands.runOnce(() -> SetGearMode(true)));
+			// driverXbox.rightStick().onFalse(Commands.runOnce(() -> SetGearMode(true));
 		}
 
 		SmartDashboard.putString("Gear Mode", isInHighGear ? "High" : "Low");
@@ -229,6 +230,7 @@ public class RobotContainer {
         UnloadCoral unloadCoral = new UnloadCoral(coralManipulator);
 		UnloadCoralTwistRight unloadCoralTwistRight = new UnloadCoralTwistRight(coralManipulator);
 		UnloadCoralTwistLeft unloadCoralTwistLeft = new UnloadCoralTwistLeft(coralManipulator);
+		ForceEject forceEject = new ForceEject(coralManipulator);
 
 		loadOrStopCoral.coralManipulator = coralManipulator;
 		unloadCoral.coralManipulator = coralManipulator;
@@ -246,6 +248,7 @@ public class RobotContainer {
 			driverXbox.rightBumper().onTrue(unloadCoral);
 			driverXbox.rightTrigger().onTrue(unloadCoralTwistRight);
 			driverXbox.leftTrigger().onTrue(unloadCoralTwistLeft);
+			driverXbox.rightStick().onTrue(forceEject);
 		}
 		
 	}

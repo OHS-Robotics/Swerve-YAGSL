@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -36,13 +37,13 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
     }
 
     public void expelCoralTwistRight() {
-        motorLeft.set(Constants.CoralManipulator.expelCoralSpeed);
-        motorRight.set(-Constants.CoralManipulator.expelCoralSpeed * 0.5);
+        motorLeft.set(Constants.CoralManipulator.expelCoralTwistFast);
+        motorRight.set(-Constants.CoralManipulator.expelCoralTwistSlow);
     }
 
     public void expelCoralTwistLeft() {
-        motorLeft.set(Constants.CoralManipulator.expelCoralSpeed * 0.5);
-        motorRight.set(-Constants.CoralManipulator.expelCoralSpeed);
+        motorLeft.set(Constants.CoralManipulator.expelCoralTwistSlow);
+        motorRight.set(-Constants.CoralManipulator.expelCoralTwistFast);
     }
 
     public void stopMoving() {
@@ -79,6 +80,7 @@ public class CoralManipulatorSubsystem extends SubsystemBase{
     public void periodic() {
         if (RobotBase.isReal()) {
             SmartDashboard.putNumber("Coral Laser Dist (in.)", laser.getMeasurement().distance_mm / 25.4);
+            SmartDashboard.putBoolean("Coral Loaded", CoralLoaded());
         }
     }
 }
