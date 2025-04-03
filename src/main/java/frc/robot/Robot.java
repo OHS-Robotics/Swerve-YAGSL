@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import static frc.robot.Constants.Vision.*;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -11,8 +13,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import swervelib.SwerveDrive;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -70,11 +76,11 @@ public class Robot extends TimedRobot {
           // Driver wants auto-alignment to tag 7
           // And, tag 7 is in sight, so we can turn toward it.
           // Override the driver's turn command with an automatic one that turns toward the tag.
-          turn = -1.0 * targetYaw * VISION_TURN_kP * Constants.Swerve.kMaxAngularSpeed;
+          turn = -1.0 * targetYaw * kDefaultPeriod * Constants.Swerve.kMaxAngularSpeed;
       }
 
       // Command drivetrain motors based on target speeds
-      SwerveDrive.drive(forward, strafe, turn);
+      drivetrain.drive(forward, strafe, turn);
 
       // Put debug information to the dashboard
       SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
