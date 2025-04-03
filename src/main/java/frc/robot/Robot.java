@@ -10,9 +10,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import swervelib.SwerveDrive;
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+  private PhotonCamera camera;
 
   private final RobotContainer m_robotContainer;
   public Robot() {
@@ -35,10 +39,11 @@ public class Robot extends TimedRobot {
     // Shuffleboard.getTab("camera").add(SendableCameraWrapper.wrap("limelight", "http://limelight.local:5800/stream.mjpg"));
   }
       {
-  // Calculate drivetrain commands from Joystick values
-      double forward = -controller.getLeftY() * Constants.Swerve.kMaxLinearSpeed;
-      double strafe = -controller.getLeftX() * Constants.Swerve.kMaxLinearSpeed;
-      double turn = -controller.getRightX() * Constants.Swerve.kMaxAngularSpeed;
+  XboxController driverXbox;
+        // Calculate drivetrain commands from Joystick values
+        double forward = -driverXbox.getLeftY() * Constants.Swerve.kMaxLinearSpeed;
+      double strafe = -driverXbox.getLeftX() * Constants.Swerve.kMaxLinearSpeed;
+      double turn = -driverXbox.getRightX() * Constants.Swerve.kMaxAngularSpeed;
 
       // Read in relevant data from the Camera
       boolean targetVisible = false;
@@ -61,7 +66,7 @@ public class Robot extends TimedRobot {
       }
 
       // Auto-align when requested
-      if (controller.getAButton() && targetVisible) {
+      if (driverXbox.getAButton() && targetVisible) {
           // Driver wants auto-alignment to tag 7
           // And, tag 7 is in sight, so we can turn toward it.
           // Override the driver's turn command with an automatic one that turns toward the tag.
@@ -69,7 +74,7 @@ public class Robot extends TimedRobot {
       }
 
       // Command drivetrain motors based on target speeds
-      drivetrain.drive(forward, strafe, turn);
+      SwerveDrive.drive(forward, strafe, turn);
 
       // Put debug information to the dashboard
       SmartDashboard.putBoolean("Vision Target Visible", targetVisible);

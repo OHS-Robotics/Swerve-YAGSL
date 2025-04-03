@@ -43,6 +43,8 @@ import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.external.LimelightHelpers;
 import frc.robot.subsystems.external.LimelightHelpers.RawFiducial;
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 /**
  * This is an example subsystem used in Autonomous mode (kinda).
