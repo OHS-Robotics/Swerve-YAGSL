@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -53,6 +54,8 @@ public class SwerveSubsystem extends SubsystemBase
   public final SwerveDrive swerveDrive;
   public boolean real = RobotBase.isReal();
   public long startTime;
+
+  private ChassisSpeeds targetChassisSpeeds = new ChassisSpeeds();
   /**
    * AprilTag field layout.
    */
@@ -279,7 +282,28 @@ public class SwerveSubsystem extends SubsystemBase
     });
   }
 
-  /**
+
+  public void drive(double vxMeters, double vyMeters, double omegaRadians) {
+    var targetChassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(vxMeters, vyMeters, omegaRadians, getHeading());
+    setChassisSpeeds(targetChassisSpeeds, true, false);
+  }
+
+  public void setChassisSpeeds(
+    ChassisSpeeds targetChassisSpeeds, boolean openLoop, boolean steerInPlace) {
+      setModuleStates(getKinematics().toSwerveModuleStates(targetChassisSpeeds), openLoop, steerInPlace);
+      this.targetChassisSpeeds = targetChassisSpeeds;
+    }
+
+
+     public void setModuleStates(SwerveModuleState[] desiredStates, boolean openLoop, boolean steerInPlace) {
+        SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, Constants.Swerve.kMaxLinearSpeed);
+        var modules = swerveDrive.getModules();
+        for (int i = 0; i < modules.length; i++) {
+          modules[i].setDesiredState(desiredStates[i], openLoop, steerInPlace);
+        }
+    }
+  
+    /**
    * The primary method for controlling the drivebase.  Takes a {@link Translation2d} and a rotation rate, and
    * calculates and commands module states accordingly.  Can use either open-loop or closed-loop velocity control for
    * the wheel velocities.  Also has field- and robot-relative modes, which affect how the translation vector is used.

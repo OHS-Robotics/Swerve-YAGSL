@@ -24,7 +24,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private PhotonCamera camera;
 
-  private final RobotContainer m_robotContainer;
+  private RobotContainer m_robotContainer = null;
   public Robot() {
     m_robotContainer = new RobotContainer();
     enableLiveWindowInTest(true);
@@ -44,49 +44,6 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putData(SendableCameraWrapper.wrap("limelight", "http://limelight.local:5800/stream.mjpg"));
     // Shuffleboard.getTab("camera").add(SendableCameraWrapper.wrap("limelight", "http://limelight.local:5800/stream.mjpg"));
   }
-      {
-  XboxController driverXbox;
-        // Calculate drivetrain commands from Joystick values
-        double forward = -driverXbox.getLeftY() * Constants.Swerve.kMaxLinearSpeed;
-      double strafe = -driverXbox.getLeftX() * Constants.Swerve.kMaxLinearSpeed;
-      double turn = -driverXbox.getRightX() * Constants.Swerve.kMaxAngularSpeed;
-
-      // Read in relevant data from the Camera
-      boolean targetVisible = false;
-      double targetYaw = 0.0;
-      var results = camera.getAllUnreadResults();
-      if (!results.isEmpty()) {
-          // Camera processed a new frame since last
-          // Get the last one in the list.
-          var result = results.get(results.size() - 1);
-          if (result.hasTargets()) {
-              // At least one AprilTag was seen by the camera
-              for (var target : result.getTargets()) {
-                  if (target.getFiducialId() == 7) {
-                      // Found Tag 7, record its information
-                      targetYaw = target.getYaw();
-                      targetVisible = true;
-                  }
-              }
-          }
-      }
-
-      // Auto-align when requested
-      if (driverXbox.getAButton() && targetVisible) {
-          // Driver wants auto-alignment to tag 7
-          // And, tag 7 is in sight, so we can turn toward it.
-          // Override the driver's turn command with an automatic one that turns toward the tag.
-          turn = -1.0 * targetYaw * kDefaultPeriod * Constants.Swerve.kMaxAngularSpeed;
-      }
-
-      // Command drivetrain motors based on target speeds
-      drivetrain.drive(forward, strafe, turn);
-
-      // Put debug information to the dashboard
-      SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
-  }
-  
-  
 
   @Override
   public void disabledInit() {}
@@ -123,6 +80,48 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+
+    XboxController driverXbox = m_robotContainer.getXBoxController().getHID();
+
+    // Calculate drivetrain commands from Joystick values
+    double forward = -driverXbox.getLeftY() * Constants.Swerve.kMaxLinearSpeed;
+    double strafe = -driverXbox.getLeftX() * Constants.Swerve.kMaxLinearSpeed;
+    double turn = -driverXbox.getRightX() * Constants.Swerve.kMaxAngularSpeed;
+
+    // Read in relevant data from the Camera
+    boolean targetVisible = false;
+    double targetYaw = 0.0;
+    var results = camera.getAllUnreadResults();
+    if (!results.isEmpty()) {
+        // Camera processed a new frame since last
+        // Get the last one in the list.
+        var result = results.get(results.size() - 1);
+        if (result.hasTargets()) {
+            // At least one AprilTag was seen by the camera
+            for (var target : result.getTargets()) {
+                if (target.getFiducialId() == 7) {
+                    // Found Tag 7, record its information
+                    targetYaw = target.getYaw();
+                    targetVisible = true;
+                }
+            }
+        }
+    }
+
+    // Auto-align when requested
+    if (driverXbox.getAButton() && targetVisible) {
+        // Driver wants auto-alignment to tag 7
+        // And, tag 7 is in sight, so we can turn toward it.
+        // Override the driver's turn command with an automatic one that turns toward the tag.
+        turn = -1.0 * targetYaw * kDefaultPeriod * Constants.Swerve.kMaxAngularSpeed;
+    }
+
+    // Command drivetrain motors based on target speeds
+    m_robotContainer.drivebase.drive(forward, strafe, turn);
+
+    // Put debug information to the dashboard
+    SmartDashboard.putBoolean("Vision Target Visible", targetVisible);
+
     m_robotContainer.elevator.updateSmartDashboard();
   }
 

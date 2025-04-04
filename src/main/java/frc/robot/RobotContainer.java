@@ -8,6 +8,7 @@ import java.io.File;
 
 import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
@@ -104,6 +105,11 @@ public class RobotContainer {
 
 		configureDriveInputStreams();
 		configureBindings();
+		drivebase.swerveDrive.getModules();
+	}
+
+	public CommandXboxController getXBoxController() {
+		return driverXbox;
 	}
 
 	private void configureDriveInputStreams() {
