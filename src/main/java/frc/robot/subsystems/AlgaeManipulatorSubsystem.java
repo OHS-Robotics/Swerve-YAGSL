@@ -112,7 +112,7 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
 
         //Up is negative for this elevator
         // beginAcceleration(-speed_DegPerSecond * Constants.AlgaeManipulator.revsPerDegree);
-        motorLift.set(-speed_DegPerSecond * Constants.AlgaeManipulator.revsPerDegree);
+        motorLift.set(speed_DegPerSecond * Constants.AlgaeManipulator.revsPerDegree);
         joggingUp = true;
     }
 
@@ -128,7 +128,7 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
 
         //Down is positive for this elevator
         // beginAcceleration(speed_DegPerSecond * Constants.AlgaeManipulator.revsPerDegree);
-        motorLift.set(speed_DegPerSecond * Constants.AlgaeManipulator.revsPerDegree);
+        motorLift.set(-speed_DegPerSecond * Constants.AlgaeManipulator.revsPerDegree);
         joggingDown = true;
     }
 
@@ -194,11 +194,11 @@ public class AlgaeManipulatorSubsystem extends SubsystemBase {
     }
 
     public boolean isMovingUp() {
-        return isMoving() && (currentVelocity_RevsPerSec() > 0);
+        return isMoving() && (currentVelocity_RevsPerSec() < 0);
     }
 
     public boolean isMovingDown() {
-        return isMoving() && (currentVelocity_RevsPerSec() < 0);
+        return isMoving() && (currentVelocity_RevsPerSec() > 0);
     }
 
     public boolean valueIsWithinTolerance(double val, double target, double tolerance) {
