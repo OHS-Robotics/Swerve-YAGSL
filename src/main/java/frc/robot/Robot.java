@@ -4,21 +4,17 @@
 
 package frc.robot;
 
-import static frc.robot.Constants.Vision.*;
+import static frc.robot.Constants.Vision.kCameraName;
+
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import swervelib.SwerveDrive;
-
-import org.photonvision.PhotonCamera;
-import org.photonvision.targeting.PhotonTrackedTarget;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import frc.robot.subsystems.swervedrive.SwerveSubsystem;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -141,3 +137,27 @@ public class Robot extends TimedRobot {
   @Override
   public void testExit() {}
 }
+  
+@Override
+public void robotInit() {
+        // drivetrain = new SwerveDrive();
+        camera = new PhotonCamera(kCameraName); //CODA the camera object was declared above, but here is where it's actually initialized.  
+                                                // You may need to change that kCameraName variable to match something you've set to it?
+                                                // Pro Tip: click on a variable and right click -> go to definition to see whewre it's created (or press F12)                                  
+        // visionSim = new VisionSim(camera);
+
+            // Optional: Add an initial Shuffleboard entry
+            Shuffleboard.getTab("Vision").addDouble("AprilTag ID", this::getAprilTagID);
+        }
+    
+        /**
+         * Get the AprilTag ID from the best target.
+         */
+        public double getAprilTagID() {
+            PhotonPipelineResult result = camera.getLatestResult();
+            if (result.hasTargets()) {
+                return result.getBestTarget().getFiducialId();
+            }
+            return -1; // No tag found
+        }
+      }
