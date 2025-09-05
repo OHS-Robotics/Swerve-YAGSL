@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.Elastic;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -141,7 +142,7 @@ public class Robot extends TimedRobot {
 @Override
 public void robotInit() {
         // drivetrain = new SwerveDrive();
-        camera = new PhotonCamera(kCameraName); //CODA the camera object was declared above, but here is where it's actually initialized.  
+        camera = new PhotonCamera(kCameraName); //(From PhotonVision-Custom) CODA the camera object was declared above, but here is where it's actually initialized.  
                                                 // You may need to change that kCameraName variable to match something you've set to it?
                                                 // Pro Tip: click on a variable and right click -> go to definition to see whewre it's created (or press F12)                                  
         // visionSim = new VisionSim(camera);
