@@ -144,7 +144,7 @@ public void robotInit() {
         // drivetrain = new SwerveDrive();
         camera = new PhotonCamera(kCameraName); //(From PhotonVision-Custom) CODA the camera object was declared above, but here is where it's actually initialized.  
                                                 // You may need to change that kCameraName variable to match something you've set to it?
-                                                // Pro Tip: click on a variable and right click -> go to definition to see whewre it's created (or press F12)                                  
+                                                // Pro Tip: click on a variable and right click -> go to definition to see where it's created (or press F12) Hey Coda, Coda here, its under Constants                                
         // visionSim = new VisionSim(camera);
 
             // Optional: Add an initial Shuffleboard entry
