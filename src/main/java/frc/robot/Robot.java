@@ -9,6 +9,7 @@ import static frc.robot.Constants.Vision.kCameraName;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -22,6 +23,7 @@ public class Robot extends TimedRobot {
   private PhotonCamera camera;
 
   private RobotContainer m_robotContainer = null;
+  private final Joystick numpad = new Joystick(0);
   public Robot() {
     m_robotContainer = new RobotContainer();
     enableLiveWindowInTest(true);
@@ -78,6 +80,13 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
+//    System.out.println("teleopPeriodic");
+    // if (numpad.getRawButtonPressed(1)) {
+    //   System.out.println("Numpad 1 pressed");
+    // } else {
+    //   System.out.println("Numpad 1 not pressed");
+    // }
+    
     XboxController driverXbox = m_robotContainer.getXBoxController().getHID();
 
     // Calculate drivetrain commands from Joystick values
@@ -89,12 +98,15 @@ public class Robot extends TimedRobot {
     boolean targetVisible = false;
     double targetYaw = 0.0;
     var results = camera.getAllUnreadResults();
+
     if (!results.isEmpty()) {
         // Camera processed a new frame since last
         // Get the last one in the list.
+        System.out.println("Has Results...");
         var result = results.get(results.size() - 1);
         if (result.hasTargets()) {
-            // At least one AprilTag was seen by the camera
+          System.out.println("Has Targets...");
+          // At least one AprilTag was seen by the camera
             for (var target : result.getTargets()) {
                 if (target.getFiducialId() == 7) {
                     // Found Tag 7, record its information
@@ -103,10 +115,14 @@ public class Robot extends TimedRobot {
                 }
             }
         }
+    } else {
+      System.out.println("Results Empty...");
     }
 
+    System.out.println("Target Visible: " + targetVisible);
     // Auto-align when requested
-    if (driverXbox.getAButton() && targetVisible) {
+ //   if (numpad.getRawButtonPressed(1) && targetVisible) {
+     if (targetVisible) {
         // Driver wants auto-alignment to tag 7
         // And, tag 7 is in sight, so we can turn toward it.
         // Override the driver's turn command with an automatic one that turns toward the tag.
