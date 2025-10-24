@@ -20,7 +20,9 @@ import frc.robot.util.Elastic;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-  private PhotonCamera camera;
+
+  // Change this to match the name of your camera
+  private PhotonCamera camera = new PhotonCamera("Arducam_OV9281_USB_Camera");
 
   private RobotContainer m_robotContainer = null;
   private final Joystick numpad = new Joystick(0);
@@ -80,7 +82,12 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-//    System.out.println("teleopPeriodic");
+    //camera = new PhotonCamera(kCameraName);
+
+     // Change this to match the name of your camera
+     // PhotonCamera camera = new PhotonCamera("Arducam_OV9281_USB_Camera");
+
+    //    System.out.println("teleopPeriodic");
     // if (numpad.getRawButtonPressed(1)) {
     //   System.out.println("Numpad 1 pressed");
     // } else {
@@ -97,15 +104,16 @@ public class Robot extends TimedRobot {
     // Read in relevant data from the Camera
     boolean targetVisible = false;
     double targetYaw = 0.0;
+
     var results = camera.getAllUnreadResults();
 
     if (!results.isEmpty()) {
         // Camera processed a new frame since last
         // Get the last one in the list.
-        System.out.println("Has Results...");
+        // System.out.println("Has Results Size: " + results.size());
         var result = results.get(results.size() - 1);
         if (result.hasTargets()) {
-          System.out.println("Has Targets...");
+          // System.out.println("Has Targets...");
           // At least one AprilTag was seen by the camera
             for (var target : result.getTargets()) {
                 if (target.getFiducialId() == 7) {
@@ -114,15 +122,17 @@ public class Robot extends TimedRobot {
                     targetVisible = true;
                 }
             }
+        } else {
+          // No targets?
         }
     } else {
-      System.out.println("Results Empty...");
+      // System.out.println("Results Empty...");
     }
 
     System.out.println("Target Visible: " + targetVisible);
     // Auto-align when requested
- //   if (numpad.getRawButtonPressed(1) && targetVisible) {
-     if (targetVisible) {
+    // if (numpad.getRawButtonPressed(1) && targetVisible) {
+    if (targetVisible) {
         // Driver wants auto-alignment to tag 7
         // And, tag 7 is in sight, so we can turn toward it.
         // Override the driver's turn command with an automatic one that turns toward the tag.
@@ -130,6 +140,7 @@ public class Robot extends TimedRobot {
     }
 
     // Command drivetrain motors based on target speeds
+    System.out.println(String.format("Driving Forward: %.5f Strafe: %.5f Turn: %.5f", forward, strafe, turn));
     m_robotContainer.drivebase.drive(forward, strafe, turn);
 
     // Put debug information to the dashboard
@@ -157,7 +168,9 @@ public class Robot extends TimedRobot {
 
 @Override
 public void robotInit() {
-        // drivetrain = new SwerveDrive();
+        
+  
+  // drivetrain = new SwerveDrive();
         camera = new PhotonCamera(kCameraName); //(From PhotonVision-Custom) CODA the camera object was declared above, but here is where it's actually initialized.  
                                                 // You may need to change that kCameraName variable to match something you've set to it?
                                                 // Pro Tip: click on a variable and right click -> go to definition to see where it's created (or press F12) Hey Coda, Coda here, its under Constants                                
