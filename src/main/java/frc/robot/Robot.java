@@ -8,7 +8,11 @@ import static frc.robot.Constants.Vision.kCameraName;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
-
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
@@ -19,10 +23,17 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.util.Elastic;
 
 public class Robot extends TimedRobot {
+  public static final AprilTagFieldLayout kTagLayout =
+    AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+
+  public static final Transform3d kRobotToCam =
+    new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
+  
   private Command m_autonomousCommand;
 
   // Change this to match the name of your camera
   private PhotonCamera camera = new PhotonCamera("Arducam_OV9281_USB_Camera");
+  private PhotonCamera camera2 = new PhotonCamera("Intel(R)_RealSense(TM)_Depth_Camera_455__RGB");
 
   private RobotContainer m_robotContainer = null;
   private final Joystick numpad = new Joystick(0);
