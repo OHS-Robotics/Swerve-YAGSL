@@ -8,19 +8,35 @@ import static frc.robot.Constants.Vision.kCameraName;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
-
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.util.Elastic;
 
 public class Robot extends TimedRobot {
+  public static final AprilTagFieldLayout kTagLayout =
+    AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+
+  public static final Transform3d kRobotToCam =
+    new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, 0, 0));
+  
   private Command m_autonomousCommand;
-  private PhotonCamera camera;
+
+  // Change this to match the name of your camera
+  private PhotonCamera camera = new PhotonCamera("Arducam_OV9281_USB_Camera");
+  private PhotonCamera camera2 = new PhotonCamera("Intel(R)_RealSense(TM)_Depth_Camera_455__RGB");
 
   private RobotContainer m_robotContainer = null;
+  private final Joystick numpad = new Joystick(0);
   public Robot() {
     m_robotContainer = new RobotContainer();
     enableLiveWindowInTest(true);
@@ -77,6 +93,18 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
+    //camera = new PhotonCamera(kCameraName);
+
+     // Change this to match the name of your camera
+     // PhotonCamera camera = new PhotonCamera("Arducam_OV9281_USB_Camera");
+
+    //    System.out.println("teleopPeriodic");
+    // if (numpad.getRawButtonPressed(1)) {
+    //   System.out.println("Numpad 1 pressed");
+    // } else {
+    //   System.out.println("Numpad 1 not pressed");
+    // }
+    
     XboxController driverXbox = m_robotContainer.getXBoxController().getHID();
 
     // Calculate drivetrain commands from Joystick values
@@ -87,13 +115,17 @@ public class Robot extends TimedRobot {
     // Read in relevant data from the Camera
     boolean targetVisible = false;
     double targetYaw = 0.0;
+
     var results = camera.getAllUnreadResults();
+
     if (!results.isEmpty()) {
         // Camera processed a new frame since last
         // Get the last one in the list.
+        // System.out.println("Has Results Size: " + results.size());
         var result = results.get(results.size() - 1);
         if (result.hasTargets()) {
-            // At least one AprilTag was seen by the camera
+          // System.out.println("Has Targets...");
+          // At least one AprilTag was seen by the camera
             for (var target : result.getTargets()) {
                 if (target.getFiducialId() == 7) {
                     // Found Tag 7, record its information
@@ -101,11 +133,17 @@ public class Robot extends TimedRobot {
                     targetVisible = true;
                 }
             }
+        } else {
+          // No targets?
         }
+    } else {
+      // System.out.println("Results Empty...");
     }
 
+    System.out.println("Target Visible: " + targetVisible);
     // Auto-align when requested
-    if (driverXbox.getAButton() && targetVisible) {
+    // if (numpad.getRawButtonPressed(1) && targetVisible) {
+    if (targetVisible) {
         // Driver wants auto-alignment to tag 7
         // And, tag 7 is in sight, so we can turn toward it.
         // Override the driver's turn command with an automatic one that turns toward the tag.
@@ -113,6 +151,7 @@ public class Robot extends TimedRobot {
     }
 
     // Command drivetrain motors based on target speeds
+    System.out.println(String.format("Driving Forward: %.5f Strafe: %.5f Turn: %.5f", forward, strafe, turn));
     m_robotContainer.drivebase.drive(forward, strafe, turn);
 
     // Put debug information to the dashboard
@@ -136,14 +175,16 @@ public class Robot extends TimedRobot {
 
   @Override
   public void testExit() {}
-}
-  
+
+
 @Override
 public void robotInit() {
-        // drivetrain = new SwerveDrive();
-        camera = new PhotonCamera(kCameraName); //CODA the camera object was declared above, but here is where it's actually initialized.  
+        
+  
+  // drivetrain = new SwerveDrive();
+        camera = new PhotonCamera(kCameraName); //(From PhotonVision-Custom) CODA the camera object was declared above, but here is where it's actually initialized.  
                                                 // You may need to change that kCameraName variable to match something you've set to it?
-                                                // Pro Tip: click on a variable and right click -> go to definition to see whewre it's created (or press F12)                                  
+                                                // Pro Tip: click on a variable and right click -> go to definition to see where it's created (or press F12) Hey Coda, Coda here, its under Constants                                
         // visionSim = new VisionSim(camera);
 
             // Optional: Add an initial Shuffleboard entry

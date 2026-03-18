@@ -150,10 +150,10 @@ public final class Constants
   }
 
   public static final class Vision {
-        public static final String kCameraName = "photonvision";
+        public static final String kCameraName = "Arducam_OV9281_USB_Camera";
         // Cam mounted facing forward, half a meter forward of center, half a meter up from center,
         // pitched upward.
-        private static final double camPitch = Units.degreesToRadians(30.0);
+        private static final double camPitch = Units.degreesToRadians(35.0);
         public static final Transform3d kRobotToCam =
                 new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0, -camPitch, 0));
 
